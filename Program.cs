@@ -1,3 +1,4 @@
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using MyApp.Api.Endpoints;
 using MyApp.Infrastructure.Data;
@@ -13,6 +14,8 @@ builder.Services.AddControllers();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddValidatorsFromAssemblyContaining<MyTaskValidator>();
 
 var app = builder.Build();
 

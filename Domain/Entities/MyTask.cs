@@ -18,6 +18,7 @@ public class MyTask
     public int Progress { get; set; } = 0;
 
     public List<SubTask> SubTasks { get; set; } = new();
+    public List<CalendarEvent> CalendarEvents { get; set; } = new();
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;

@@ -1,27 +1,35 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using MyApp.Infrastructure.Data;
+using MyApp.Application.DTOs.SubTask;
 using MyApp.Domain.Entities;
+using MyApp.Infrastructure.Data;
 
-namespace MyApp.API.Controllers;
+namespace MyApp.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
 public class SubTasksController : ControllerBase
 {
     private readonly AppDbContext _db;
+    private readonly IMapper _mapper;
 
-    public SubTasksController(AppDbContext db)
+    public SubTasksController(AppDbContext db, IMapper mapper)
     {
         _db = db;
+        _mapper = mapper;
     }
 
-    // GET: api/subtasks
-    [HttpGet]
-    public async Task<IActionResult> GetAll()
+    // GET: api/subtasks/bytask/5
+    [HttpGet("bytask/{taskId:int}")]
+    public async Task<IActionResult> GetByTask(int taskId)
     {
-        var subtasks = await _db.SubTasks.ToListAsync();
-        return Ok(subtasks);
+        var subtasks = await _db.SubTasks
+            .Where(s => s.TaskId == taskId)
+            .ToListAsync();
+
+        var dto = _mapper.Map<List<SubTaskResponseDto>>(subtasks);
+        return Ok(dto);
     }
 
     // GET: api/subtasks/5
@@ -32,48 +40,47 @@ public class SubTasksController : ControllerBase
         if (subtask is null)
             return NotFound();
 
-        return Ok(subtask);
-    }
-
-    // GET: api/subtasks/bytask/3
-    [HttpGet("bytask/{taskId:int}")]
-    public async Task<IActionResult> GetByTask(int taskId)
-    {
-        var subtasks = await _db.SubTasks
-            .Where(s => s.TaskId == taskId)
-            .ToListAsync();
-
-        return Ok(subtasks);
+        var dto = _mapper.Map<SubTaskResponseDto>(subtask);
+        return Ok(dto);
     }
 
     // POST: api/subtasks
     [HttpPost]
-    public async Task<IActionResult> Create(SubTask subtask)
+    public async Task<IActionResult> Create(SubTaskCreateDto dto)
     {
         // Validate FK
-        var taskExists = await _db.MyTasks.AnyAsync(t => t.MyTaskId == subtask.TaskId);
+        var taskExists = await _db.MyTasks.AnyAsync(t => t.MyTaskId == dto.TaskId);
         if (!taskExists)
             return BadRequest("The parent MyTask does not exist.");
+
+        var subtask = _mapper.Map<SubTask>(dto);
+
+        subtask.CreatedAt = DateTime.UtcNow;
+        subtask.UpdatedAt = DateTime.UtcNow;
 
         _db.SubTasks.Add(subtask);
         await _db.SaveChangesAsync();
 
-        return CreatedAtAction(nameof(GetById), new { id = subtask.SubTaskId }, subtask);
+        var response = _mapper.Map<SubTaskResponseDto>(subtask);
+        return CreatedAtAction(nameof(GetById), new { id = subtask.SubTaskId }, response);
     }
 
     // PUT: api/subtasks/5
     [HttpPut("{id:int}")]
-    public async Task<IActionResult> Update(int id, SubTask updated)
+    public async Task<IActionResult> Update(int id, SubTaskUpdateDto dto)
     {
         var subtask = await _db.SubTasks.FindAsync(id);
         if (subtask is null)
             return NotFound();
 
-        subtask.Description = updated.Description;
-        subtask.Status = updated.Status;
+        _mapper.Map(dto, subtask);
+
+        subtask.UpdatedAt = DateTime.UtcNow;
 
         await _db.SaveChangesAsync();
-        return Ok(subtask);
+
+        var response = _mapper.Map<SubTaskResponseDto>(subtask);
+        return Ok(response);
     }
 
     // DELETE: api/subtasks/5
