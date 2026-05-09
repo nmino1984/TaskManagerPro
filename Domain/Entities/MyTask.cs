@@ -27,6 +27,7 @@ public class MyTask
         if (SubTasks.Count == 0)
         {
             Progress = 0;
+            UpdateStatus();
             return;
         }
 

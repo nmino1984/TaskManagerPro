@@ -3,6 +3,7 @@ using FluentValidation;
 using Microsoft.AspNetCore.OpenApi;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi;
+using MyApp.Api.Filters;
 using MyApp.Api.Middleware;
 using MyApp.Application.Mapping;
 using MyApp.Infrastructure.Data;
@@ -38,7 +39,10 @@ builder.Services.AddOpenApi(options =>
     });
 });
 
-builder.Services.AddControllers()
+builder.Services.AddControllers(options =>
+    {
+        options.Filters.Add<ValidationFilter>();
+    })
     .AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());

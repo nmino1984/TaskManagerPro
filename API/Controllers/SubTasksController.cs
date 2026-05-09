@@ -69,12 +69,13 @@ public class SubTasksController : ControllerBase
             return BadRequest("The parent task does not exist.");
 
         var subtask = _mapper.Map<SubTask>(dto);
-
         subtask.CreatedAt = DateTime.UtcNow;
         subtask.UpdatedAt = DateTime.UtcNow;
 
         _db.SubTasks.Add(subtask);
         await _db.SaveChangesAsync();
+
+        await SyncTaskProgressAsync(dto.TaskId);
 
         return CreatedAtAction(nameof(GetById), new { id = subtask.SubTaskId }, _mapper.Map<SubTaskResponseDto>(subtask));
     }
@@ -99,6 +100,8 @@ public class SubTasksController : ControllerBase
 
         await _db.SaveChangesAsync();
 
+        await SyncTaskProgressAsync(subtask.TaskId);
+
         return Ok(_mapper.Map<SubTaskResponseDto>(subtask));
     }
 
@@ -115,9 +118,26 @@ public class SubTasksController : ControllerBase
         if (subtask is null)
             return NotFound();
 
+        var taskId = subtask.TaskId;
+
         _db.SubTasks.Remove(subtask);
         await _db.SaveChangesAsync();
 
+        await SyncTaskProgressAsync(taskId);
+
         return NoContent();
+    }
+
+    private async Task SyncTaskProgressAsync(int taskId)
+    {
+        var task = await _db.MyTasks
+            .Include(t => t.SubTasks)
+            .FirstOrDefaultAsync(t => t.MyTaskId == taskId);
+
+        if (task is null) return;
+
+        task.UpdateProgress();
+        task.UpdatedAt = DateTime.UtcNow;
+        await _db.SaveChangesAsync();
     }
 }
