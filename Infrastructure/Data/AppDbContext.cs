@@ -1,5 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MyApp.Domain.Entities;
+using MyApp.Domain.Enums;
 
 namespace MyApp.Infrastructure.Data;
 
@@ -21,11 +23,29 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<MyTask>()
             .HasMany(t => t.SubTasks)
             .WithOne()
-            .HasForeignKey(s => s.TaskId);
+            .HasForeignKey(s => s.TaskId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<MyTask>()
+            .HasMany(t => t.CalendarEvents)
+            .WithOne(e => e.Task)
+            .HasForeignKey(e => e.TaskId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<MyTask>()
+            .Property(t => t.Priority)
+            .HasConversion(new EnumToStringConverter<TaskPriority>());
+
+        modelBuilder.Entity<MyTask>()
+            .Property(t => t.Status)
+            .HasConversion(new EnumToStringConverter<MyTaskStatus>());
+
+        modelBuilder.Entity<SubTask>()
+            .Property(s => s.Status)
+            .HasConversion(new EnumToStringConverter<SubTaskStatus>());
 
         modelBuilder.Entity<CalendarEvent>()
-            .HasOne(e => e.Task)
-            .WithMany()
-            .HasForeignKey(e => e.TaskId);
+            .Property(e => e.Status)
+            .HasConversion(new EnumToStringConverter<MyTaskStatus>());
     }
 }

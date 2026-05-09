@@ -1,4 +1,6 @@
-﻿namespace MyApp.Domain.Entities;
+using MyApp.Domain.Enums;
+
+namespace MyApp.Domain.Entities;
 
 public class CalendarEvent
 {
@@ -7,8 +9,7 @@ public class CalendarEvent
 
     public DateTime Date { get; set; }
 
-    // Allowed values: same as Task.Status
-    public string Status { get; set; } = "NotStarted";
+    public MyTaskStatus Status { get; set; } = MyTaskStatus.NotStarted;
 
     public MyTask? Task { get; set; }
 }

@@ -1,4 +1,6 @@
-﻿namespace MyApp.Application.DTOs.SubTask;
+using MyApp.Domain.Enums;
+
+namespace MyApp.Application.DTOs.SubTask;
 
 public class SubTaskResponseDto
 {
@@ -6,7 +8,7 @@ public class SubTaskResponseDto
     public int TaskId { get; set; }
 
     public string Description { get; set; } = string.Empty;
-    public string Status { get; set; } = "Pendiente";
+    public SubTaskStatus Status { get; set; }
 
     public DateTime? DueDate { get; set; }
     public string? Notes { get; set; }

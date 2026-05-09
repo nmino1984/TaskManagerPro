@@ -1,34 +1,80 @@
+using System.Text.Json.Serialization;
 using FluentValidation;
+using Microsoft.AspNetCore.OpenApi;
 using Microsoft.EntityFrameworkCore;
-using MyApp.Api.Endpoints;
+using Microsoft.OpenApi;
+using MyApp.Api.Middleware;
+using MyApp.Application.Mapping;
 using MyApp.Infrastructure.Data;
+using Scalar.AspNetCore;
+using Serilog;
+
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .WriteTo.File("logs/log-.txt", rollingInterval: RollingInterval.Day)
+    .Enrich.FromLogContext()
+    .CreateLogger();
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+builder.Host.UseSerilog();
 
-builder.Services.AddOpenApi();
+builder.Services.AddOpenApi(options =>
+{
+    options.AddDocumentTransformer((document, context, cancellationToken) =>
+    {
+        document.Info = new OpenApiInfo
+        {
+            Title = "TaskMaster Pro API",
+            Version = "v1",
+            Description = "REST API for managing tasks, subtasks, and calendar events in a collaborative team environment.",
+            Contact = new OpenApiContact
+            {
+                Name = "TaskMaster Pro",
+                Email = "dev@taskmasterpro.io"
+            }
+        };
+        return Task.CompletedTask;
+    });
+});
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    });
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddAutoMapper(cfg => cfg.AddProfile<MappingProfile>());
 
 builder.Services.AddValidatorsFromAssemblyContaining<MyTaskValidator>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+app.UseMiddleware<ErrorHandlingMiddleware>();
+
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/openapi/v1.json", "TaskMaster Pro API v1");
+        options.RoutePrefix = "swagger";
+        options.DocumentTitle = "TaskMaster Pro API";
+    });
+
+    app.MapScalarApiReference(options =>
+    {
+        options.Title = "TaskMaster Pro API";
+        options.Theme = ScalarTheme.Purple;
+    });
 }
 
 app.UseHttpsRedirection();
 
 app.MapControllers();
-
-app.MapMyTaskEndpoints();
 
 app.Run();

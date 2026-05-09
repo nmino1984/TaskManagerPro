@@ -1,4 +1,6 @@
-﻿namespace MyApp.Domain.Entities;
+using MyApp.Domain.Enums;
+
+namespace MyApp.Domain.Entities;
 
 public class SubTask
 {
@@ -7,8 +9,7 @@ public class SubTask
 
     public string Description { get; set; } = string.Empty;
 
-    // Allowed values: "Pending", "Completed"
-    public string Status { get; set; } = "Pending";
+    public SubTaskStatus Status { get; set; } = SubTaskStatus.Pending;
 
     public DateTime? DueDate { get; set; }
     public string? Notes { get; set; }

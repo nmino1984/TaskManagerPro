@@ -12,7 +12,7 @@ namespace MyApp.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Tasks",
+                name: "MyTasks",
                 columns: table => new
                 {
                     MyTaskId = table.Column<int>(type: "INTEGER", nullable: false)
@@ -29,7 +29,7 @@ namespace MyApp.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Tasks", x => x.MyTaskId);
+                    table.PrimaryKey("PK_MyTasks", x => x.MyTaskId);
                 });
 
             migrationBuilder.CreateTable(
@@ -46,9 +46,9 @@ namespace MyApp.Migrations
                 {
                     table.PrimaryKey("PK_CalendarEvents", x => x.CalendarEventId);
                     table.ForeignKey(
-                        name: "FK_CalendarEvents_Tasks_TaskId",
+                        name: "FK_CalendarEvents_MyTasks_TaskId",
                         column: x => x.TaskId,
-                        principalTable: "Tasks",
+                        principalTable: "MyTasks",
                         principalColumn: "MyTaskId",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -71,9 +71,9 @@ namespace MyApp.Migrations
                 {
                     table.PrimaryKey("PK_SubTasks", x => x.SubTaskId);
                     table.ForeignKey(
-                        name: "FK_SubTasks_Tasks_TaskId",
+                        name: "FK_SubTasks_MyTasks_TaskId",
                         column: x => x.TaskId,
-                        principalTable: "Tasks",
+                        principalTable: "MyTasks",
                         principalColumn: "MyTaskId",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -99,7 +99,7 @@ namespace MyApp.Migrations
                 name: "SubTasks");
 
             migrationBuilder.DropTable(
-                name: "Tasks");
+                name: "MyTasks");
         }
     }
 }

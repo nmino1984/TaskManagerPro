@@ -4,7 +4,6 @@ using MyApp.Application.DTOs.CalendarEvent;
 using MyApp.Application.DTOs.MyTask;
 using MyApp.Application.DTOs.SubTask;
 using MyApp.Domain.Entities;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace MyApp.Application.Mapping;
 

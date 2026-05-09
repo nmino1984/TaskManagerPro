@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MyApp.Application.DTOs.SubTask;
@@ -7,8 +7,13 @@ using MyApp.Infrastructure.Data;
 
 namespace MyApp.Api.Controllers;
 
+/// <summary>
+/// Manages subtasks belonging to a parent task.
+/// </summary>
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/v1/subtasks")]
+[Produces("application/json")]
+[Consumes("application/json")]
 public class SubTasksController : ControllerBase
 {
     private readonly AppDbContext _db;
@@ -20,38 +25,48 @@ public class SubTasksController : ControllerBase
         _mapper = mapper;
     }
 
-    // GET: api/subtasks/bytask/5
+    /// <summary>
+    /// Retrieves all subtasks belonging to a specific task.
+    /// </summary>
+    /// <param name="taskId">The parent task ID.</param>
     [HttpGet("bytask/{taskId:int}")]
+    [ProducesResponseType<List<SubTaskResponseDto>>(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetByTask(int taskId)
     {
         var subtasks = await _db.SubTasks
             .Where(s => s.TaskId == taskId)
             .ToListAsync();
 
-        var dto = _mapper.Map<List<SubTaskResponseDto>>(subtasks);
-        return Ok(dto);
+        return Ok(_mapper.Map<List<SubTaskResponseDto>>(subtasks));
     }
 
-    // GET: api/subtasks/5
+    /// <summary>
+    /// Retrieves a single subtask by its ID.
+    /// </summary>
+    /// <param name="id">The subtask ID.</param>
     [HttpGet("{id:int}")]
+    [ProducesResponseType<SubTaskResponseDto>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById(int id)
     {
         var subtask = await _db.SubTasks.FindAsync(id);
         if (subtask is null)
             return NotFound();
 
-        var dto = _mapper.Map<SubTaskResponseDto>(subtask);
-        return Ok(dto);
+        return Ok(_mapper.Map<SubTaskResponseDto>(subtask));
     }
 
-    // POST: api/subtasks
+    /// <summary>
+    /// Creates a new subtask under an existing task.
+    /// </summary>
     [HttpPost]
+    [ProducesResponseType<SubTaskResponseDto>(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Create(SubTaskCreateDto dto)
     {
-        // Validate FK
         var taskExists = await _db.MyTasks.AnyAsync(t => t.MyTaskId == dto.TaskId);
         if (!taskExists)
-            return BadRequest("The parent MyTask does not exist.");
+            return BadRequest("The parent task does not exist.");
 
         var subtask = _mapper.Map<SubTask>(dto);
 
@@ -61,12 +76,18 @@ public class SubTasksController : ControllerBase
         _db.SubTasks.Add(subtask);
         await _db.SaveChangesAsync();
 
-        var response = _mapper.Map<SubTaskResponseDto>(subtask);
-        return CreatedAtAction(nameof(GetById), new { id = subtask.SubTaskId }, response);
+        return CreatedAtAction(nameof(GetById), new { id = subtask.SubTaskId }, _mapper.Map<SubTaskResponseDto>(subtask));
     }
 
-    // PUT: api/subtasks/5
+    /// <summary>
+    /// Updates an existing subtask.
+    /// </summary>
+    /// <param name="id">The subtask ID.</param>
+    /// <param name="dto">The updated subtask data.</param>
     [HttpPut("{id:int}")]
+    [ProducesResponseType<SubTaskResponseDto>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Update(int id, SubTaskUpdateDto dto)
     {
         var subtask = await _db.SubTasks.FindAsync(id);
@@ -74,17 +95,20 @@ public class SubTasksController : ControllerBase
             return NotFound();
 
         _mapper.Map(dto, subtask);
-
         subtask.UpdatedAt = DateTime.UtcNow;
 
         await _db.SaveChangesAsync();
 
-        var response = _mapper.Map<SubTaskResponseDto>(subtask);
-        return Ok(response);
+        return Ok(_mapper.Map<SubTaskResponseDto>(subtask));
     }
 
-    // DELETE: api/subtasks/5
+    /// <summary>
+    /// Deletes a subtask by its ID.
+    /// </summary>
+    /// <param name="id">The subtask ID.</param>
     [HttpDelete("{id:int}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(int id)
     {
         var subtask = await _db.SubTasks.FindAsync(id);

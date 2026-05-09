@@ -1,4 +1,4 @@
-﻿using FluentValidation;
+using FluentValidation;
 using MyApp.Domain.Entities;
 
 public class MyTaskValidator : AbstractValidator<MyTask>
@@ -17,12 +17,10 @@ public class MyTaskValidator : AbstractValidator<MyTask>
             .WithMessage("StartDate must be earlier than EndDate.");
 
         RuleFor(t => t.Priority)
-            .Must(p => new[] { "High", "Medium", "Low" }.Contains(p))
-            .WithMessage("Invalid priority value. Allowed: High, Medium, Low.");
+            .IsInEnum().WithMessage("Invalid priority value.");
 
         RuleFor(t => t.Status)
-            .Must(s => new[] { "NotStarted", "InProgress", "Completed", "Overdue" }.Contains(s))
-            .WithMessage("Invalid status value.");
+            .IsInEnum().WithMessage("Invalid status value.");
 
         RuleFor(t => t.Progress)
             .InclusiveBetween(0, 100)

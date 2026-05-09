@@ -1,4 +1,6 @@
-﻿namespace MyApp.Application.DTOs.MyTask;
+using MyApp.Domain.Enums;
+
+namespace MyApp.Application.DTOs.MyTask;
 
 public class MyTaskCreateDto
 {
@@ -8,5 +10,5 @@ public class MyTaskCreateDto
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
 
-    public string Priority { get; set; } = "Medium";
+    public TaskPriority Priority { get; set; } = TaskPriority.Medium;
 }

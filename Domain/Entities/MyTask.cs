@@ -1,4 +1,6 @@
-﻿namespace MyApp.Domain.Entities;
+using MyApp.Domain.Enums;
+
+namespace MyApp.Domain.Entities;
 
 public class MyTask
 {
@@ -9,11 +11,8 @@ public class MyTask
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
 
-    // Allowed values: "High", "Medium", "Low"
-    public string Priority { get; set; } = "Medium";
-
-    // Allowed values: "NotStarted", "InProgress", "Completed", "Overdue"
-    public string Status { get; set; } = "NotStarted";
+    public TaskPriority Priority { get; set; } = TaskPriority.Medium;
+    public MyTaskStatus Status { get; set; } = MyTaskStatus.NotStarted;
 
     public int Progress { get; set; } = 0;
 
@@ -31,7 +30,7 @@ public class MyTask
             return;
         }
 
-        int completed = SubTasks.Count(s => s.Status == "Completed");
+        int completed = SubTasks.Count(s => s.Status == SubTaskStatus.Completed);
         Progress = (int)((completed / (double)SubTasks.Count) * 100);
 
         UpdateStatus();
@@ -41,22 +40,16 @@ public class MyTask
     {
         if (Progress == 100)
         {
-            Status = "Completed";
+            Status = MyTaskStatus.Completed;
             return;
         }
 
         if (DateTime.UtcNow.Date > EndDate.Date)
         {
-            Status = "Overdue";
+            Status = MyTaskStatus.Overdue;
             return;
         }
 
-        if (Progress > 0)
-        {
-            Status = "InProgress";
-            return;
-        }
-
-        Status = "NotStarted";
+        Status = Progress > 0 ? MyTaskStatus.InProgress : MyTaskStatus.NotStarted;
     }
 }

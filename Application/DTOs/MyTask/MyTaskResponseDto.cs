@@ -1,5 +1,6 @@
-﻿using MyApp.Application.DTOs.CalendarEvent;
+using MyApp.Application.DTOs.CalendarEvent;
 using MyApp.Application.DTOs.SubTask;
+using MyApp.Domain.Enums;
 
 namespace MyApp.Application.DTOs.MyTask;
 
@@ -12,8 +13,8 @@ public class MyTaskResponseDto
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
 
-    public string Priority { get; set; } = "Medium";
-    public string Status { get; set; } = "NotStarted";
+    public TaskPriority Priority { get; set; }
+    public MyTaskStatus Status { get; set; }
     public int Progress { get; set; }
 
     public DateTime CreatedAt { get; set; }

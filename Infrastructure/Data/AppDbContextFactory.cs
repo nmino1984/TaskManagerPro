@@ -10,7 +10,7 @@ public class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbContext>
         var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
 
         // Hardcoded connection string ONLY for design-time
-        optionsBuilder.UseSqlite("Data Source=taskmaster.db");
+        optionsBuilder.UseSqlite("Data Source=TaskManagerPro.db");
 
         return new AppDbContext(optionsBuilder.Options);
     }

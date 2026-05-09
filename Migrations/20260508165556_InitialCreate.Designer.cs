@@ -11,7 +11,7 @@ using MyApp.Infrastructure.Data;
 namespace MyApp.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260504180023_InitialCreate")]
+    [Migration("20260508165556_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -81,7 +81,7 @@ namespace MyApp.Migrations
 
                     b.HasKey("MyTaskId");
 
-                    b.ToTable("Tasks");
+                    b.ToTable("MyTasks");
                 });
 
             modelBuilder.Entity("MyApp.Domain.Entities.SubTask", b =>
@@ -123,7 +123,7 @@ namespace MyApp.Migrations
             modelBuilder.Entity("MyApp.Domain.Entities.CalendarEvent", b =>
                 {
                     b.HasOne("MyApp.Domain.Entities.MyTask", "Task")
-                        .WithMany()
+                        .WithMany("CalendarEvents")
                         .HasForeignKey("TaskId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -142,6 +142,8 @@ namespace MyApp.Migrations
 
             modelBuilder.Entity("MyApp.Domain.Entities.MyTask", b =>
                 {
+                    b.Navigation("CalendarEvents");
+
                     b.Navigation("SubTasks");
                 });
 #pragma warning restore 612, 618

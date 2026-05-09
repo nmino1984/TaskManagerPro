@@ -1,4 +1,6 @@
-﻿namespace MyApp.Application.DTOs.CalendarEvent;
+using MyApp.Domain.Enums;
+
+namespace MyApp.Application.DTOs.CalendarEvent;
 
 public class CalendarEventResponseDto
 {
@@ -6,5 +8,5 @@ public class CalendarEventResponseDto
     public int TaskId { get; set; }
 
     public DateTime Date { get; set; }
-    public string Status { get; set; } = "NotStarted";
+    public MyTaskStatus Status { get; set; }
 }
