@@ -36,10 +36,7 @@ public class MyTaskController : ControllerBase
     [ProducesResponseType<MyTaskResponseDto>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<MyTaskResponseDto>> GetById(int id)
-    {
-        var result = await _taskService.GetByIdAsync(id);
-        return result is null ? NotFound() : Ok(result);
-    }
+        => Ok(await _taskService.GetByIdAsync(id));
 
     /// <summary>
     /// Creates a new task.
@@ -63,10 +60,7 @@ public class MyTaskController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<MyTaskResponseDto>> Update(int id, MyTaskUpdateDto dto)
-    {
-        var result = await _taskService.UpdateAsync(id, dto);
-        return result is null ? NotFound() : Ok(result);
-    }
+        => Ok(await _taskService.UpdateAsync(id, dto));
 
     /// <summary>
     /// Deletes a task by its ID.
@@ -76,5 +70,8 @@ public class MyTaskController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(int id)
-        => await _taskService.DeleteAsync(id) ? NoContent() : NotFound();
+    {
+        await _taskService.DeleteAsync(id);
+        return NoContent();
+    }
 }

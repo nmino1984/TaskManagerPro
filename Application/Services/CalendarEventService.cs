@@ -1,6 +1,7 @@
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using MyApp.Application.DTOs.CalendarEvent;
+using MyApp.Application.Exceptions;
 using MyApp.Application.Interfaces;
 using MyApp.Domain.Entities;
 using MyApp.Infrastructure.Data;
@@ -27,16 +28,19 @@ public class CalendarEventService : ICalendarEventService
         return _mapper.Map<List<CalendarEventResponseDto>>(events);
     }
 
-    public async Task<CalendarEventResponseDto?> GetByIdAsync(int id)
+    public async Task<CalendarEventResponseDto> GetByIdAsync(int id)
     {
-        var ev = await _db.CalendarEvents.FindAsync(id);
-        return ev is null ? null : _mapper.Map<CalendarEventResponseDto>(ev);
+        var ev = await _db.CalendarEvents.FindAsync(id)
+            ?? throw new NotFoundException("CalendarEvent", id);
+
+        return _mapper.Map<CalendarEventResponseDto>(ev);
     }
 
-    public async Task<CalendarEventResponseDto?> CreateAsync(CalendarEventCreateDto dto)
+    public async Task<CalendarEventResponseDto> CreateAsync(CalendarEventCreateDto dto)
     {
         var taskExists = await _db.MyTasks.AnyAsync(t => t.MyTaskId == dto.TaskId);
-        if (!taskExists) return null;
+        if (!taskExists)
+            throw new NotFoundException("MyTask", dto.TaskId);
 
         var ev = _mapper.Map<CalendarEvent>(dto);
 
@@ -46,10 +50,10 @@ public class CalendarEventService : ICalendarEventService
         return _mapper.Map<CalendarEventResponseDto>(ev);
     }
 
-    public async Task<CalendarEventResponseDto?> UpdateAsync(int id, CalendarEventUpdateDto dto)
+    public async Task<CalendarEventResponseDto> UpdateAsync(int id, CalendarEventUpdateDto dto)
     {
-        var ev = await _db.CalendarEvents.FindAsync(id);
-        if (ev is null) return null;
+        var ev = await _db.CalendarEvents.FindAsync(id)
+            ?? throw new NotFoundException("CalendarEvent", id);
 
         _mapper.Map(dto, ev);
 
@@ -58,14 +62,12 @@ public class CalendarEventService : ICalendarEventService
         return _mapper.Map<CalendarEventResponseDto>(ev);
     }
 
-    public async Task<bool> DeleteAsync(int id)
+    public async Task DeleteAsync(int id)
     {
-        var ev = await _db.CalendarEvents.FindAsync(id);
-        if (ev is null) return false;
+        var ev = await _db.CalendarEvents.FindAsync(id)
+            ?? throw new NotFoundException("CalendarEvent", id);
 
         _db.CalendarEvents.Remove(ev);
         await _db.SaveChangesAsync();
-
-        return true;
     }
 }

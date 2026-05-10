@@ -36,11 +36,16 @@ public class ValidationFilter : IAsyncActionFilter
                         g => g.Select(e => e.ErrorMessage).ToArray()
                     );
 
-                context.Result = new BadRequestObjectResult(new
+                var problem = new ValidationProblemDetails(errors)
                 {
-                    type = "Validation Error",
-                    errors
-                });
+                    Type = "https://tools.ietf.org/html/rfc9110#section-15.5.1",
+                    Title = "Validation Error",
+                    Status = StatusCodes.Status400BadRequest,
+                    Instance = context.HttpContext.Request.Path
+                };
+                problem.Extensions["traceId"] = context.HttpContext.TraceIdentifier;
+
+                context.Result = new BadRequestObjectResult(problem);
                 return;
             }
         }

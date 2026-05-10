@@ -1,5 +1,5 @@
-﻿using System.Net;
-using System.Text.Json;
+using Microsoft.AspNetCore.Mvc;
+using MyApp.Application.Exceptions;
 
 namespace MyApp.Api.Middleware;
 
@@ -20,23 +20,42 @@ public class ErrorHandlingMiddleware
         {
             await _next(context);
         }
+        catch (NotFoundException ex)
+        {
+            context.Response.StatusCode = StatusCodes.Status404NotFound;
+            context.Response.ContentType = "application/problem+json";
+
+            var problem = new ProblemDetails
+            {
+                Type = "https://tools.ietf.org/html/rfc9110#section-15.5.5",
+                Title = "Not Found",
+                Status = StatusCodes.Status404NotFound,
+                Detail = ex.Message,
+                Instance = context.Request.Path
+            };
+            problem.Extensions["traceId"] = context.TraceIdentifier;
+
+            await context.Response.WriteAsJsonAsync(problem);
+        }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Unhandled exception");
+            _logger.LogError(ex, "Unhandled exception on {Method} {Path}",
+                context.Request.Method, context.Request.Path);
 
-            context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-            context.Response.ContentType = "application/json";
+            context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+            context.Response.ContentType = "application/problem+json";
 
-            var error = new
+            var problem = new ProblemDetails
             {
-                message = "An unexpected error occurred.",
-                detail = ex.Message,
-                traceId = context.TraceIdentifier
+                Type = "https://tools.ietf.org/html/rfc9110#section-15.6.1",
+                Title = "Internal Server Error",
+                Status = StatusCodes.Status500InternalServerError,
+                Detail = "An unexpected error occurred. Please try again later.",
+                Instance = context.Request.Path
             };
+            problem.Extensions["traceId"] = context.TraceIdentifier;
 
-            var json = JsonSerializer.Serialize(error);
-
-            await context.Response.WriteAsync(json);
+            await context.Response.WriteAsJsonAsync(problem);
         }
     }
 }

@@ -1,6 +1,7 @@
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using MyApp.Application.DTOs.MyTask;
+using MyApp.Application.Exceptions;
 using MyApp.Application.Interfaces;
 using MyApp.Domain.Entities;
 using MyApp.Infrastructure.Data;
@@ -28,14 +29,15 @@ public class TaskService : ITaskService
         return _mapper.Map<List<MyTaskResponseDto>>(tasks);
     }
 
-    public async Task<MyTaskResponseDto?> GetByIdAsync(int id)
+    public async Task<MyTaskResponseDto> GetByIdAsync(int id)
     {
         var task = await _db.MyTasks
             .Include(t => t.SubTasks)
             .Include(t => t.CalendarEvents)
-            .FirstOrDefaultAsync(t => t.MyTaskId == id);
+            .FirstOrDefaultAsync(t => t.MyTaskId == id)
+            ?? throw new NotFoundException("MyTask", id);
 
-        return task is null ? null : _mapper.Map<MyTaskResponseDto>(task);
+        return _mapper.Map<MyTaskResponseDto>(task);
     }
 
     public async Task<MyTaskResponseDto> CreateAsync(MyTaskCreateDto dto)
@@ -50,10 +52,10 @@ public class TaskService : ITaskService
         return _mapper.Map<MyTaskResponseDto>(task);
     }
 
-    public async Task<MyTaskResponseDto?> UpdateAsync(int id, MyTaskUpdateDto dto)
+    public async Task<MyTaskResponseDto> UpdateAsync(int id, MyTaskUpdateDto dto)
     {
-        var task = await _db.MyTasks.FindAsync(id);
-        if (task is null) return null;
+        var task = await _db.MyTasks.FindAsync(id)
+            ?? throw new NotFoundException("MyTask", id);
 
         _mapper.Map(dto, task);
         task.UpdatedAt = DateTime.UtcNow;
@@ -63,14 +65,12 @@ public class TaskService : ITaskService
         return _mapper.Map<MyTaskResponseDto>(task);
     }
 
-    public async Task<bool> DeleteAsync(int id)
+    public async Task DeleteAsync(int id)
     {
-        var task = await _db.MyTasks.FindAsync(id);
-        if (task is null) return false;
+        var task = await _db.MyTasks.FindAsync(id)
+            ?? throw new NotFoundException("MyTask", id);
 
         _db.MyTasks.Remove(task);
         await _db.SaveChangesAsync();
-
-        return true;
     }
 }

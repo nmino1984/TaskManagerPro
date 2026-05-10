@@ -37,10 +37,7 @@ public class SubTasksController : ControllerBase
     [ProducesResponseType<SubTaskResponseDto>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById(int id)
-    {
-        var result = await _subTaskService.GetByIdAsync(id);
-        return result is null ? NotFound() : Ok(result);
-    }
+        => Ok(await _subTaskService.GetByIdAsync(id));
 
     /// <summary>
     /// Creates a new subtask under an existing task.
@@ -48,12 +45,10 @@ public class SubTasksController : ControllerBase
     [HttpPost]
     [ProducesResponseType<SubTaskResponseDto>(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Create(SubTaskCreateDto dto)
     {
         var result = await _subTaskService.CreateAsync(dto);
-        if (result is null)
-            return BadRequest("The parent task does not exist.");
-
         return CreatedAtAction(nameof(GetById), new { id = result.SubTaskId }, result);
     }
 
@@ -67,10 +62,7 @@ public class SubTasksController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Update(int id, SubTaskUpdateDto dto)
-    {
-        var result = await _subTaskService.UpdateAsync(id, dto);
-        return result is null ? NotFound() : Ok(result);
-    }
+        => Ok(await _subTaskService.UpdateAsync(id, dto));
 
     /// <summary>
     /// Deletes a subtask by its ID.
@@ -80,5 +72,8 @@ public class SubTasksController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(int id)
-        => await _subTaskService.DeleteAsync(id) ? NoContent() : NotFound();
+    {
+        await _subTaskService.DeleteAsync(id);
+        return NoContent();
+    }
 }

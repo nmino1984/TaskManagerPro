@@ -37,10 +37,7 @@ public class CalendarEventsController : ControllerBase
     [ProducesResponseType<CalendarEventResponseDto>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById(int id)
-    {
-        var result = await _calendarEventService.GetByIdAsync(id);
-        return result is null ? NotFound() : Ok(result);
-    }
+        => Ok(await _calendarEventService.GetByIdAsync(id));
 
     /// <summary>
     /// Creates a new calendar event linked to an existing task.
@@ -48,12 +45,10 @@ public class CalendarEventsController : ControllerBase
     [HttpPost]
     [ProducesResponseType<CalendarEventResponseDto>(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Create(CalendarEventCreateDto dto)
     {
         var result = await _calendarEventService.CreateAsync(dto);
-        if (result is null)
-            return BadRequest("The parent task does not exist.");
-
         return CreatedAtAction(nameof(GetById), new { id = result.CalendarEventId }, result);
     }
 
@@ -67,10 +62,7 @@ public class CalendarEventsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Update(int id, CalendarEventUpdateDto dto)
-    {
-        var result = await _calendarEventService.UpdateAsync(id, dto);
-        return result is null ? NotFound() : Ok(result);
-    }
+        => Ok(await _calendarEventService.UpdateAsync(id, dto));
 
     /// <summary>
     /// Deletes a calendar event by its ID.
@@ -80,5 +72,8 @@ public class CalendarEventsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(int id)
-        => await _calendarEventService.DeleteAsync(id) ? NoContent() : NotFound();
+    {
+        await _calendarEventService.DeleteAsync(id);
+        return NoContent();
+    }
 }
