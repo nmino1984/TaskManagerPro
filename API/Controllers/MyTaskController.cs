@@ -1,9 +1,6 @@
-using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using MyApp.Application.DTOs.MyTask;
-using MyApp.Domain.Entities;
-using MyApp.Infrastructure.Data;
+using MyApp.Application.Interfaces;
 
 namespace MyApp.Api.Controllers;
 
@@ -16,13 +13,11 @@ namespace MyApp.Api.Controllers;
 [Consumes("application/json")]
 public class MyTaskController : ControllerBase
 {
-    private readonly AppDbContext _db;
-    private readonly IMapper _mapper;
+    private readonly ITaskService _taskService;
 
-    public MyTaskController(AppDbContext db, IMapper mapper)
+    public MyTaskController(ITaskService taskService)
     {
-        _db = db;
-        _mapper = mapper;
+        _taskService = taskService;
     }
 
     /// <summary>
@@ -31,14 +26,7 @@ public class MyTaskController : ControllerBase
     [HttpGet]
     [ProducesResponseType<List<MyTaskResponseDto>>(StatusCodes.Status200OK)]
     public async Task<ActionResult<IEnumerable<MyTaskResponseDto>>> GetAll()
-    {
-        var tasks = await _db.MyTasks
-            .Include(t => t.SubTasks)
-            .Include(t => t.CalendarEvents)
-            .ToListAsync();
-
-        return Ok(_mapper.Map<List<MyTaskResponseDto>>(tasks));
-    }
+        => Ok(await _taskService.GetAllAsync());
 
     /// <summary>
     /// Retrieves a single task by its ID.
@@ -49,15 +37,8 @@ public class MyTaskController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<MyTaskResponseDto>> GetById(int id)
     {
-        var task = await _db.MyTasks
-            .Include(t => t.SubTasks)
-            .Include(t => t.CalendarEvents)
-            .FirstOrDefaultAsync(t => t.MyTaskId == id);
-
-        if (task is null)
-            return NotFound();
-
-        return Ok(_mapper.Map<MyTaskResponseDto>(task));
+        var result = await _taskService.GetByIdAsync(id);
+        return result is null ? NotFound() : Ok(result);
     }
 
     /// <summary>
@@ -68,17 +49,8 @@ public class MyTaskController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<MyTaskResponseDto>> Create(MyTaskCreateDto dto)
     {
-        var task = _mapper.Map<MyTask>(dto);
-
-        task.CreatedAt = DateTime.UtcNow;
-        task.UpdatedAt = DateTime.UtcNow;
-
-        _db.MyTasks.Add(task);
-        await _db.SaveChangesAsync();
-
-        var response = _mapper.Map<MyTaskResponseDto>(task);
-
-        return CreatedAtAction(nameof(GetById), new { id = task.MyTaskId }, response);
+        var result = await _taskService.CreateAsync(dto);
+        return CreatedAtAction(nameof(GetById), new { id = result.MyTaskId }, result);
     }
 
     /// <summary>
@@ -92,16 +64,8 @@ public class MyTaskController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<MyTaskResponseDto>> Update(int id, MyTaskUpdateDto dto)
     {
-        var task = await _db.MyTasks.FindAsync(id);
-        if (task is null)
-            return NotFound();
-
-        _mapper.Map(dto, task);
-        task.UpdatedAt = DateTime.UtcNow;
-
-        await _db.SaveChangesAsync();
-
-        return Ok(_mapper.Map<MyTaskResponseDto>(task));
+        var result = await _taskService.UpdateAsync(id, dto);
+        return result is null ? NotFound() : Ok(result);
     }
 
     /// <summary>
@@ -112,14 +76,5 @@ public class MyTaskController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(int id)
-    {
-        var task = await _db.MyTasks.FindAsync(id);
-        if (task is null)
-            return NotFound();
-
-        _db.MyTasks.Remove(task);
-        await _db.SaveChangesAsync();
-
-        return NoContent();
-    }
+        => await _taskService.DeleteAsync(id) ? NoContent() : NotFound();
 }

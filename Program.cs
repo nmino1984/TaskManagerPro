@@ -5,7 +5,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi;
 using MyApp.Api.Filters;
 using MyApp.Api.Middleware;
+using MyApp.Application.Interfaces;
 using MyApp.Application.Mapping;
+using MyApp.Application.Services;
 using MyApp.Infrastructure.Data;
 using Scalar.AspNetCore;
 using Serilog;
@@ -54,6 +56,10 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddAutoMapper(cfg => cfg.AddProfile<MappingProfile>());
 
 builder.Services.AddValidatorsFromAssemblyContaining<MyTaskValidator>();
+
+builder.Services.AddScoped<ITaskService, TaskService>();
+builder.Services.AddScoped<ISubTaskService, SubTaskService>();
+builder.Services.AddScoped<ICalendarEventService, CalendarEventService>();
 
 var app = builder.Build();
 

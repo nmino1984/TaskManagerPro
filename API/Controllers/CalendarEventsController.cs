@@ -1,9 +1,6 @@
-using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using MyApp.Application.DTOs.CalendarEvent;
-using MyApp.Domain.Entities;
-using MyApp.Infrastructure.Data;
+using MyApp.Application.Interfaces;
 
 namespace MyApp.Api.Controllers;
 
@@ -16,13 +13,11 @@ namespace MyApp.Api.Controllers;
 [Consumes("application/json")]
 public class CalendarEventsController : ControllerBase
 {
-    private readonly AppDbContext _db;
-    private readonly IMapper _mapper;
+    private readonly ICalendarEventService _calendarEventService;
 
-    public CalendarEventsController(AppDbContext db, IMapper mapper)
+    public CalendarEventsController(ICalendarEventService calendarEventService)
     {
-        _db = db;
-        _mapper = mapper;
+        _calendarEventService = calendarEventService;
     }
 
     /// <summary>
@@ -32,13 +27,7 @@ public class CalendarEventsController : ControllerBase
     [HttpGet("bytask/{taskId:int}")]
     [ProducesResponseType<List<CalendarEventResponseDto>>(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetByTask(int taskId)
-    {
-        var events = await _db.CalendarEvents
-            .Where(e => e.TaskId == taskId)
-            .ToListAsync();
-
-        return Ok(_mapper.Map<List<CalendarEventResponseDto>>(events));
-    }
+        => Ok(await _calendarEventService.GetByTaskAsync(taskId));
 
     /// <summary>
     /// Retrieves a single calendar event by its ID.
@@ -49,11 +38,8 @@ public class CalendarEventsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById(int id)
     {
-        var ev = await _db.CalendarEvents.FindAsync(id);
-        if (ev is null)
-            return NotFound();
-
-        return Ok(_mapper.Map<CalendarEventResponseDto>(ev));
+        var result = await _calendarEventService.GetByIdAsync(id);
+        return result is null ? NotFound() : Ok(result);
     }
 
     /// <summary>
@@ -64,16 +50,11 @@ public class CalendarEventsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Create(CalendarEventCreateDto dto)
     {
-        var taskExists = await _db.MyTasks.AnyAsync(t => t.MyTaskId == dto.TaskId);
-        if (!taskExists)
+        var result = await _calendarEventService.CreateAsync(dto);
+        if (result is null)
             return BadRequest("The parent task does not exist.");
 
-        var ev = _mapper.Map<CalendarEvent>(dto);
-
-        _db.CalendarEvents.Add(ev);
-        await _db.SaveChangesAsync();
-
-        return CreatedAtAction(nameof(GetById), new { id = ev.CalendarEventId }, _mapper.Map<CalendarEventResponseDto>(ev));
+        return CreatedAtAction(nameof(GetById), new { id = result.CalendarEventId }, result);
     }
 
     /// <summary>
@@ -87,15 +68,8 @@ public class CalendarEventsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Update(int id, CalendarEventUpdateDto dto)
     {
-        var ev = await _db.CalendarEvents.FindAsync(id);
-        if (ev is null)
-            return NotFound();
-
-        _mapper.Map(dto, ev);
-
-        await _db.SaveChangesAsync();
-
-        return Ok(_mapper.Map<CalendarEventResponseDto>(ev));
+        var result = await _calendarEventService.UpdateAsync(id, dto);
+        return result is null ? NotFound() : Ok(result);
     }
 
     /// <summary>
@@ -106,14 +80,5 @@ public class CalendarEventsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(int id)
-    {
-        var ev = await _db.CalendarEvents.FindAsync(id);
-        if (ev is null)
-            return NotFound();
-
-        _db.CalendarEvents.Remove(ev);
-        await _db.SaveChangesAsync();
-
-        return NoContent();
-    }
+        => await _calendarEventService.DeleteAsync(id) ? NoContent() : NotFound();
 }
