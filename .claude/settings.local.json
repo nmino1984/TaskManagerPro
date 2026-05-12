@@ -1,0 +1,41 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\okind\\\\source\\\\repos\\\\nmino1984\\\\C#.Net\\\\TaskManagerPro\" -Recurse -File)",
+      "Bash(Select-Object FullName, Length)",
+      "Bash(ConvertTo-Json)",
+      "Bash(dotnet build *)",
+      "Bash(del *)",
+      "Bash(dotnet run *)",
+      "PowerShell(Get-Process *)",
+      "Read(//tmp/**)",
+      "PowerShell(Stop-Process *)",
+      "Bash(dotnet ef *)",
+      "PowerShell(Start-Sleep -Seconds 6; try { $r = Invoke-WebRequest -Uri \"http://localhost:5141/api/v1/tasks\" -UseBasicParsing -TimeoutSec 5; Write-Output \"Status: $\\($r.StatusCode\\)\"; Write-Output $r.Content } catch { Write-Output \"Error: $_\" })",
+      "PowerShell($r = Invoke-WebRequest -Uri \"http://localhost:5141/api/v1/tasks\" -UseBasicParsing -TimeoutSec 5; Write-Output \"HTTP $\\($r.StatusCode\\)\"; $r.Content)",
+      "PowerShell(Get-NetTCPConnection *)",
+      "PowerShell(Set-Location \"C:\\\\Users\\\\okind\\\\source\\\\repos\\\\nmino1984\\\\C#.Net\\\\TaskManagerPro\\\\MyApp\"; Start-Process \"dotnet\" -ArgumentList \"run\",\"--launch-profile\",\"http\" -WindowStyle Normal; Start-Sleep -Seconds 7; $r = Invoke-WebRequest -Uri \"http://localhost:5141/openapi/v1.json\" -UseBasicParsing -TimeoutSec 5; Write-Output \"OpenAPI spec: HTTP $\\($r.StatusCode\\)\"; $r.Content | ConvertFrom-Json | Select-Object -ExpandProperty info)",
+      "PowerShell($r = Invoke-WebRequest -Uri \"http://localhost:5141/openapi/v1.json\" -UseBasicParsing -TimeoutSec 5; $json = $r.Content | ConvertFrom-Json; Write-Output \"Title: $\\($json.info.title\\)\"; Write-Output \"Paths count: $\\(\\($json.paths | Get-Member -MemberType NoteProperty\\).Count\\)\")",
+      "PowerShell($swagger = Invoke-WebRequest -Uri \"http://localhost:5141/swagger\" -UseBasicParsing -TimeoutSec 5; Write-Output \"Swagger: HTTP $\\($swagger.StatusCode\\)\"; $scalar = Invoke-WebRequest -Uri \"http://localhost:5141/scalar/v1\" -UseBasicParsing -TimeoutSec 5; Write-Output \"Scalar: HTTP $\\($scalar.StatusCode\\)\")",
+      "PowerShell(Set-Location \"C:\\\\Users\\\\okind\\\\source\\\\repos\\\\nmino1984\\\\C#.Net\\\\TaskManagerPro\\\\MyApp\"; Start-Process \"dotnet\" -ArgumentList \"run\",\"--launch-profile\",\"http\"; Start-Sleep -Seconds 7; $body = '{\"title\":\"\",\"startDate\":\"2026-05-09T00:00:00Z\",\"endDate\":\"2026-05-30T00:00:00Z\",\"priority\":\"High\"}'; $r = Invoke-WebRequest -Uri \"http://localhost:5141/api/v1/tasks\" -Method POST -Body $body -ContentType \"application/json\" -UseBasicParsing; Write-Output \"Status: $\\($r.StatusCode\\)\"; $r.Content)",
+      "PowerShell($body = '{\"title\":\"\",\"startDate\":\"2026-05-09T00:00:00Z\",\"endDate\":\"2026-05-30T00:00:00Z\",\"priority\":\"High\"}'; try { Invoke-WebRequest -Uri \"http://localhost:5141/api/v1/tasks\" -Method POST -Body $body -ContentType \"application/json\" -UseBasicParsing } catch { $_.Exception.Response.StatusCode; $stream = $_.Exception.Response.GetResponseStream\\(\\); $reader = New-Object System.IO.StreamReader\\($stream\\); $reader.ReadToEnd\\(\\) })",
+      "PowerShell(dotnet build *)",
+      "PowerShell(Start-Sleep -Seconds 4; Invoke-WebRequest -Uri \"http://localhost:5141/api/v1/tasks\" -UseBasicParsing 2>&1 | Select-Object -ExpandProperty Content)",
+      "PowerShell(Get-ChildItem \"C:\\\\Users\\\\okind\\\\source\\\\repos\\\\nmino1984\\\\C#.Net\\\\TaskManagerPro\\\\MyApp\" -Recurse | Where-Object { $_.Extension -eq \".db\" } | Select-Object FullName, Length, LastWriteTime)",
+      "PowerShell($body = '{\"title\":\"Test Task\",\"description\":\"Testing\",\"startDate\":\"2026-05-10T00:00:00\",\"endDate\":\"2026-05-20T00:00:00\",\"priority\":\"Medium\"}'; $response = Invoke-WebRequest -Uri \"http://localhost:5141/api/v1/tasks\" -Method POST -Body $body -ContentType \"application/json\" -UseBasicParsing; $response.StatusCode; $response.Content)",
+      "PowerShell(try { $body = '{\"title\":\"Test Task\",\"description\":\"Testing\",\"startDate\":\"2026-05-10T00:00:00\",\"endDate\":\"2026-05-20T00:00:00\",\"priority\":\"Medium\"}'; Invoke-WebRequest -Uri \"http://localhost:5141/api/v1/tasks\" -Method POST -Body $body -ContentType \"application/json\" -UseBasicParsing } catch { $_.Exception.Response.GetResponseStream\\(\\) | ForEach-Object { $reader = New-Object System.IO.StreamReader $_; $reader.ReadToEnd\\(\\) } })",
+      "PowerShell($body = '{\"title\":\"Test Task\",\"description\":\"Testing\",\"startDate\":\"2026-05-10T00:00:00\",\"endDate\":\"2026-05-20T00:00:00\",\"priority\":\"Medium\"}'; try { $r = Invoke-WebRequest -Uri \"http://localhost:5141/api/v1/tasks\" -Method POST -Body $body -ContentType \"application/json\" -UseBasicParsing; \"$\\($r.StatusCode\\): $\\($r.Content\\)\" } catch { $stream = $_.Exception.Response.GetResponseStream\\(\\); $reader = New-Object System.IO.StreamReader $stream; \"ERROR: $\\($reader.ReadToEnd\\(\\)\\)\" })",
+      "PowerShell(Set-Location \"C:\\\\Users\\\\okind\\\\source\\\\repos\\\\nmino1984\\\\C#.Net\\\\TaskManagerPro\\\\MyApp\"; Start-Process -FilePath \"dotnet\" -ArgumentList \"run\",\"--no-build\",\"--configuration\",\"Debug\" -WorkingDirectory \"C:\\\\Users\\\\okind\\\\source\\\\repos\\\\nmino1984\\\\C#.Net\\\\TaskManagerPro\\\\MyApp\"; Start-Sleep -Seconds 6; $body = '{\"title\":\"Test Task\",\"description\":\"Testing\",\"startDate\":\"2026-05-10T00:00:00\",\"endDate\":\"2026-05-20T00:00:00\",\"priority\":\"Medium\"}'; try { $r = Invoke-WebRequest -Uri \"http://localhost:5141/api/v1/tasks\" -Method POST -Body $body -ContentType \"application/json\" -UseBasicParsing; \"POST $\\($r.StatusCode\\): $\\($r.Content\\)\" } catch { $stream = $_.Exception.Response.GetResponseStream\\(\\); $reader = New-Object System.IO.StreamReader $stream; \"POST ERROR: $\\($reader.ReadToEnd\\(\\)\\)\" })",
+      "PowerShell(Set-Location \"C:\\\\Users\\\\okind\\\\source\\\\repos\\\\nmino1984\\\\C#.Net\\\\TaskManagerPro\\\\MyApp\"; Start-Process -FilePath \"dotnet\" -ArgumentList \"run\",\"--no-build\",\"--configuration\",\"Debug\" -WorkingDirectory \"C:\\\\Users\\\\okind\\\\source\\\\repos\\\\nmino1984\\\\C#.Net\\\\TaskManagerPro\\\\MyApp\"; Start-Sleep -Seconds 6; try { $r = Invoke-WebRequest -Uri \"http://localhost:5141/api/v1/tasks\" -UseBasicParsing; \"GET $\\($r.StatusCode\\): $\\($r.Content\\)\" } catch { \"ERROR: $\\($_.Exception.Message\\)\" })",
+      "PowerShell(Get-ChildItem \"C:\\\\Users\\\\okind\\\\.nuget\\\\packages\\\\microsoft.data.sqlite.core\" -Recurse -Filter \"Microsoft.Data.Sqlite.dll\" | Where-Object { $_.FullName -match \"net9|net8|net6|netstandard2\" } | Select-Object -First 1 -ExpandProperty FullName)",
+      "PowerShell(New-Item *)",
+      "PowerShell(Set-Location *)",
+      "PowerShell(dotnet test *)",
+      "Bash(Get-ChildItem -Force -Recurse -Filter \".git\" -Directory)",
+      "Bash(Select-Object FullName)",
+      "Bash(git restore *)",
+      "Bash(git add *)",
+      "Bash(git commit -m 'feat: add complete test suite and solution file *)"
+    ]
+  }
+}
