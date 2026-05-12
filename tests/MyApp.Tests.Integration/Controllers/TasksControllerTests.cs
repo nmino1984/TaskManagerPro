@@ -42,6 +42,7 @@ public class TasksControllerTests : IntegrationTestBase, IClassFixture<CustomWeb
     [Fact]
     public async Task GetById_NonExistingId_Returns404ProblemDetails()
     {
+        await AuthenticateAsync();
         var response = await Client.GetAsync("/api/v1/tasks/99999");
 
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -53,6 +54,7 @@ public class TasksControllerTests : IntegrationTestBase, IClassFixture<CustomWeb
     [Fact]
     public async Task Create_ValidDto_Returns201WithLocationAndBody()
     {
+        await AuthenticateAsync();
         var body = new MyTaskCreateDto
         {
             Title = "Created Task",
@@ -78,6 +80,7 @@ public class TasksControllerTests : IntegrationTestBase, IClassFixture<CustomWeb
     [Fact]
     public async Task Create_EmptyTitle_Returns400WithValidationError()
     {
+        await AuthenticateAsync();
         var body = new MyTaskCreateDto
         {
             Title = "",
@@ -96,6 +99,7 @@ public class TasksControllerTests : IntegrationTestBase, IClassFixture<CustomWeb
     [Fact]
     public async Task Create_EndDateBeforeStartDate_Returns400WithValidationError()
     {
+        await AuthenticateAsync();
         var body = new MyTaskCreateDto
         {
             Title = "Bad dates",
@@ -136,6 +140,7 @@ public class TasksControllerTests : IntegrationTestBase, IClassFixture<CustomWeb
     [Fact]
     public async Task Update_NonExistingId_Returns404()
     {
+        await AuthenticateAsync();
         var body = new MyTaskUpdateDto
         {
             Title = "Ghost",
@@ -165,6 +170,7 @@ public class TasksControllerTests : IntegrationTestBase, IClassFixture<CustomWeb
     [Fact]
     public async Task Delete_NonExistingId_Returns404()
     {
+        await AuthenticateAsync();
         var response = await Client.DeleteAsync("/api/v1/tasks/99999");
 
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);

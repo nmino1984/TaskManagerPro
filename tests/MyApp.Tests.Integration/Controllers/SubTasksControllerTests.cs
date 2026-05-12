@@ -45,6 +45,7 @@ public class SubTasksControllerTests : IntegrationTestBase, IClassFixture<Custom
     [Fact]
     public async Task GetById_NonExistingId_Returns404()
     {
+        await AuthenticateAsync();
         var response = await Client.GetAsync("/api/v1/subtasks/99999");
 
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -75,6 +76,7 @@ public class SubTasksControllerTests : IntegrationTestBase, IClassFixture<Custom
     [Fact]
     public async Task Create_NonExistingTaskId_Returns404()
     {
+        await AuthenticateAsync();
         var body = new SubTaskCreateDto { TaskId = 99999, Description = "Orphan subtask" };
 
         var response = await Client.PostAsJsonAsync("/api/v1/subtasks", body, JsonOptions);
@@ -138,6 +140,7 @@ public class SubTasksControllerTests : IntegrationTestBase, IClassFixture<Custom
     [Fact]
     public async Task Update_NonExistingId_Returns404()
     {
+        await AuthenticateAsync();
         var body = new SubTaskUpdateDto { Description = "Ghost", Status = SubTaskStatus.Pending };
 
         var response = await Client.PutAsJsonAsync("/api/v1/subtasks/99999", body, JsonOptions);
@@ -161,6 +164,7 @@ public class SubTasksControllerTests : IntegrationTestBase, IClassFixture<Custom
     [Fact]
     public async Task Delete_NonExistingId_Returns404()
     {
+        await AuthenticateAsync();
         var response = await Client.DeleteAsync("/api/v1/subtasks/99999");
 
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
