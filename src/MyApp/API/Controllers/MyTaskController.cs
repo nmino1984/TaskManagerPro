@@ -24,15 +24,15 @@ public class MyTaskController : ControllerBase
     }
 
     /// <summary>
-    /// Retrieves all tasks including their subtasks and calendar events.
+    /// Retrieves all tasks with optional pagination and filtering.
     /// </summary>
     [HttpGet]
-    [ProducesResponseType<List<MyTaskResponseDto>>(StatusCodes.Status200OK)]
-    public async Task<ActionResult<IEnumerable<MyTaskResponseDto>>> GetAll()
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetAll([FromQuery] TaskQueryParams q)
     {
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
             ?? throw new InvalidOperationException("User ID not found in token");
-        return Ok(await _taskService.GetAllAsync(userId));
+        return Ok(await _taskService.GetAllAsync(userId, q));
     }
 
     /// <summary>

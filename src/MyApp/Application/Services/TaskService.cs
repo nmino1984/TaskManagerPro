@@ -1,5 +1,6 @@
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using MyApp.Application.DTOs.Common;
 using MyApp.Application.DTOs.MyTask;
 using MyApp.Application.Exceptions;
 using MyApp.Application.Interfaces;
@@ -19,15 +20,39 @@ public class TaskService : ITaskService
         _mapper = mapper;
     }
 
-    public async Task<List<MyTaskResponseDto>> GetAllAsync(string userId)
+    public async Task<PagedResult<MyTaskResponseDto>> GetAllAsync(string userId, TaskQueryParams q)
     {
-        var tasks = await _db.MyTasks
+        var query = _db.MyTasks
             .Where(t => t.UserId == userId)
+            .AsQueryable();
+
+        if (q.Status.HasValue)
+            query = query.Where(t => t.Status == q.Status);
+
+        if (q.Priority.HasValue)
+            query = query.Where(t => t.Priority == q.Priority);
+
+        if (!string.IsNullOrWhiteSpace(q.Search))
+            query = query.Where(t => t.Title.Contains(q.Search) || (t.Description != null && t.Description.Contains(q.Search)));
+
+        var totalCount = await query.CountAsync();
+
+        var validPageSize = Math.Min(q.PageSize, 100);
+        var tasks = await query
+            .OrderByDescending(t => t.CreatedAt)
+            .Skip((q.Page - 1) * validPageSize)
+            .Take(validPageSize)
             .Include(t => t.SubTasks)
             .Include(t => t.CalendarEvents)
             .ToListAsync();
 
-        return _mapper.Map<List<MyTaskResponseDto>>(tasks);
+        return new PagedResult<MyTaskResponseDto>
+        {
+            Items = _mapper.Map<List<MyTaskResponseDto>>(tasks),
+            TotalCount = totalCount,
+            Page = q.Page,
+            PageSize = validPageSize
+        };
     }
 
     public async Task<MyTaskResponseDto> GetByIdAsync(int id, string userId)

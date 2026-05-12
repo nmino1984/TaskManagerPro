@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.Http.Json;
 using FluentAssertions;
+using MyApp.Application.DTOs.Common;
 using MyApp.Application.DTOs.MyTask;
 using MyApp.Domain.Enums;
 using MyApp.Tests.Integration.Infrastructure;
@@ -20,9 +21,11 @@ public class TasksControllerTests : IntegrationTestBase, IClassFixture<CustomWeb
         var response = await Client.GetAsync("/api/v1/tasks");
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        var tasks = await response.Content.ReadFromJsonAsync<List<MyTaskResponseDto>>(JsonOptions);
-        tasks.Should().NotBeNull();
-        tasks!.Should().Contain(t => t.MyTaskId == seeded.MyTaskId && t.Title == "GetAll Unique Title");
+        var result = await response.Content.ReadFromJsonAsync<PagedResult<MyTaskResponseDto>>(JsonOptions);
+        result.Should().NotBeNull();
+        result!.Items.Should().Contain(t => t.MyTaskId == seeded.MyTaskId && t.Title == "GetAll Unique Title");
+        result.TotalCount.Should().BeGreaterThan(0);
+        result.Page.Should().Be(1);
     }
 
     [Fact]
