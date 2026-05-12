@@ -35,7 +35,10 @@
       "Bash(Select-Object FullName)",
       "Bash(git restore *)",
       "Bash(git add *)",
-      "Bash(git commit -m 'feat: add complete test suite and solution file *)"
+      "Bash(git commit -m 'feat: add complete test suite and solution file *)",
+      "Bash(git rev-list *)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\okind\\\\source\\\\repos\\\\nmino1984\\\\C#.Net\\\\TaskManagerPro\" -Recurse -Depth 4)",
+      "Bash(Format-Table -AutoSize)"
     ]
   }
 }

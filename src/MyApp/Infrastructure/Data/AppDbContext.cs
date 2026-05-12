@@ -12,6 +12,7 @@ public class AppDbContext : DbContext
     {
     }
 
+    public DbSet<User> Users { get; set; }
     public DbSet<MyTask> MyTasks { get; set; }
     public DbSet<SubTask> SubTasks { get; set; }
     public DbSet<CalendarEvent> CalendarEvents { get; set; }
@@ -19,6 +20,16 @@ public class AppDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+
+        modelBuilder.Entity<User>()
+            .HasIndex(u => u.Username)
+            .IsUnique();
+
+        modelBuilder.Entity<MyTask>()
+            .HasOne(t => t.User)
+            .WithMany(u => u.Tasks)
+            .HasForeignKey(t => t.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<MyTask>()
             .HasMany(t => t.SubTasks)

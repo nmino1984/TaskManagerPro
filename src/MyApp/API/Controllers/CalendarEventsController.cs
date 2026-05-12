@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MyApp.Application.DTOs.CalendarEvent;
 using MyApp.Application.Interfaces;
@@ -11,6 +12,7 @@ namespace MyApp.Api.Controllers;
 [Route("api/v1/calendarevents")]
 [Produces("application/json")]
 [Consumes("application/json")]
+[Authorize]
 public class CalendarEventsController : ControllerBase
 {
     private readonly ICalendarEventService _calendarEventService;

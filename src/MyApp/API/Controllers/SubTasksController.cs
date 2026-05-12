@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MyApp.Application.DTOs.SubTask;
 using MyApp.Application.Interfaces;
@@ -11,6 +12,7 @@ namespace MyApp.Api.Controllers;
 [Route("api/v1/subtasks")]
 [Produces("application/json")]
 [Consumes("application/json")]
+[Authorize]
 public class SubTasksController : ControllerBase
 {
     private readonly ISubTaskService _subTaskService;

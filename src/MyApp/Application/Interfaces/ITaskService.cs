@@ -4,9 +4,9 @@ namespace MyApp.Application.Interfaces;
 
 public interface ITaskService
 {
-    Task<List<MyTaskResponseDto>> GetAllAsync();
-    Task<MyTaskResponseDto> GetByIdAsync(int id);
-    Task<MyTaskResponseDto> CreateAsync(MyTaskCreateDto dto);
-    Task<MyTaskResponseDto> UpdateAsync(int id, MyTaskUpdateDto dto);
-    Task DeleteAsync(int id);
+    Task<List<MyTaskResponseDto>> GetAllAsync(string userId);
+    Task<MyTaskResponseDto> GetByIdAsync(int id, string userId);
+    Task<MyTaskResponseDto> CreateAsync(MyTaskCreateDto dto, string userId);
+    Task<MyTaskResponseDto> UpdateAsync(int id, MyTaskUpdateDto dto, string userId);
+    Task DeleteAsync(int id, string userId);
 }

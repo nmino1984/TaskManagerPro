@@ -16,6 +16,9 @@ public class MyTask
 
     public int Progress { get; set; } = 0;
 
+    public string UserId { get; set; } = string.Empty;
+    public User User { get; set; } = null!;
+
     public List<SubTask> SubTasks { get; set; } = new();
     public List<CalendarEvent> CalendarEvents { get; set; } = new();
 
