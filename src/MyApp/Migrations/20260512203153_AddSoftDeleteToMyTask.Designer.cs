@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MyApp.Infrastructure.Data;
 
@@ -10,9 +11,11 @@ using MyApp.Infrastructure.Data;
 namespace MyApp.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260512203153_AddSoftDeleteToMyTask")]
+    partial class AddSoftDeleteToMyTask
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.7");
@@ -88,14 +91,7 @@ namespace MyApp.Migrations
 
                     b.HasKey("MyTaskId");
 
-                    b.HasIndex("Priority")
-                        .HasDatabaseName("IX_MyTasks_Priority");
-
-                    b.HasIndex("Status")
-                        .HasDatabaseName("IX_MyTasks_Status");
-
-                    b.HasIndex("UserId", "IsDeleted", "CreatedAt")
-                        .HasDatabaseName("IX_MyTasks_UserId_IsDeleted_CreatedAt");
+                    b.HasIndex("UserId");
 
                     b.ToTable("MyTasks");
                 });

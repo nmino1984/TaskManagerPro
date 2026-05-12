@@ -97,7 +97,8 @@ public class TaskService : ITaskService
         var task = await _db.MyTasks.FirstOrDefaultAsync(t => t.MyTaskId == id && t.UserId == userId)
             ?? throw new NotFoundException("MyTask", id);
 
-        _db.MyTasks.Remove(task);
+        task.IsDeleted = true;
+        task.DeletedAt = DateTime.UtcNow;
         await _db.SaveChangesAsync();
     }
 }

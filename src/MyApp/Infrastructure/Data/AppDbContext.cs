@@ -26,6 +26,7 @@ public class AppDbContext : DbContext
             .IsUnique();
 
         modelBuilder.Entity<MyTask>()
+            .HasQueryFilter(t => !t.IsDeleted)
             .HasOne(t => t.User)
             .WithMany(u => u.Tasks)
             .HasForeignKey(t => t.UserId)
@@ -50,6 +51,18 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<MyTask>()
             .Property(t => t.Status)
             .HasConversion(new EnumToStringConverter<MyTaskStatus>());
+
+        modelBuilder.Entity<MyTask>()
+            .HasIndex(t => new { t.UserId, t.IsDeleted, t.CreatedAt })
+            .HasDatabaseName("IX_MyTasks_UserId_IsDeleted_CreatedAt");
+
+        modelBuilder.Entity<MyTask>()
+            .HasIndex(t => t.Status)
+            .HasDatabaseName("IX_MyTasks_Status");
+
+        modelBuilder.Entity<MyTask>()
+            .HasIndex(t => t.Priority)
+            .HasDatabaseName("IX_MyTasks_Priority");
 
         modelBuilder.Entity<SubTask>()
             .Property(s => s.Status)

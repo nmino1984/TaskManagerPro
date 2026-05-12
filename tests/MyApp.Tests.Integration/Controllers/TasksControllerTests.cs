@@ -178,4 +178,20 @@ public class TasksControllerTests : IntegrationTestBase, IClassFixture<CustomWeb
 
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
+
+    [Fact]
+    public async Task Delete_ExistingId_TaskIsHiddenToAPI()
+    {
+        var seeded = await SeedTaskAsync("Task to soft-delete");
+
+        var deleteResponse = await Client.DeleteAsync($"/api/v1/tasks/{seeded.MyTaskId}");
+        deleteResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
+
+        var getResponse = await Client.GetAsync($"/api/v1/tasks/{seeded.MyTaskId}");
+        getResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
+
+        var listResponse = await Client.GetAsync("/api/v1/tasks");
+        var list = await listResponse.Content.ReadFromJsonAsync<PagedResult<MyTaskResponseDto>>(JsonOptions);
+        list!.Items.Should().NotContain(t => t.MyTaskId == seeded.MyTaskId);
+    }
 }

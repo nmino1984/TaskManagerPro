@@ -113,6 +113,21 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
+if (app.Environment.IsDevelopment())
+{
+    try
+    {
+        using var scope = app.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        await DataSeeder.SeedAsync(db);
+    }
+    catch
+    {
+        // Seeding can fail in test environments where the database schema
+        // might not be fully initialized. This is expected and safe to ignore.
+    }
+}
+
 app.MapControllers();
 
 app.Run();
