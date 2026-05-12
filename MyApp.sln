@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
 VisualStudioVersion = 18.5.11723.231
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyApp", "MyApp\MyApp.csproj", "{6D275F6F-AEAD-E531-D3D7-DD3DC3888BC7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyApp", "src\MyApp\MyApp.csproj", "{6D275F6F-AEAD-E531-D3D7-DD3DC3888BC7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyApp.Tests.Unit", "MyApp.Tests.Unit\MyApp.Tests.Unit.csproj", "{76F11853-7EBB-4119-ADE1-3EE19EC74111}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyApp.Tests.Unit", "tests\MyApp.Tests.Unit\MyApp.Tests.Unit.csproj", "{76F11853-7EBB-4119-ADE1-3EE19EC74111}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyApp.Tests.Integration", "MyApp.Tests.Integration\MyApp.Tests.Integration.csproj", "{2A3A5AFD-57A6-471B-8FCB-5E02009F3815}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyApp.Tests.Integration", "tests\MyApp.Tests.Integration\MyApp.Tests.Integration.csproj", "{2A3A5AFD-57A6-471B-8FCB-5E02009F3815}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
