@@ -41,6 +41,7 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<MyTask>()
             .HasMany(t => t.CalendarEvents)
             .WithOne(e => e.Task)
+            .IsRequired(false)
             .HasForeignKey(e => e.TaskId)
             .OnDelete(DeleteBehavior.Cascade);
 
