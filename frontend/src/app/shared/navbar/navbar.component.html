@@ -1,0 +1,21 @@
+<mat-toolbar color="primary">
+  <span class="app-title">TaskMaster Pro</span>
+
+  <span class="spacer"></span>
+
+  <button mat-button [matMenuTriggerFor]="userMenu" *ngIf="isAuthenticated()">
+    <mat-icon>account_circle</mat-icon>
+    <span>User</span>
+  </button>
+
+  <mat-menu #userMenu="matMenu">
+    <button mat-menu-item disabled>
+      <span>{{ currentUser()?.username || 'User' }}</span>
+    </button>
+    <mat-divider></mat-divider>
+    <button mat-menu-item (click)="logout()">
+      <mat-icon>logout</mat-icon>
+      <span>Logout</span>
+    </button>
+  </mat-menu>
+</mat-toolbar>

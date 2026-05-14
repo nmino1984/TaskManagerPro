@@ -1,0 +1,20 @@
+mat-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  .app-title {
+    font-weight: 600;
+    font-size: 1.2rem;
+    margin-left: 1rem;
+  }
+
+  .spacer {
+    flex: 1 1 auto;
+  }
+
+  button {
+    margin-right: 1rem;
+  }
+}

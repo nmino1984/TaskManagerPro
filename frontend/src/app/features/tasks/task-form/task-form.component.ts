@@ -1,0 +1,111 @@
+import { Component, Inject, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatDividerModule } from '@angular/material/divider';
+
+import { TaskService } from '../../../core/services/task.service';
+import { MyTask, TaskPriority, MyTaskStatus } from '../../../core/models/task.models';
+import { SubTaskListComponent } from '../subtask-list/subtask-list.component';
+import { CalendarEventListComponent } from '../calendar-event-list/calendar-event-list.component';
+
+interface TaskFormData {
+  mode: 'create' | 'edit';
+  task?: MyTask;
+}
+
+@Component({
+  selector: 'app-task-form',
+  standalone: true,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatDialogModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatButtonModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatProgressSpinnerModule,
+    MatDividerModule,
+    SubTaskListComponent,
+    CalendarEventListComponent
+  ],
+  templateUrl: './task-form.component.html',
+  styleUrls: ['./task-form.component.scss']
+})
+export class TaskFormComponent {
+  private taskService = inject(TaskService);
+  private fb = inject(FormBuilder);
+  private dialogRef = inject(MatDialogRef<TaskFormComponent>);
+  data: TaskFormData = inject(MAT_DIALOG_DATA);
+
+  form: FormGroup;
+  loading = false;
+  TaskPriority = TaskPriority;
+  MyTaskStatus = MyTaskStatus;
+
+  constructor() {
+    if (!this.data) {
+      this.data = { mode: 'create' };
+    }
+
+    this.form = this.fb.group({
+      title: ['', [Validators.required, Validators.minLength(3)]],
+      description: [''],
+      startDate: [new Date(), Validators.required],
+      endDate: [new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), Validators.required],
+      priority: [TaskPriority.Medium, Validators.required],
+      status: [MyTaskStatus.NotStarted, Validators.required]
+    });
+
+    if (this.data.mode === 'edit' && this.data.task) {
+      this.form.patchValue({
+        title: this.data.task.title,
+        description: this.data.task.description,
+        startDate: new Date(this.data.task.startDate),
+        endDate: new Date(this.data.task.endDate),
+        priority: this.data.task.priority,
+        status: this.data.task.status
+      });
+    }
+  }
+
+  onSubmit(): void {
+    if (this.form.invalid) return;
+
+    this.loading = true;
+
+    if (this.data.mode === 'create') {
+      this.taskService.create(this.form.value).subscribe({
+        next: () => {
+          this.dialogRef.close(true);
+        },
+        error: () => {
+          this.loading = false;
+        }
+      });
+    } else if (this.data.mode === 'edit' && this.data.task) {
+      this.taskService.update(this.data.task.myTaskId, this.form.value).subscribe({
+        next: () => {
+          this.dialogRef.close(true);
+        },
+        error: () => {
+          this.loading = false;
+        }
+      });
+    }
+  }
+
+  onCancel(): void {
+    this.dialogRef.close(false);
+  }
+}

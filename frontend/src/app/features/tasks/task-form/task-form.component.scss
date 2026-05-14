@@ -1,0 +1,30 @@
+mat-dialog-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 2rem;
+  min-width: 400px;
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+}
+
+.full-width {
+  width: 100%;
+}
+
+.subtask-divider {
+  margin: 1.5rem 0 1rem 0;
+}
+
+mat-dialog-actions {
+  padding: 1rem 2rem;
+  border-top: 1px solid #e0e0e0;
+
+  button {
+    margin-left: 0.5rem;
+  }
+}

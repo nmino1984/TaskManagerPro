@@ -1,0 +1,46 @@
+<h2 mat-dialog-title>
+  {{ data.mode === 'create' ? 'Create Subtask' : 'Edit Subtask' }}
+</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="form" class="form-container">
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Description</mat-label>
+      <input matInput formControlName="description" placeholder="Enter subtask description">
+      <mat-error *ngIf="form.get('description')?.hasError('required')">
+        Description is required
+      </mat-error>
+      <mat-error *ngIf="form.get('description')?.hasError('minlength')">
+        Minimum 3 characters
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Status</mat-label>
+      <mat-select formControlName="status">
+        <mat-option [value]="SubTaskStatus.Pending">Pending</mat-option>
+        <mat-option [value]="SubTaskStatus.Completed">Completed</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Due Date</mat-label>
+      <input matInput [matDatepicker]="picker" formControlName="dueDate">
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Notes</mat-label>
+      <textarea matInput formControlName="notes" placeholder="Additional notes" rows="3"></textarea>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Cancel</button>
+  <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="form.invalid || loading()">
+    <mat-spinner diameter="20" *ngIf="loading()"></mat-spinner>
+    <span *ngIf="!loading()">{{ data.mode === 'create' ? 'Create' : 'Update' }}</span>
+  </button>
+</mat-dialog-actions>
