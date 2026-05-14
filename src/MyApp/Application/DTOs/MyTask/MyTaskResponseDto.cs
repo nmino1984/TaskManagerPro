@@ -1,4 +1,4 @@
-using MyApp.Application.DTOs.CalendarEvent;
+using MyApp.Application.DTOs.Milestone;
 using MyApp.Application.DTOs.SubTask;
 using MyApp.Domain.Enums;
 
@@ -21,5 +21,5 @@ public class MyTaskResponseDto
     public DateTime UpdatedAt { get; set; }
 
     public List<SubTaskResponseDto>? SubTasks { get; set; }
-    public List<CalendarEventResponseDto>? CalendarEvents { get; set; }
+    public List<MilestoneResponseDto>? Milestones { get; set; }
 }

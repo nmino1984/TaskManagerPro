@@ -15,7 +15,7 @@ public class AppDbContext : DbContext
     public DbSet<User> Users { get; set; }
     public DbSet<MyTask> MyTasks { get; set; }
     public DbSet<SubTask> SubTasks { get; set; }
-    public DbSet<CalendarEvent> CalendarEvents { get; set; }
+    public DbSet<Milestone> Milestones { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -39,10 +39,10 @@ public class AppDbContext : DbContext
             .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<MyTask>()
-            .HasMany(t => t.CalendarEvents)
-            .WithOne(e => e.Task)
+            .HasMany(t => t.Milestones)
+            .WithOne(m => m.Task)
             .IsRequired(false)
-            .HasForeignKey(e => e.TaskId)
+            .HasForeignKey(m => m.TaskId)
             .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<MyTask>()
@@ -69,8 +69,8 @@ public class AppDbContext : DbContext
             .Property(s => s.Status)
             .HasConversion(new EnumToStringConverter<SubTaskStatus>());
 
-        modelBuilder.Entity<CalendarEvent>()
-            .Property(e => e.Status)
-            .HasConversion(new EnumToStringConverter<MyTaskStatus>());
+        modelBuilder.Entity<Milestone>()
+            .Property(m => m.Status)
+            .HasConversion(new EnumToStringConverter<MilestoneStatus>());
     }
 }

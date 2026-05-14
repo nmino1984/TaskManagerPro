@@ -1,73 +1,33 @@
+// DEPRECATED: Use MilestoneService instead
+// This file is kept for backwards compatibility but redirects to MilestoneService
+
 using AutoMapper;
-using Microsoft.EntityFrameworkCore;
-using MyApp.Application.DTOs.CalendarEvent;
-using MyApp.Application.Exceptions;
 using MyApp.Application.Interfaces;
-using MyApp.Domain.Entities;
 using MyApp.Infrastructure.Data;
 
 namespace MyApp.Application.Services;
 
-public class CalendarEventService : ICalendarEventService
+public class CalendarEventService : IMilestoneService
 {
-    private readonly AppDbContext _db;
-    private readonly IMapper _mapper;
+    private readonly MilestoneService _milestoneService;
 
     public CalendarEventService(AppDbContext db, IMapper mapper)
     {
-        _db = db;
-        _mapper = mapper;
+        _milestoneService = new MilestoneService(db, mapper);
     }
 
-    public async Task<List<CalendarEventResponseDto>> GetByTaskAsync(int taskId)
-    {
-        var events = await _db.CalendarEvents
-            .Where(e => e.TaskId == taskId)
-            .ToListAsync();
+    public async Task<List<MyApp.Application.DTOs.Milestone.MilestoneResponseDto>> GetByTaskAsync(int taskId)
+        => await _milestoneService.GetByTaskAsync(taskId);
 
-        return _mapper.Map<List<CalendarEventResponseDto>>(events);
-    }
+    public async Task<MyApp.Application.DTOs.Milestone.MilestoneResponseDto> GetByIdAsync(int id)
+        => await _milestoneService.GetByIdAsync(id);
 
-    public async Task<CalendarEventResponseDto> GetByIdAsync(int id)
-    {
-        var ev = await _db.CalendarEvents.FindAsync(id)
-            ?? throw new NotFoundException("CalendarEvent", id);
+    public async Task<MyApp.Application.DTOs.Milestone.MilestoneResponseDto> CreateAsync(MyApp.Application.DTOs.Milestone.MilestoneCreateDto dto)
+        => await _milestoneService.CreateAsync(dto);
 
-        return _mapper.Map<CalendarEventResponseDto>(ev);
-    }
-
-    public async Task<CalendarEventResponseDto> CreateAsync(CalendarEventCreateDto dto)
-    {
-        var taskExists = await _db.MyTasks.AnyAsync(t => t.MyTaskId == dto.TaskId);
-        if (!taskExists)
-            throw new NotFoundException("MyTask", dto.TaskId);
-
-        var ev = _mapper.Map<CalendarEvent>(dto);
-
-        _db.CalendarEvents.Add(ev);
-        await _db.SaveChangesAsync();
-
-        return _mapper.Map<CalendarEventResponseDto>(ev);
-    }
-
-    public async Task<CalendarEventResponseDto> UpdateAsync(int id, CalendarEventUpdateDto dto)
-    {
-        var ev = await _db.CalendarEvents.FindAsync(id)
-            ?? throw new NotFoundException("CalendarEvent", id);
-
-        _mapper.Map(dto, ev);
-
-        await _db.SaveChangesAsync();
-
-        return _mapper.Map<CalendarEventResponseDto>(ev);
-    }
+    public async Task<MyApp.Application.DTOs.Milestone.MilestoneResponseDto> UpdateAsync(int id, MyApp.Application.DTOs.Milestone.MilestoneUpdateDto dto)
+        => await _milestoneService.UpdateAsync(id, dto);
 
     public async Task DeleteAsync(int id)
-    {
-        var ev = await _db.CalendarEvents.FindAsync(id)
-            ?? throw new NotFoundException("CalendarEvent", id);
-
-        _db.CalendarEvents.Remove(ev);
-        await _db.SaveChangesAsync();
-    }
+        => await _milestoneService.DeleteAsync(id);
 }

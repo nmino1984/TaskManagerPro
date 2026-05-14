@@ -20,7 +20,7 @@ public class MyTask
     public User User { get; set; } = null!;
 
     public List<SubTask> SubTasks { get; set; } = new();
-    public List<CalendarEvent> CalendarEvents { get; set; } = new();
+    public List<Milestone> Milestones { get; set; } = new();
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;

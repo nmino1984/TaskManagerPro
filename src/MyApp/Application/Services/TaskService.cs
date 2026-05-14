@@ -43,7 +43,7 @@ public class TaskService : ITaskService
             .Skip((q.Page - 1) * validPageSize)
             .Take(validPageSize)
             .Include(t => t.SubTasks)
-            .Include(t => t.CalendarEvents)
+            .Include(t => t.Milestones)
             .ToListAsync();
 
         return new PagedResult<MyTaskResponseDto>
@@ -59,7 +59,7 @@ public class TaskService : ITaskService
     {
         var task = await _db.MyTasks
             .Include(t => t.SubTasks)
-            .Include(t => t.CalendarEvents)
+            .Include(t => t.Milestones)
             .FirstOrDefaultAsync(t => t.MyTaskId == id && t.UserId == userId)
             ?? throw new NotFoundException("MyTask", id);
 

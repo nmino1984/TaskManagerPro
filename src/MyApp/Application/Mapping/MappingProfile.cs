@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using MyApp.Application.DTOs;
-using MyApp.Application.DTOs.CalendarEvent;
 using MyApp.Application.DTOs.MyTask;
 using MyApp.Application.DTOs.SubTask;
+using MyApp.Application.DTOs.Milestone;
 using MyApp.Domain.Entities;
 
 namespace MyApp.Application.Mapping;
@@ -26,7 +26,7 @@ public class MappingProfile : Profile
 
         CreateMap<MyTask, MyTaskResponseDto>()
             .ForMember(dest => dest.SubTasks, opt => opt.MapFrom(src => src.SubTasks))
-            .ForMember(dest => dest.CalendarEvents, opt => opt.MapFrom(src => src.CalendarEvents));
+            .ForMember(dest => dest.Milestones, opt => opt.MapFrom(src => src.Milestones));
 
 
         //
@@ -48,16 +48,18 @@ public class MappingProfile : Profile
 
         //
         // ─────────────────────────────────────────────
-        //   CALENDAR EVENT
+        //   MILESTONE
         // ─────────────────────────────────────────────
         //
 
-        CreateMap<CalendarEventCreateDto, CalendarEvent>();
+        CreateMap<MilestoneCreateDto, Milestone>();
 
-        CreateMap<CalendarEventUpdateDto, CalendarEvent>()
-            .ForMember(dest => dest.CalendarEventId, opt => opt.Ignore())
-            .ForMember(dest => dest.TaskId, opt => opt.Ignore());
+        CreateMap<MilestoneUpdateDto, Milestone>()
+            .ForMember(dest => dest.MilestoneId, opt => opt.Ignore())
+            .ForMember(dest => dest.TaskId, opt => opt.Ignore())
+            .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
+            .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore());
 
-        CreateMap<CalendarEvent, CalendarEventResponseDto>();
+        CreateMap<Milestone, MilestoneResponseDto>();
     }
 }
