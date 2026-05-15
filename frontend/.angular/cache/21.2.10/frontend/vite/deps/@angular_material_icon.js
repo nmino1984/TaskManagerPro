@@ -5,13 +5,13 @@ import {
   DomSanitizer
 } from "./chunk-CUNTZZCJ.js";
 import "./chunk-6G5ZZ4TE.js";
-import "./chunk-I5UHAOQ3.js";
-import {
-  BidiModule
-} from "./chunk-Q5AOYERX.js";
 import {
   HttpClient
 } from "./chunk-AFLOI4UZ.js";
+import {
+  BidiModule
+} from "./chunk-Q5AOYERX.js";
+import "./chunk-I5UHAOQ3.js";
 import "./chunk-YOR3SJ3P.js";
 import "./chunk-CWC3OMAC.js";
 import {
@@ -45,10 +45,10 @@ import {
   ɵɵdefineInjector,
   ɵɵinject
 } from "./chunk-ZW2T7RM7.js";
-import "./chunk-4YCCEXQQ.js";
 import {
   forkJoin
 } from "./chunk-J46EEYGT.js";
+import "./chunk-4YCCEXQQ.js";
 import {
   Subscription,
   catchError,

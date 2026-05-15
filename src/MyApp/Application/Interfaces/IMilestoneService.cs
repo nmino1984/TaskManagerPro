@@ -9,4 +9,7 @@ public interface IMilestoneService
     Task<MilestoneResponseDto> CreateAsync(MilestoneCreateDto dto);
     Task<MilestoneResponseDto> UpdateAsync(int id, MilestoneUpdateDto dto);
     Task DeleteAsync(int id);
+    Task<byte[]> ExportToJsonAsync(int taskId);
+    Task<byte[]> ExportToXmlAsync(int taskId);
+    Task<byte[]> ExportToICalAsync(int taskId);
 }

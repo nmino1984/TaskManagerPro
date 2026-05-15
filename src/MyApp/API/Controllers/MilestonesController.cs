@@ -79,4 +79,46 @@ public class MilestonesController : ControllerBase
         await _milestoneService.DeleteAsync(id);
         return NoContent();
     }
+
+    /// <summary>
+    /// Exports all milestones of a task to JSON format.
+    /// </summary>
+    /// <param name="taskId">The parent task ID.</param>
+    [HttpGet("bytask/{taskId:int}/export/json")]
+    [Produces("application/json")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> ExportJson(int taskId)
+    {
+        var data = await _milestoneService.ExportToJsonAsync(taskId);
+        return File(data, "application/json", "milestones.json");
+    }
+
+    /// <summary>
+    /// Exports all milestones of a task to XML format.
+    /// </summary>
+    /// <param name="taskId">The parent task ID.</param>
+    [HttpGet("bytask/{taskId:int}/export/xml")]
+    [Produces("application/xml")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> ExportXml(int taskId)
+    {
+        var data = await _milestoneService.ExportToXmlAsync(taskId);
+        return File(data, "application/xml", "milestones.xml");
+    }
+
+    /// <summary>
+    /// Exports all milestones of a task to iCalendar format (.ics) for calendar integration.
+    /// </summary>
+    /// <param name="taskId">The parent task ID.</param>
+    [HttpGet("bytask/{taskId:int}/export/ical")]
+    [Produces("text/calendar")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> ExportIcal(int taskId)
+    {
+        var data = await _milestoneService.ExportToICalAsync(taskId);
+        return File(data, "text/calendar", "milestones.ics");
+    }
 }

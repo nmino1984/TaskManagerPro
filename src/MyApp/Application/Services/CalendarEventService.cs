@@ -30,4 +30,13 @@ public class CalendarEventService : IMilestoneService
 
     public async Task DeleteAsync(int id)
         => await _milestoneService.DeleteAsync(id);
+
+    public async Task<byte[]> ExportToJsonAsync(int taskId)
+        => await _milestoneService.ExportToJsonAsync(taskId);
+
+    public async Task<byte[]> ExportToXmlAsync(int taskId)
+        => await _milestoneService.ExportToXmlAsync(taskId);
+
+    public async Task<byte[]> ExportToICalAsync(int taskId)
+        => await _milestoneService.ExportToICalAsync(taskId);
 }

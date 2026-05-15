@@ -135,7 +135,8 @@ export class TaskListComponent implements OnInit {
 
   openCreateDialog(): void {
     this.dialog.open(TaskFormComponent, {
-      width: '500px',
+      width: '900px',
+      height: '600px',
       data: { mode: 'create' }
     }).afterClosed().subscribe((result) => {
       if (result) {
@@ -147,7 +148,8 @@ export class TaskListComponent implements OnInit {
 
   editTask(task: MyTask): void {
     this.dialog.open(TaskFormComponent, {
-      width: '500px',
+      width: '900px',
+      height: '600px',
       data: { mode: 'edit', task }
     }).afterClosed().subscribe((result) => {
       if (result) {

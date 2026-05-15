@@ -10,11 +10,12 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatTabsModule } from '@angular/material/tabs';
 
 import { TaskService } from '../../../core/services/task.service';
 import { MyTask, TaskPriority, MyTaskStatus } from '../../../core/models/task.models';
 import { SubTaskListComponent } from '../subtask-list/subtask-list.component';
-import { CalendarEventListComponent } from '../calendar-event-list/calendar-event-list.component';
+import { MilestoneListComponent } from '../milestone-list/milestone-list.component';
 
 interface TaskFormData {
   mode: 'create' | 'edit';
@@ -36,8 +37,9 @@ interface TaskFormData {
     MatNativeDateModule,
     MatProgressSpinnerModule,
     MatDividerModule,
+    MatTabsModule,
     SubTaskListComponent,
-    CalendarEventListComponent
+    MilestoneListComponent
   ],
   templateUrl: './task-form.component.html',
   styleUrls: ['./task-form.component.scss']

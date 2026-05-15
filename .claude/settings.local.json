@@ -66,7 +66,21 @@
       "Bash(Select-String -Pattern '\\(listening|http|started|Listening|error|Error|ERROR|Application started|exception\\)' -Line)",
       "Bash(npm start *)",
       "PowerShell(Start-Sleep -Seconds 5; Invoke-WebRequest -Uri 'http://localhost:5000/health' -ErrorAction SilentlyContinue | Select-Object StatusCode)",
-      "WebFetch(domain:github.com)"
+      "WebFetch(domain:github.com)",
+      "PowerShell(cd \"C:\\\\Users\\\\okind\\\\source\\\\repos\\\\nmino1984\\\\C_Sharp.Net\\\\TaskManagerPro\"; Get-ChildItem -File | Where-Object {$_.Extension -in @\\('.pdf', '.md', '.docx'\\)} | Select-Object Name)",
+      "Bash(grep -E \"\\\\.\\(pdf|md|docx\\)$\")",
+      "Bash(git push *)",
+      "Bash(Get-ChildItem -Recurse \"C:\\\\Users\\\\okind\\\\source\\\\repos\\\\nmino1984\\\\C_Sharp.Net\\\\TaskManagerPro\\\\frontend\\\\src\\\\app\")",
+      "Bash(Sort-Object FullName)",
+      "Bash(npm run *)",
+      "Bash(curl -s http://localhost:5000/api/v1/tasks)",
+      "Bash(curl -s -o /dev/null -w \"HTTP Status: %{http_code}\\\\n\" http://localhost:5141/health)",
+      "Bash(pkill -f \"ng serve\")",
+      "PowerShell(netstat *)",
+      "Bash(awk '{print $2}')",
+      "Bash(xargs kill -9)",
+      "Bash(curl -s -o /dev/null -w \"HTTP %{http_code}\\\\n\" http://localhost:4201/)",
+      "Bash(curl -s -o /dev/null -w \"Status: %{http_code}\\\\n\" http://localhost:4201/)"
     ]
   }
 }

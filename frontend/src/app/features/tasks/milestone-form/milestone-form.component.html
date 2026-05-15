@@ -1,0 +1,59 @@
+<h2 mat-dialog-title>
+  {{ data.mode === 'create' ? 'Create Milestone' : 'Edit Milestone' }}
+</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="form" class="form-container">
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Title</mat-label>
+      <input matInput formControlName="title" placeholder="e.g., API Ready for Testing">
+      <mat-error *ngIf="form.get('title')?.hasError('required')">
+        Title is required
+      </mat-error>
+      <mat-error *ngIf="form.get('title')?.hasError('minlength')">
+        Title must be at least 3 characters
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Description</mat-label>
+      <textarea matInput formControlName="description" rows="3" placeholder="Describe this milestone..."></textarea>
+      <mat-error *ngIf="form.get('description')?.hasError('required')">
+        Description is required
+      </mat-error>
+      <mat-error *ngIf="form.get('description')?.hasError('minlength')">
+        Description must be at least 5 characters
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Target Date</mat-label>
+      <input matInput [matDatepicker]="picker" formControlName="targetDate" placeholder="Select target date">
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+      <mat-error *ngIf="form.get('targetDate')?.hasError('required')">
+        Target date is required
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Status</mat-label>
+      <mat-select formControlName="status">
+        <mat-option *ngFor="let status of statusOptions" [value]="status">
+          {{ status }}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="form.get('status')?.hasError('required')">
+        Status is required
+      </mat-error>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Cancel</button>
+  <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="form.invalid || loading()">
+    <mat-spinner diameter="20" *ngIf="loading()"></mat-spinner>
+    <span *ngIf="!loading()">{{ data.mode === 'create' ? 'Create' : 'Update' }}</span>
+  </button>
+</mat-dialog-actions>
