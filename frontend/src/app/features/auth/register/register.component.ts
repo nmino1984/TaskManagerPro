@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -27,8 +27,8 @@ import { AuthService } from '../../../core/services/auth.service';
 })
 export class RegisterComponent {
   registerForm: FormGroup;
-  loading = false;
-  error: string | null = null;
+  loading = signal(false);
+  error = signal<string | null>(null);
 
   constructor(
     private fb: FormBuilder,
@@ -44,16 +44,21 @@ export class RegisterComponent {
   onSubmit(): void {
     if (this.registerForm.invalid) return;
 
-    this.loading = true;
-    this.error = null;
+    this.loading.set(true);
+    this.error.set(null);
 
     this.authService.register(this.registerForm.value).subscribe({
       next: () => {
+        console.log('✅ Registration successful!');
         this.router.navigate(['/tasks']);
       },
       error: (err) => {
-        this.loading = false;
-        this.error = err.error?.title || 'Registration failed';
+        console.log('❌ Registration error:', err);
+        console.log('Error response:', err.error);
+        this.loading.set(false);
+        const errorMsg = err.error?.detail || err.error?.message || 'Registration failed';
+        this.error.set(errorMsg);
+        console.log('Error message set to:', errorMsg);
       }
     });
   }

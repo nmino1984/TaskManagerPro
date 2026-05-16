@@ -118,7 +118,10 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-app.UseHttpsRedirection();
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
 
 app.UseAuthentication();
 app.UseAuthorization();
@@ -129,12 +132,12 @@ if (app.Environment.IsDevelopment())
     {
         using var scope = app.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        await db.Database.MigrateAsync();
         await DataSeeder.SeedAsync(db);
     }
-    catch
+    catch (Exception ex)
     {
-        // Seeding can fail in test environments where the database schema
-        // might not be fully initialized. This is expected and safe to ignore.
+        Log.Error(ex, "Error during database migration or seeding");
     }
 }
 

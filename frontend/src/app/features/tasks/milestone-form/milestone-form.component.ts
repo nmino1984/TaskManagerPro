@@ -44,6 +44,7 @@ export class MilestoneFormComponent {
 
   form: FormGroup;
   loading = signal(false);
+  error = signal<string | null>(null);
   MilestoneStatus = MilestoneStatus;
   statusOptions = Object.values(MilestoneStatus);
 
@@ -73,6 +74,7 @@ export class MilestoneFormComponent {
     if (this.form.invalid) return;
 
     this.loading.set(true);
+    this.error.set(null);
 
     if (this.data.mode === 'create') {
       const createRequest: MilestoneCreateRequest = {
@@ -85,8 +87,10 @@ export class MilestoneFormComponent {
           this.loading.set(false);
           this.dialogRef.close(true);
         },
-        error: () => {
+        error: (err) => {
           this.loading.set(false);
+          const errorMsg = err.error?.detail || err.error?.message || 'Error creating milestone';
+          this.error.set(errorMsg);
         }
       });
     } else if (this.data.mode === 'edit' && this.data.milestone) {
@@ -97,8 +101,10 @@ export class MilestoneFormComponent {
           this.loading.set(false);
           this.dialogRef.close(true);
         },
-        error: () => {
+        error: (err) => {
           this.loading.set(false);
+          const errorMsg = err.error?.detail || err.error?.message || 'Error updating milestone';
+          this.error.set(errorMsg);
         }
       });
     }

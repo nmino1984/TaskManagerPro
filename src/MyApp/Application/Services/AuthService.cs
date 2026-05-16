@@ -28,7 +28,7 @@ public class AuthService : IAuthService
             .FirstOrDefaultAsync(u => u.Username == dto.Username);
 
         if (existingUser != null)
-            throw new InvalidOperationException($"Username '{dto.Username}' is already taken.");
+            throw new ValidationException($"Username '{dto.Username}' is already taken. Please choose a different username.");
 
         var user = new User
         {
@@ -47,10 +47,10 @@ public class AuthService : IAuthService
     {
         var user = await _db.Users
             .FirstOrDefaultAsync(u => u.Username == dto.Username)
-            ?? throw new NotFoundException($"User with username '{dto.Username}' was not found.");
+            ?? throw new ValidationException($"Username or password is incorrect.");
 
         if (!BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash))
-            throw new InvalidOperationException("Invalid password.");
+            throw new ValidationException("Username or password is incorrect.");
 
         var token = GenerateJwtToken(user);
         return new AuthResponseDto { Token = token, Username = user.Username };

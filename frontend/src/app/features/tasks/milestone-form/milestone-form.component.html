@@ -47,6 +47,10 @@
         Status is required
       </mat-error>
     </mat-form-field>
+
+    <div *ngIf="error()" class="error-message">
+      {{ error() }}
+    </div>
   </form>
 </mat-dialog-content>
 

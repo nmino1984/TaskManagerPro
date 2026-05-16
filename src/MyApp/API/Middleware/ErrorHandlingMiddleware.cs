@@ -37,6 +37,23 @@ public class ErrorHandlingMiddleware
 
             await context.Response.WriteAsJsonAsync(problem);
         }
+        catch (ValidationException ex)
+        {
+            context.Response.StatusCode = StatusCodes.Status400BadRequest;
+            context.Response.ContentType = "application/problem+json";
+
+            var problem = new ProblemDetails
+            {
+                Type = "https://tools.ietf.org/html/rfc9110#section-15.4.1",
+                Title = "Bad Request",
+                Status = StatusCodes.Status400BadRequest,
+                Detail = ex.Message,
+                Instance = context.Request.Path
+            };
+            problem.Extensions["traceId"] = context.TraceIdentifier;
+
+            await context.Response.WriteAsJsonAsync(problem);
+        }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Unhandled exception on {Method} {Path}",

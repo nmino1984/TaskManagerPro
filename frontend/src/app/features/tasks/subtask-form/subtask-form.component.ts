@@ -46,6 +46,7 @@ export class SubTaskFormComponent {
 
   form: FormGroup;
   loading = signal(false);
+  error = signal<string | null>(null);
   SubTaskStatus = SubTaskStatus;
 
   constructor() {
@@ -74,6 +75,7 @@ export class SubTaskFormComponent {
     if (this.form.invalid) return;
 
     this.loading.set(true);
+    this.error.set(null);
 
     if (this.data.mode === 'create') {
       const createRequest: SubTaskCreateRequest = {
@@ -83,11 +85,13 @@ export class SubTaskFormComponent {
 
       this.subTaskService.create(createRequest).subscribe({
         next: () => {
-          this.loading.set(false); 
+          this.loading.set(false);
           this.dialogRef.close(true);
         },
-        error: () => {
+        error: (err) => {
           this.loading.set(false);
+          const errorMsg = err.error?.detail || err.error?.message || 'Error creating subtask';
+          this.error.set(errorMsg);
         }
       });
     } else if (this.data.mode === 'edit' && this.data.subTask) {
@@ -95,11 +99,13 @@ export class SubTaskFormComponent {
 
       this.subTaskService.update(this.data.subTask.subTaskId, updateRequest).subscribe({
         next: () => {
-          this.loading.set(false); 
+          this.loading.set(false);
           this.dialogRef.close(true);
         },
-        error: () => {
+        error: (err) => {
           this.loading.set(false);
+          const errorMsg = err.error?.detail || err.error?.message || 'Error updating subtask';
+          this.error.set(errorMsg);
         }
       });
     }

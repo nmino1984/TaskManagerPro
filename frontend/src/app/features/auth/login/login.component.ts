@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -27,8 +27,8 @@ import { AuthService } from '../../../core/services/auth.service';
 })
 export class LoginComponent {
   loginForm: FormGroup;
-  loading = false;
-  error: string | null = null;
+  loading = signal(false);
+  error = signal<string | null>(null);
 
   constructor(
     private fb: FormBuilder,
@@ -44,16 +44,17 @@ export class LoginComponent {
   onSubmit(): void {
     if (this.loginForm.invalid) return;
 
-    this.loading = true;
-    this.error = null;
+    this.loading.set(true);
+    this.error.set(null);
 
     this.authService.login(this.loginForm.value).subscribe({
       next: () => {
         this.router.navigate(['/tasks']);
       },
       error: (err) => {
-        this.loading = false;
-        this.error = err.error?.title || 'Login failed';
+        this.loading.set(false);
+        const errorMsg = err.error?.detail || err.error?.message || 'Login failed';
+        this.error.set(errorMsg);
       }
     });
   }

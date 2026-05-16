@@ -1,4 +1,4 @@
-import { Component, Inject, inject } from '@angular/core';
+import { Component, Inject, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
@@ -42,7 +42,8 @@ interface TaskFormData {
     MilestoneListComponent
   ],
   templateUrl: './task-form.component.html',
-  styleUrls: ['./task-form.component.scss']
+  styleUrls: ['./task-form.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TaskFormComponent {
   private taskService = inject(TaskService);
@@ -51,7 +52,8 @@ export class TaskFormComponent {
   data: TaskFormData = inject(MAT_DIALOG_DATA);
 
   form: FormGroup;
-  loading = false;
+  loading = signal(false);
+  error = signal<string | null>(null);
   TaskPriority = TaskPriority;
   MyTaskStatus = MyTaskStatus;
 

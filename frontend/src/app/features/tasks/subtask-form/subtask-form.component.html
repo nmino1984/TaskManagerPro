@@ -34,6 +34,10 @@
       <mat-label>Notes</mat-label>
       <textarea matInput formControlName="notes" placeholder="Additional notes" rows="3"></textarea>
     </mat-form-field>
+
+    <div *ngIf="error()" class="error-message">
+      {{ error() }}
+    </div>
   </form>
 </mat-dialog-content>
 

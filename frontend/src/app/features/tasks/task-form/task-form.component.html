@@ -56,6 +56,10 @@
           </mat-select>
         </mat-form-field>
       </div>
+
+      <div *ngIf="error()" class="error-message">
+        {{ error() }}
+      </div>
     </form>
   </div>
 
@@ -117,6 +121,10 @@
               </mat-select>
             </mat-form-field>
           </div>
+
+          <div *ngIf="error()" class="error-message">
+            {{ error() }}
+          </div>
         </form>
       </div>
     </mat-tab>
@@ -139,8 +147,8 @@
 
 <mat-dialog-actions align="end">
   <button mat-button (click)="onCancel()">Cancel</button>
-  <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="form.invalid || loading">
-    <mat-spinner diameter="20" *ngIf="loading"></mat-spinner>
-    <span *ngIf="!loading">{{ data.mode === 'create' ? 'Create' : 'Save' }}</span>
+  <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="form.invalid || loading()">
+    <mat-spinner diameter="20" *ngIf="loading()"></mat-spinner>
+    <span *ngIf="!loading()">{{ data.mode === 'create' ? 'Create' : 'Save' }}</span>
   </button>
 </mat-dialog-actions>
