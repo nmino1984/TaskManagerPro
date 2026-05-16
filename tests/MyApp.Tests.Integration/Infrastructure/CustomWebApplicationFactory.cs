@@ -23,6 +23,8 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
+        builder.UseEnvironment("Development");
+
         builder.ConfigureServices(services =>
         {
             // Replace the SQLite file-based registration with the open in-memory connection

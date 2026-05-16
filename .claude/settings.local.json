@@ -102,7 +102,11 @@
       "Bash(rm -f src/MyApp/Application/Services/CalendarEventService.cs src/MyApp/API/Controllers/CalendarEventsController.cs src/MyApp/Application/Interfaces/ICalendarEventService.cs src/MyApp/Domain/Entities/CalendarEvent.cs src/MyApp/API/Validators/CalendarEventCreateDtoValidator.cs src/MyApp/API/Validators/CalendarEventUpdateDtoValidator.cs tests/MyApp.Tests.Integration/Controllers/CalendarEventsControllerTests.cs)",
       "Bash(rm -rf \"src/MyApp/Application/DTOs/CalendarEvent\")",
       "Bash(rm -rf frontend/src/app/features/tasks/calendar-event-list frontend/src/app/features/tasks/calendar-event-form)",
-      "Bash(rm -f frontend/src/app/core/services/calendar-event.service.ts frontend/src/app/core/models/calendar-event.models.ts)"
+      "Bash(rm -f frontend/src/app/core/services/calendar-event.service.ts frontend/src/app/core/models/calendar-event.models.ts)",
+      "Bash(git *)",
+      "Bash(dotnet clean *)",
+      "Bash(curl -X POST http://localhost:5141/api/v1/auth/register -H 'Content-Type: application/json' -d '{\"username\":\"testuser\",\"password\":\"TestPassword123!\"}')",
+      "Bash(pkill -f \"dotnet run\")"
     ]
   }
 }

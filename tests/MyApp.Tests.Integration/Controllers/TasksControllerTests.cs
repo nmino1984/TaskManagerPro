@@ -115,7 +115,7 @@ public class TasksControllerTests : IntegrationTestBase, IClassFixture<CustomWeb
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         var content = await response.Content.ReadAsStringAsync();
-        content.Should().Contain("EndDate");
+        content.Should().Contain("StartDate");
     }
 
     [Fact]

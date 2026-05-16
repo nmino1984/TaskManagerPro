@@ -22,6 +22,17 @@ public class AuthService : IAuthService
         _config = config;
     }
 
+    private string GetJwtKey()
+    {
+        var key = Environment.GetEnvironmentVariable("JWT_KEY");
+        if (string.IsNullOrEmpty(key))
+        {
+            // Use development default if not set (matches Program.cs behavior)
+            key = "development-key-that-must-be-at-least-32-characters-long!!!";
+        }
+        return key;
+    }
+
     public async Task<AuthResponseDto> RegisterAsync(RegisterDto dto)
     {
         var existingUser = await _db.Users
@@ -40,7 +51,7 @@ public class AuthService : IAuthService
         await _db.SaveChangesAsync();
 
         var token = GenerateJwtToken(user);
-        return new AuthResponseDto { Token = token, Username = user.Username };
+        return new AuthResponseDto { Token = token, UserId = user.UserId, Username = user.Username };
     }
 
     public async Task<AuthResponseDto> LoginAsync(LoginDto dto)
@@ -53,14 +64,13 @@ public class AuthService : IAuthService
             throw new ValidationException("Username or password is incorrect.");
 
         var token = GenerateJwtToken(user);
-        return new AuthResponseDto { Token = token, Username = user.Username };
+        return new AuthResponseDto { Token = token, UserId = user.UserId, Username = user.Username };
     }
 
     private string GenerateJwtToken(User user)
     {
         var jwtSettings = _config.GetSection("Jwt");
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
-            jwtSettings["Key"] ?? throw new InvalidOperationException("JWT Key not configured")));
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(GetJwtKey()));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
         var claims = new[]

@@ -22,8 +22,8 @@ export class AuthService {
     return this.http.post<AuthResponse>(`${this.apiUrl}/login`, request).pipe(
       tap(response => {
         this.storeToken(response.token);
-        this.storeUser({ userId: '', username: response.username });
-        this.currentUser.set({ userId: '', username: response.username });
+        this.storeUser({ userId: response.userId, username: response.username });
+        this.currentUser.set({ userId: response.userId, username: response.username });
         this.isAuthenticated.set(true);
       })
     );
@@ -33,8 +33,8 @@ export class AuthService {
     return this.http.post<AuthResponse>(`${this.apiUrl}/register`, request).pipe(
       tap(response => {
         this.storeToken(response.token);
-        this.storeUser({ userId: '', username: response.username });
-        this.currentUser.set({ userId: '', username: response.username });
+        this.storeUser({ userId: response.userId, username: response.username });
+        this.currentUser.set({ userId: response.userId, username: response.username });
         this.isAuthenticated.set(true);
       })
     );
