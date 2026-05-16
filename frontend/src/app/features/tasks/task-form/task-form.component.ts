@@ -86,24 +86,31 @@ export class TaskFormComponent {
   onSubmit(): void {
     if (this.form.invalid) return;
 
-    this.loading = true;
+    this.loading.set(true);
+    this.error.set(null);
 
     if (this.data.mode === 'create') {
       this.taskService.create(this.form.value).subscribe({
         next: () => {
+          this.loading.set(false);
           this.dialogRef.close(true);
         },
-        error: () => {
-          this.loading = false;
+        error: (err) => {
+          this.loading.set(false);
+          const errorMsg = err.error?.detail || err.error?.message || 'Error creating task';
+          this.error.set(errorMsg);
         }
       });
     } else if (this.data.mode === 'edit' && this.data.task) {
       this.taskService.update(this.data.task.myTaskId, this.form.value).subscribe({
         next: () => {
+          this.loading.set(false);
           this.dialogRef.close(true);
         },
-        error: () => {
-          this.loading = false;
+        error: (err) => {
+          this.loading.set(false);
+          const errorMsg = err.error?.detail || err.error?.message || 'Error updating task';
+          this.error.set(errorMsg);
         }
       });
     }
