@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MyApp.Application.DTOs.Milestone;
@@ -30,7 +31,11 @@ public class MilestonesController : ControllerBase
     [HttpGet("bytask/{taskId:int}")]
     [ProducesResponseType<List<MilestoneResponseDto>>(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetByTask(int taskId)
-        => Ok(await _milestoneService.GetByTaskAsync(taskId));
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+            ?? throw new InvalidOperationException("User ID not found in token");
+        return Ok(await _milestoneService.GetByTaskAsync(taskId, userId));
+    }
 
     /// <summary>
     /// Retrieves a single milestone by its ID.
@@ -40,7 +45,11 @@ public class MilestonesController : ControllerBase
     [ProducesResponseType<MilestoneResponseDto>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById(int id)
-        => Ok(await _milestoneService.GetByIdAsync(id));
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+            ?? throw new InvalidOperationException("User ID not found in token");
+        return Ok(await _milestoneService.GetByIdAsync(id, userId));
+    }
 
     /// <summary>
     /// Creates a new milestone under an existing task.
@@ -51,7 +60,9 @@ public class MilestonesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Create(MilestoneCreateDto dto)
     {
-        var result = await _milestoneService.CreateAsync(dto);
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+            ?? throw new InvalidOperationException("User ID not found in token");
+        var result = await _milestoneService.CreateAsync(dto, userId);
         return CreatedAtAction(nameof(GetById), new { id = result.MilestoneId }, result);
     }
 
@@ -65,7 +76,11 @@ public class MilestonesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Update(int id, MilestoneUpdateDto dto)
-        => Ok(await _milestoneService.UpdateAsync(id, dto));
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+            ?? throw new InvalidOperationException("User ID not found in token");
+        return Ok(await _milestoneService.UpdateAsync(id, dto, userId));
+    }
 
     /// <summary>
     /// Deletes a milestone by its ID.
@@ -76,7 +91,9 @@ public class MilestonesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(int id)
     {
-        await _milestoneService.DeleteAsync(id);
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+            ?? throw new InvalidOperationException("User ID not found in token");
+        await _milestoneService.DeleteAsync(id, userId);
         return NoContent();
     }
 
@@ -90,7 +107,9 @@ public class MilestonesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> ExportJson(int taskId)
     {
-        var data = await _milestoneService.ExportToJsonAsync(taskId);
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+            ?? throw new InvalidOperationException("User ID not found in token");
+        var data = await _milestoneService.ExportToJsonAsync(taskId, userId);
         return File(data, "application/json", "milestones.json");
     }
 
@@ -104,7 +123,9 @@ public class MilestonesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> ExportXml(int taskId)
     {
-        var data = await _milestoneService.ExportToXmlAsync(taskId);
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+            ?? throw new InvalidOperationException("User ID not found in token");
+        var data = await _milestoneService.ExportToXmlAsync(taskId, userId);
         return File(data, "application/xml", "milestones.xml");
     }
 
@@ -118,7 +139,9 @@ public class MilestonesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> ExportIcal(int taskId)
     {
-        var data = await _milestoneService.ExportToICalAsync(taskId);
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+            ?? throw new InvalidOperationException("User ID not found in token");
+        var data = await _milestoneService.ExportToICalAsync(taskId, userId);
         return File(data, "text/calendar", "milestones.ics");
     }
 }

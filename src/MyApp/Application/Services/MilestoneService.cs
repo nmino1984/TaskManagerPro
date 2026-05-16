@@ -23,8 +23,14 @@ public class MilestoneService : IMilestoneService
         _mapper = mapper;
     }
 
-    public async Task<List<MilestoneResponseDto>> GetByTaskAsync(int taskId)
+    public async Task<List<MilestoneResponseDto>> GetByTaskAsync(int taskId, string userId)
     {
+        var taskExists = await _db.MyTasks
+            .AnyAsync(t => t.MyTaskId == taskId && t.UserId == userId);
+
+        if (!taskExists)
+            throw new NotFoundException("MyTask", taskId);
+
         var milestones = await _db.Milestones
             .Where(m => m.TaskId == taskId)
             .ToListAsync();
@@ -32,19 +38,24 @@ public class MilestoneService : IMilestoneService
         return _mapper.Map<List<MilestoneResponseDto>>(milestones);
     }
 
-    public async Task<MilestoneResponseDto> GetByIdAsync(int id)
+    public async Task<MilestoneResponseDto> GetByIdAsync(int id, string userId)
     {
-        var milestone = await _db.Milestones.FindAsync(id)
+        var milestone = await _db.Milestones
+            .Where(m => m.MilestoneId == id)
+            .Join(_db.MyTasks, m => m.TaskId, t => t.MyTaskId, (m, t) => new { Milestone = m, Task = t })
+            .FirstOrDefaultAsync(x => x.Task.UserId == userId)
             ?? throw new NotFoundException("Milestone", id);
 
-        return _mapper.Map<MilestoneResponseDto>(milestone);
+        return _mapper.Map<MilestoneResponseDto>(milestone.Milestone);
     }
 
-    public async Task<MilestoneResponseDto> CreateAsync(MilestoneCreateDto dto)
+    public async Task<MilestoneResponseDto> CreateAsync(MilestoneCreateDto dto, string userId)
     {
-        var taskExists = await _db.MyTasks.AnyAsync(t => t.MyTaskId == dto.TaskId);
-        if (!taskExists)
-            throw new NotFoundException("MyTask", dto.TaskId);
+        var task = await _db.MyTasks.FirstOrDefaultAsync(t => t.MyTaskId == dto.TaskId)
+            ?? throw new NotFoundException("MyTask", dto.TaskId);
+
+        if (task.UserId != userId)
+            throw new UnauthorizedAccessException("You do not have access to this task.");
 
         var milestone = _mapper.Map<Milestone>(dto);
         milestone.CreatedAt = DateTime.UtcNow;
@@ -56,31 +67,37 @@ public class MilestoneService : IMilestoneService
         return _mapper.Map<MilestoneResponseDto>(milestone);
     }
 
-    public async Task<MilestoneResponseDto> UpdateAsync(int id, MilestoneUpdateDto dto)
+    public async Task<MilestoneResponseDto> UpdateAsync(int id, MilestoneUpdateDto dto, string userId)
     {
-        var milestone = await _db.Milestones.FindAsync(id)
+        var milestone = await _db.Milestones
+            .Where(m => m.MilestoneId == id)
+            .Join(_db.MyTasks, m => m.TaskId, t => t.MyTaskId, (m, t) => new { Milestone = m, Task = t })
+            .FirstOrDefaultAsync(x => x.Task.UserId == userId)
             ?? throw new NotFoundException("Milestone", id);
 
-        _mapper.Map(dto, milestone);
-        milestone.UpdatedAt = DateTime.UtcNow;
+        _mapper.Map(dto, milestone.Milestone);
+        milestone.Milestone.UpdatedAt = DateTime.UtcNow;
 
         await _db.SaveChangesAsync();
 
-        return _mapper.Map<MilestoneResponseDto>(milestone);
+        return _mapper.Map<MilestoneResponseDto>(milestone.Milestone);
     }
 
-    public async Task DeleteAsync(int id)
+    public async Task DeleteAsync(int id, string userId)
     {
-        var milestone = await _db.Milestones.FindAsync(id)
+        var milestone = await _db.Milestones
+            .Where(m => m.MilestoneId == id)
+            .Join(_db.MyTasks, m => m.TaskId, t => t.MyTaskId, (m, t) => new { Milestone = m, Task = t })
+            .FirstOrDefaultAsync(x => x.Task.UserId == userId)
             ?? throw new NotFoundException("Milestone", id);
 
-        _db.Milestones.Remove(milestone);
+        _db.Milestones.Remove(milestone.Milestone);
         await _db.SaveChangesAsync();
     }
 
-    public async Task<byte[]> ExportToJsonAsync(int taskId)
+    public async Task<byte[]> ExportToJsonAsync(int taskId, string userId)
     {
-        var milestones = await GetByTaskAsync(taskId);
+        var milestones = await GetByTaskAsync(taskId, userId);
 
         var options = new JsonSerializerOptions
         {
@@ -92,9 +109,9 @@ public class MilestoneService : IMilestoneService
         return JsonSerializer.SerializeToUtf8Bytes(milestones, options);
     }
 
-    public async Task<byte[]> ExportToXmlAsync(int taskId)
+    public async Task<byte[]> ExportToXmlAsync(int taskId, string userId)
     {
-        var milestones = await GetByTaskAsync(taskId);
+        var milestones = await GetByTaskAsync(taskId, userId);
 
         var serializer = new XmlSerializer(typeof(List<MilestoneResponseDto>));
         using var ms = new MemoryStream();
@@ -102,9 +119,9 @@ public class MilestoneService : IMilestoneService
         return ms.ToArray();
     }
 
-    public async Task<byte[]> ExportToICalAsync(int taskId)
+    public async Task<byte[]> ExportToICalAsync(int taskId, string userId)
     {
-        var milestones = await GetByTaskAsync(taskId);
+        var milestones = await GetByTaskAsync(taskId, userId);
         var sb = new System.Text.StringBuilder();
 
         sb.AppendLine("BEGIN:VCALENDAR");

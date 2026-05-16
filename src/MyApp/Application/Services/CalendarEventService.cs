@@ -16,27 +16,27 @@ public class CalendarEventService : IMilestoneService
         _milestoneService = new MilestoneService(db, mapper);
     }
 
-    public async Task<List<MyApp.Application.DTOs.Milestone.MilestoneResponseDto>> GetByTaskAsync(int taskId)
-        => await _milestoneService.GetByTaskAsync(taskId);
+    public async Task<List<MyApp.Application.DTOs.Milestone.MilestoneResponseDto>> GetByTaskAsync(int taskId, string userId)
+        => await _milestoneService.GetByTaskAsync(taskId, userId);
 
-    public async Task<MyApp.Application.DTOs.Milestone.MilestoneResponseDto> GetByIdAsync(int id)
-        => await _milestoneService.GetByIdAsync(id);
+    public async Task<MyApp.Application.DTOs.Milestone.MilestoneResponseDto> GetByIdAsync(int id, string userId)
+        => await _milestoneService.GetByIdAsync(id, userId);
 
-    public async Task<MyApp.Application.DTOs.Milestone.MilestoneResponseDto> CreateAsync(MyApp.Application.DTOs.Milestone.MilestoneCreateDto dto)
-        => await _milestoneService.CreateAsync(dto);
+    public async Task<MyApp.Application.DTOs.Milestone.MilestoneResponseDto> CreateAsync(MyApp.Application.DTOs.Milestone.MilestoneCreateDto dto, string userId)
+        => await _milestoneService.CreateAsync(dto, userId);
 
-    public async Task<MyApp.Application.DTOs.Milestone.MilestoneResponseDto> UpdateAsync(int id, MyApp.Application.DTOs.Milestone.MilestoneUpdateDto dto)
-        => await _milestoneService.UpdateAsync(id, dto);
+    public async Task<MyApp.Application.DTOs.Milestone.MilestoneResponseDto> UpdateAsync(int id, MyApp.Application.DTOs.Milestone.MilestoneUpdateDto dto, string userId)
+        => await _milestoneService.UpdateAsync(id, dto, userId);
 
-    public async Task DeleteAsync(int id)
-        => await _milestoneService.DeleteAsync(id);
+    public async Task DeleteAsync(int id, string userId)
+        => await _milestoneService.DeleteAsync(id, userId);
 
-    public async Task<byte[]> ExportToJsonAsync(int taskId)
-        => await _milestoneService.ExportToJsonAsync(taskId);
+    public async Task<byte[]> ExportToJsonAsync(int taskId, string userId)
+        => await _milestoneService.ExportToJsonAsync(taskId, userId);
 
-    public async Task<byte[]> ExportToXmlAsync(int taskId)
-        => await _milestoneService.ExportToXmlAsync(taskId);
+    public async Task<byte[]> ExportToXmlAsync(int taskId, string userId)
+        => await _milestoneService.ExportToXmlAsync(taskId, userId);
 
-    public async Task<byte[]> ExportToICalAsync(int taskId)
-        => await _milestoneService.ExportToICalAsync(taskId);
+    public async Task<byte[]> ExportToICalAsync(int taskId, string userId)
+        => await _milestoneService.ExportToICalAsync(taskId, userId);
 }
