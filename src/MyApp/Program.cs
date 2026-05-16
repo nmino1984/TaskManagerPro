@@ -61,7 +61,11 @@ builder.Services.AddAutoMapper(cfg => cfg.AddProfile<MappingProfile>());
 builder.Services.AddValidatorsFromAssemblyContaining<MyTaskValidator>();
 
 var jwtSettings = builder.Configuration.GetSection("Jwt");
-var key = Encoding.UTF8.GetBytes(jwtSettings["Key"] ?? throw new InvalidOperationException("JWT Key not configured"));
+var jwtKey = Environment.GetEnvironmentVariable("JWT_KEY")
+    ?? (builder.Environment.IsDevelopment()
+        ? "development-key-that-must-be-at-least-32-characters-long!!!"
+        : throw new InvalidOperationException("JWT_KEY environment variable not configured"));
+var key = Encoding.UTF8.GetBytes(jwtKey);
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
