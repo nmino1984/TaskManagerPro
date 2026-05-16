@@ -33,7 +33,7 @@ builder.Services.AddOpenApi(options =>
         {
             Title = "TaskMaster Pro API",
             Version = "v1",
-            Description = "REST API for managing tasks, subtasks, and calendar events in a collaborative team environment.",
+            Description = "REST API for managing tasks, subtasks, and milestones in a collaborative team environment.",
             Contact = new OpenApiContact
             {
                 Name = "TaskMaster Pro",

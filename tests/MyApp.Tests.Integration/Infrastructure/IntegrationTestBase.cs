@@ -2,7 +2,6 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using MyApp.Application.DTOs.Auth;
-using MyApp.Application.DTOs.CalendarEvent;
 using MyApp.Application.DTOs.MyTask;
 using MyApp.Application.DTOs.SubTask;
 using MyApp.Domain.Enums;
@@ -71,14 +70,4 @@ public abstract class IntegrationTestBase
         return (await response.Content.ReadFromJsonAsync<SubTaskResponseDto>(JsonOptions))!;
     }
 
-    protected async Task<CalendarEventResponseDto> SeedCalendarEventAsync(int taskId)
-    {
-        if (Token == null)
-            await AuthenticateAsync();
-
-        var body = new CalendarEventCreateDto { TaskId = taskId, Date = DateTime.UtcNow.AddDays(5) };
-        var response = await Client.PostAsJsonAsync("/api/v1/calendarevents", body, JsonOptions);
-        response.EnsureSuccessStatusCode();
-        return (await response.Content.ReadFromJsonAsync<CalendarEventResponseDto>(JsonOptions))!;
-    }
 }

@@ -80,7 +80,29 @@
       "Bash(awk '{print $2}')",
       "Bash(xargs kill -9)",
       "Bash(curl -s -o /dev/null -w \"HTTP %{http_code}\\\\n\" http://localhost:4201/)",
-      "Bash(curl -s -o /dev/null -w \"Status: %{http_code}\\\\n\" http://localhost:4201/)"
+      "Bash(curl -s -o /dev/null -w \"Status: %{http_code}\\\\n\" http://localhost:4201/)",
+      "Bash(dotnet new *)",
+      "Bash(dotnet add *)",
+      "Bash(Get-ChildItem -Path . -Filter \"*.sln\" -Recurse)",
+      "Bash(Select-Object -First 5)",
+      "PowerShell(cd \\(Get-Item -Path .\\).FullName; Write-Output $\\(Get-Location\\))",
+      "Bash(npm test *)",
+      "Bash(curl -s http://localhost:5141/api/v1/tasks -H \"Authorization: Bearer test\")",
+      "PowerShell(Start-Process -FilePath \"dotnet\" -ArgumentList \"run\" -WorkingDirectory \"C:\\\\Users\\\\okind\\\\source\\\\repos\\\\nmino1984\\\\C_Sharp.Net\\\\TaskManagerPro\\\\src\\\\MyApp\" -WindowStyle Hidden)",
+      "PowerShell(Start-Process -FilePath \"npm\" -ArgumentList \"start\" -WorkingDirectory \"C:\\\\Users\\\\okind\\\\source\\\\repos\\\\nmino1984\\\\C_Sharp.Net\\\\TaskManagerPro\\\\frontend\" -WindowStyle Hidden)",
+      "PowerShell($response = $null; try { $response = Invoke-WebRequest -Uri \"http://localhost:4200\" -TimeoutSec 5 -ErrorAction SilentlyContinue } catch {}; if \\($response\\) { \"Frontend OK: \" + $response.StatusCode } else { \"Frontend not ready yet\" })",
+      "PowerShell($response = $null; try { $response = Invoke-WebRequest -Uri \"http://localhost:5141/api/v1/tasks\" -TimeoutSec 3 -ErrorAction SilentlyContinue } catch { $error = $_.Exception.Message }; if \\($response\\) { \"API OK: Status \" + $response.StatusCode } else { \"API NO RESPONDE - Error: \" + $error })",
+      "PowerShell($response = $null; try { $response = Invoke-WebRequest -Uri \"http://localhost:4200\" -TimeoutSec 3 -ErrorAction SilentlyContinue } catch {}; if \\($response\\) { \"Frontend OK: Status \" + $response.StatusCode } else { \"Frontend NO está listo aún\" })",
+      "PowerShell(Start-Process -FilePath \"powershell\" -ArgumentList \"-NoExit\", \"-Command\", \"cd 'C:\\\\Users\\\\okind\\\\source\\\\repos\\\\nmino1984\\\\C_Sharp.Net\\\\TaskManagerPro\\\\src\\\\MyApp'; dotnet run\")",
+      "PowerShell(Remove-Item *)",
+      "Bash(taskkill /IM dotnet.exe /F)",
+      "PowerShell(Start-Process -FilePath \"powershell\" -ArgumentList \"-NoExit\", \"-Command\", \"cd 'C:\\\\Users\\\\okind\\\\source\\\\repos\\\\nmino1984\\\\C_Sharp.Net\\\\TaskManagerPro\\\\frontend'; npm start\")",
+      "Bash(powershell -Command ' *)",
+      "PowerShell(Start-Process \"http://localhost:4200\" -WindowStyle Normal ; Write-Output \"Browser opened at http://localhost:4200\")",
+      "Bash(rm -f src/MyApp/Application/Services/CalendarEventService.cs src/MyApp/API/Controllers/CalendarEventsController.cs src/MyApp/Application/Interfaces/ICalendarEventService.cs src/MyApp/Domain/Entities/CalendarEvent.cs src/MyApp/API/Validators/CalendarEventCreateDtoValidator.cs src/MyApp/API/Validators/CalendarEventUpdateDtoValidator.cs tests/MyApp.Tests.Integration/Controllers/CalendarEventsControllerTests.cs)",
+      "Bash(rm -rf \"src/MyApp/Application/DTOs/CalendarEvent\")",
+      "Bash(rm -rf frontend/src/app/features/tasks/calendar-event-list frontend/src/app/features/tasks/calendar-event-form)",
+      "Bash(rm -f frontend/src/app/core/services/calendar-event.service.ts frontend/src/app/core/models/calendar-event.models.ts)"
     ]
   }
 }

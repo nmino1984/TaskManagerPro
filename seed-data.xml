@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SeedData>
+  <Users>
+    <User>
+      <UserId>user-001</UserId>
+      <Username>carlos.dev</Username>
+      <Email>carlos@taskmaster.io</Email>
+      <PasswordHash>hashed_password_1</PasswordHash>
+    </User>
+    <User>
+      <UserId>user-002</UserId>
+      <Username>maria.qa</Username>
+      <Email>maria@taskmaster.io</Email>
+      <PasswordHash>hashed_password_2</PasswordHash>
+    </User>
+    <User>
+      <UserId>user-003</UserId>
+      <Username>juan.backend</Username>
+      <Email>juan@taskmaster.io</Email>
+      <PasswordHash>hashed_password_3</PasswordHash>
+    </User>
+    <User>
+      <UserId>user-004</UserId>
+      <Username>sofia.frontend</Username>
+      <Email>sofia@taskmaster.io</Email>
+      <PasswordHash>hashed_password_4</PasswordHash>
+    </User>
+  </Users>
+  <Tasks>
+    <Task>
+      <MyTaskId>1</MyTaskId>
+      <UserId>user-001</UserId>
+      <Title>Implementar autenticación JWT</Title>
+      <Description>Configurar JWT para la API REST</Description>
+      <Status>Completed</Status>
+      <Priority>High</Priority>
+      <StartDate>2026-04-16T08:00:00Z</StartDate>
+      <EndDate>2026-04-20T17:00:00Z</EndDate>
+      <Progress>100</Progress>
+      <CreatedAt>2026-04-16T08:00:00Z</CreatedAt>
+      <UpdatedAt>2026-04-20T15:30:00Z</UpdatedAt>
+      <IsDeleted>false</IsDeleted>
+    </Task>
+    <Task>
+      <MyTaskId>2</MyTaskId>
+      <UserId>user-002</UserId>
+      <Title>Pruebas unitarias del servicio de tareas</Title>
+      <Description>Escribir y ejecutar pruebas unitarias para TaskService</Description>
+      <Status>Completed</Status>
+      <Priority>High</Priority>
+      <StartDate>2026-04-21T09:00:00Z</StartDate>
+      <EndDate>2026-04-25T17:00:00Z</EndDate>
+      <Progress>100</Progress>
+      <CreatedAt>2026-04-21T09:00:00Z</CreatedAt>
+      <UpdatedAt>2026-04-25T16:45:00Z</UpdatedAt>
+      <IsDeleted>false</IsDeleted>
+    </Task>
+    <Task>
+      <MyTaskId>3</MyTaskId>
+      <UserId>user-003</UserId>
+      <Title>Refactorizar la base de datos</Title>
+      <Description>Optimizar índices y relaciones en SQLite</Description>
+      <Status>Completed</Status>
+      <Priority>Medium</Priority>
+      <StartDate>2026-04-18T10:00:00Z</StartDate>
+      <EndDate>2026-04-22T17:00:00Z</EndDate>
+      <Progress>100</Progress>
+      <CreatedAt>2026-04-18T10:00:00Z</CreatedAt>
+      <UpdatedAt>2026-04-22T14:20:00Z</UpdatedAt>
+      <IsDeleted>false</IsDeleted>
+    </Task>
+    <Task>
+      <MyTaskId>4</MyTaskId>
+      <UserId>user-004</UserId>
+      <Title>Diseñar componentes Angular con Material</Title>
+      <Description>Crear componentes reutilizables con Angular Material</Description>
+      <Status>InProgress</Status>
+      <Priority>High</Priority>
+      <StartDate>2026-04-23T08:30:00Z</StartDate>
+      <EndDate>2026-05-02T17:00:00Z</EndDate>
+      <Progress>65</Progress>
+      <CreatedAt>2026-04-23T08:30:00Z</CreatedAt>
+      <UpdatedAt>2026-05-14T10:15:00Z</UpdatedAt>
+      <IsDeleted>false</IsDeleted>
+    </Task>
+    <Task>
+      <MyTaskId>5</MyTaskId>
+      <UserId>user-001</UserId>
+      <Title>API Rest para gestión de tareas</Title>
+      <Description>Implementar endpoints CRUD para tareas</Description>
+      <Status>Completed</Status>
+      <Priority>High</Priority>
+      <StartDate>2026-04-16T09:00:00Z</StartDate>
+      <EndDate>2026-04-19T17:00:00Z</EndDate>
+      <Progress>100</Progress>
+      <CreatedAt>2026-04-16T09:00:00Z</CreatedAt>
+      <UpdatedAt>2026-04-19T15:00:00Z</UpdatedAt>
+      <IsDeleted>false</IsDeleted>
+    </Task>
+    <Task>
+      <MyTaskId>6</MyTaskId>
+      <UserId>user-002</UserId>
+      <Title>Validación de formularios</Title>
+      <Description>Implementar validaciones en formularios del frontend</Description>
+      <Status>InProgress</Status>
+      <Priority>Medium</Priority>
+      <StartDate>2026-05-06T10:00:00Z</StartDate>
+      <EndDate>2026-05-15T17:00:00Z</EndDate>
+      <Progress>45</Progress>
+      <CreatedAt>2026-05-06T10:00:00Z</CreatedAt>
+      <UpdatedAt>2026-05-14T11:30:00Z</UpdatedAt>
+      <IsDeleted>false</IsDeleted>
+    </Task>
+    <Task>
+      <MyTaskId>7</MyTaskId>
+      <UserId>user-003</UserId>
+      <Title>Implementar soft delete en entidades</Title>
+      <Description>Añadir campo IsDeleted a las entidades principales</Description>
+      <Status>Completed</Status>
+      <Priority>Medium</Priority>
+      <StartDate>2026-04-25T09:00:00Z</StartDate>
+      <EndDate>2026-04-27T17:00:00Z</EndDate>
+      <Progress>100</Progress>
+      <CreatedAt>2026-04-25T09:00:00Z</CreatedAt>
+      <UpdatedAt>2026-04-27T14:00:00Z</UpdatedAt>
+      <IsDeleted>false</IsDeleted>
+    </Task>
+    <Task>
+      <MyTaskId>8</MyTaskId>
+      <UserId>user-004</UserId>
+      <Title>Integración de Modal de tareas</Title>
+      <Description>Crear modal para crear y editar tareas</Description>
+      <Status>Completed</Status>
+      <Priority>High</Priority>
+      <StartDate>2026-05-01T08:00:00Z</StartDate>
+      <EndDate>2026-05-05T17:00:00Z</EndDate>
+      <Progress>100</Progress>
+      <CreatedAt>2026-05-01T08:00:00Z</CreatedAt>
+      <UpdatedAt>2026-05-05T16:30:00Z</UpdatedAt>
+      <IsDeleted>false</IsDeleted>
+    </Task>
+    <Task>
+      <MyTaskId>9</MyTaskId>
+      <UserId>user-001</UserId>
+      <Title>Documentación de API</Title>
+      <Description>Crear documentación Swagger/OpenAPI para la API REST</Description>
+      <Status>NotStarted</Status>
+      <Priority>Low</Priority>
+      <StartDate>2026-05-15T09:00:00Z</StartDate>
+      <EndDate>2026-05-22T17:00:00Z</EndDate>
+      <Progress>0</Progress>
+      <CreatedAt>2026-05-14T14:00:00Z</CreatedAt>
+      <UpdatedAt>2026-05-14T14:00:00Z</UpdatedAt>
+      <IsDeleted>false</IsDeleted>
+    </Task>
+    <Task>
+      <MyTaskId>10</MyTaskId>
+      <UserId>user-002</UserId>
+      <Title>Testing E2E con Cypress</Title>
+      <Description>Configurar y escribir tests E2E para flujos principales</Description>
+      <Status>NotStarted</Status>
+      <Priority>Medium</Priority>
+      <StartDate>2026-05-16T09:00:00Z</StartDate>
+      <EndDate>2026-05-25T17:00:00Z</EndDate>
+      <Progress>0</Progress>
+      <CreatedAt>2026-05-15T10:00:00Z</CreatedAt>
+      <UpdatedAt>2026-05-15T10:00:00Z</UpdatedAt>
+      <IsDeleted>false</IsDeleted>
+    </Task>
+  </Tasks>
+  <SubTasks>
+    <SubTask>
+      <SubTaskId>1</SubTaskId>
+      <TaskId>1</TaskId>
+      <Description>Configurar librerías JWT</Description>
+      <Status>Completed</Status>
+      <DueDate>2026-04-18T17:00:00Z</DueDate>
+      <Notes>Usado System.IdentityModel.Tokens.Jwt</Notes>
+      <CreatedAt>2026-04-16T08:00:00Z</CreatedAt>
+      <UpdatedAt>2026-04-18T16:00:00Z</UpdatedAt>
+    </SubTask>
+    <SubTask>
+      <SubTaskId>2</SubTaskId>
+      <TaskId>1</TaskId>
+      <Description>Crear endpoints de login y registro</Description>
+      <Status>Completed</Status>
+      <DueDate>2026-04-19T17:00:00Z</DueDate>
+      <Notes>Endpoints POST /api/auth/login y /api/auth/register</Notes>
+      <CreatedAt>2026-04-16T08:00:00Z</CreatedAt>
+      <UpdatedAt>2026-04-19T15:30:00Z</UpdatedAt>
+    </SubTask>
+    <SubTask>
+      <SubTaskId>3</SubTaskId>
+      <TaskId>1</TaskId>
+      <Description>Testear autenticación</Description>
+      <Status>Completed</Status>
+      <DueDate>2026-04-20T17:00:00Z</DueDate>
+      <Notes>Tests unitarios completados</Notes>
+      <CreatedAt>2026-04-16T08:00:00Z</CreatedAt>
+      <UpdatedAt>2026-04-20T14:00:00Z</UpdatedAt>
+    </SubTask>
+    <SubTask>
+      <SubTaskId>4</SubTaskId>
+      <TaskId>2</TaskId>
+      <Description>Escribir pruebas para GetByIdAsync</Description>
+      <Status>Completed</Status>
+      <DueDate>2026-04-22T17:00:00Z</DueDate>
+      <Notes>5 tests creados</Notes>
+      <CreatedAt>2026-04-21T09:00:00Z</CreatedAt>
+      <UpdatedAt>2026-04-22T15:00:00Z</UpdatedAt>
+    </SubTask>
+    <SubTask>
+      <SubTaskId>5</SubTaskId>
+      <TaskId>2</TaskId>
+      <Description>Escribir pruebas para CreateAsync</Description>
+      <Status>Completed</Status>
+      <DueDate>2026-04-23T17:00:00Z</DueDate>
+      <Notes>Tests para validación de datos</Notes>
+      <CreatedAt>2026-04-21T09:00:00Z</CreatedAt>
+      <UpdatedAt>2026-04-23T16:30:00Z</UpdatedAt>
+    </SubTask>
+  </SubTasks>
+  <Milestones>
+    <Milestone>
+      <MilestoneId>1</MilestoneId>
+      <TaskId>1</TaskId>
+      <Title>Integración de JWT</Title>
+      <Description>Completar la integración de autenticación con JWT</Description>
+      <TargetDate>2026-04-20T17:00:00Z</TargetDate>
+      <Status>Completed</Status>
+      <CreatedAt>2026-04-16T08:00:00Z</CreatedAt>
+      <UpdatedAt>2026-04-20T15:30:00Z</UpdatedAt>
+    </Milestone>
+    <Milestone>
+      <MilestoneId>2</MilestoneId>
+      <TaskId>1</TaskId>
+      <Title>Testing de autenticación</Title>
+      <Description>Completar todos los tests de autenticación</Description>
+      <TargetDate>2026-04-21T17:00:00Z</TargetDate>
+      <Status>Completed</Status>
+      <CreatedAt>2026-04-16T08:00:00Z</CreatedAt>
+      <UpdatedAt>2026-04-20T14:30:00Z</UpdatedAt>
+    </Milestone>
+    <Milestone>
+      <MilestoneId>3</MilestoneId>
+      <TaskId>3</TaskId>
+      <Title>Optimización de BD</Title>
+      <Description>Crear índices y optimizar queries</Description>
+      <TargetDate>2026-04-22T17:00:00Z</TargetDate>
+      <Status>Completed</Status>
+      <CreatedAt>2026-04-18T10:00:00Z</CreatedAt>
+      <UpdatedAt>2026-04-22T14:20:00Z</UpdatedAt>
+    </Milestone>
+    <Milestone>
+      <MilestoneId>4</MilestoneId>
+      <TaskId>5</TaskId>
+      <Title>API CRUD completa</Title>
+      <Description>Endpoints GET, POST, PUT, DELETE funcionando</Description>
+      <TargetDate>2026-04-19T17:00:00Z</TargetDate>
+      <Status>Completed</Status>
+      <CreatedAt>2026-04-16T09:00:00Z</CreatedAt>
+      <UpdatedAt>2026-04-19T15:00:00Z</UpdatedAt>
+    </Milestone>
+    <Milestone>
+      <MilestoneId>5</MilestoneId>
+      <TaskId>8</TaskId>
+      <Title>Modal de tareas</Title>
+      <Description>Interfaz modal para crear y editar tareas</Description>
+      <TargetDate>2026-05-05T17:00:00Z</TargetDate>
+      <Status>Completed</Status>
+      <CreatedAt>2026-05-01T08:00:00Z</CreatedAt>
+      <UpdatedAt>2026-05-05T16:30:00Z</UpdatedAt>
+    </Milestone>
+    <Milestone>
+      <MilestoneId>6</MilestoneId>
+      <TaskId>4</TaskId>
+      <Title>Componentes Material</Title>
+      <Description>Crear componentes reutilizables con Angular Material</Description>
+      <TargetDate>2026-05-15T17:00:00Z</TargetDate>
+      <Status>Pending</Status>
+      <CreatedAt>2026-04-23T08:30:00Z</CreatedAt>
+      <UpdatedAt>2026-05-14T10:15:00Z</UpdatedAt>
+    </Milestone>
+    <Milestone>
+      <MilestoneId>7</MilestoneId>
+      <TaskId>6</TaskId>
+      <Title>Validación de formularios</Title>
+      <Description>Implementar validación en todos los formularios</Description>
+      <TargetDate>2026-05-15T17:00:00Z</TargetDate>
+      <Status>Pending</Status>
+      <CreatedAt>2026-05-06T10:00:00Z</CreatedAt>
+      <UpdatedAt>2026-05-14T11:30:00Z</UpdatedAt>
+    </Milestone>
+    <Milestone>
+      <MilestoneId>8</MilestoneId>
+      <TaskId>11</TaskId>
+      <Title>Optimización de queries</Title>
+      <Description>Mejorar rendimiento de consultas a BD</Description>
+      <TargetDate>2026-05-18T17:00:00Z</TargetDate>
+      <Status>Pending</Status>
+      <CreatedAt>2026-05-08T10:00:00Z</CreatedAt>
+      <UpdatedAt>2026-05-14T13:20:00Z</UpdatedAt>
+    </Milestone>
+    <Milestone>
+      <MilestoneId>9</MilestoneId>
+      <TaskId>12</TaskId>
+      <Title>Búsqueda avanzada</Title>
+      <Description>Feature de búsqueda con filtros múltiples</Description>
+      <TargetDate>2026-05-20T17:00:00Z</TargetDate>
+      <Status>Pending</Status>
+      <CreatedAt>2026-05-10T09:00:00Z</CreatedAt>
+      <UpdatedAt>2026-05-14T15:00:00Z</UpdatedAt>
+    </Milestone>
+    <Milestone>
+      <MilestoneId>10</MilestoneId>
+      <TaskId>16</TaskId>
+      <Title>Responsive design</Title>
+      <Description>Optimizar para dispositivos móviles</Description>
+      <TargetDate>2026-05-17T17:00:00Z</TargetDate>
+      <Status>Pending</Status>
+      <CreatedAt>2026-05-05T08:00:00Z</CreatedAt>
+      <UpdatedAt>2026-05-14T12:30:00Z</UpdatedAt>
+    </Milestone>
+    <Milestone>
+      <MilestoneId>11</MilestoneId>
+      <TaskId>19</TaskId>
+      <Title>Validación de seguridad</Title>
+      <Description>Implementar validación de inputs para seguridad</Description>
+      <TargetDate>2026-05-16T17:00:00Z</TargetDate>
+      <Status>Overdue</Status>
+      <CreatedAt>2026-05-09T10:00:00Z</CreatedAt>
+      <UpdatedAt>2026-05-14T14:15:00Z</UpdatedAt>
+    </Milestone>
+  </Milestones>
+</SeedData>
