@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MyApp.Application.DTOs.SubTask;
@@ -29,7 +30,11 @@ public class SubTasksController : ControllerBase
     [HttpGet("bytask/{taskId:int}")]
     [ProducesResponseType<List<SubTaskResponseDto>>(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetByTask(int taskId)
-        => Ok(await _subTaskService.GetByTaskAsync(taskId));
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+            ?? throw new InvalidOperationException("User ID not found in token");
+        return Ok(await _subTaskService.GetByTaskAsync(taskId, userId));
+    }
 
     /// <summary>
     /// Retrieves a single subtask by its ID.
@@ -39,7 +44,11 @@ public class SubTasksController : ControllerBase
     [ProducesResponseType<SubTaskResponseDto>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById(int id)
-        => Ok(await _subTaskService.GetByIdAsync(id));
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+            ?? throw new InvalidOperationException("User ID not found in token");
+        return Ok(await _subTaskService.GetByIdAsync(id, userId));
+    }
 
     /// <summary>
     /// Creates a new subtask under an existing task.
@@ -50,7 +59,9 @@ public class SubTasksController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Create(SubTaskCreateDto dto)
     {
-        var result = await _subTaskService.CreateAsync(dto);
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+            ?? throw new InvalidOperationException("User ID not found in token");
+        var result = await _subTaskService.CreateAsync(dto, userId);
         return CreatedAtAction(nameof(GetById), new { id = result.SubTaskId }, result);
     }
 
@@ -64,7 +75,11 @@ public class SubTasksController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Update(int id, SubTaskUpdateDto dto)
-        => Ok(await _subTaskService.UpdateAsync(id, dto));
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+            ?? throw new InvalidOperationException("User ID not found in token");
+        return Ok(await _subTaskService.UpdateAsync(id, dto, userId));
+    }
 
     /// <summary>
     /// Deletes a subtask by its ID.
@@ -75,7 +90,9 @@ public class SubTasksController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(int id)
     {
-        await _subTaskService.DeleteAsync(id);
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+            ?? throw new InvalidOperationException("User ID not found in token");
+        await _subTaskService.DeleteAsync(id, userId);
         return NoContent();
     }
 }
