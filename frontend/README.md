@@ -1,59 +1,308 @@
-# Frontend
+# TaskManagerPro - Frontend Application
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.10.
+A responsive, modern task management interface built with Angular 21 and Angular Material. Features signal-based state management, reactive forms, and Material Design components.
 
-## Development server
+## Quick Start
 
-To start a local development server, run:
+### Prerequisites
+- **Node.js 18+** and npm
+- **Angular 21** CLI (installed via npm)
+
+### Setup
 
 ```bash
-ng serve
+cd frontend
+npm install
+npm start
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+The application will run at `http://localhost:4200` and automatically reload on changes.
 
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+## Development Commands
 
 ```bash
-ng generate component component-name
-```
+# Start development server
+npm start
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+# Build for production
+npm run build
 
-```bash
-ng generate --help
-```
+# Run production build locally
+npm run serve:ssr
 
-## Building
+# Run linter
+npm run lint
 
-To build the project run:
+# Format code
+npm run format
 
-```bash
+# Run unit tests (if configured)
+npm test
+
+# Build only (no serve)
 ng build
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+## Project Structure
 
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
+```
+frontend/
+├── src/
+│   ├── app/
+│   │   ├── core/
+│   │   │   ├── models/              # TypeScript interfaces & enums
+│   │   │   ├── services/            # HTTP services (tasks, milestones, auth)
+│   │   │   ├── interceptors/        # HTTP interceptors (JWT, error handling)
+│   │   │   └── guards/              # Route guards (authentication)
+│   │   ├── features/
+│   │   │   ├── auth/                # Login/Register components
+│   │   │   ├── tasks/               # Task list and detail components
+│   │   │   ├── task-form/           # Task creation/editing form
+│   │   │   ├── subtasks/            # Subtask components
+│   │   │   └── milestones/          # Milestone components
+│   │   ├── shared/
+│   │   │   ├── components/          # Reusable UI components
+│   │   │   └── pipes/               # Custom pipes
+│   │   ├── app.component.*          # Root component
+│   │   ├── app.routes.ts            # Route configuration
+│   │   └── app.config.ts            # Application configuration
+│   ├── environments/                # Environment configs (dev, prod)
+│   ├── index.html
+│   ├── styles.scss
+│   └── main.ts
+├── angular.json                     # Angular CLI configuration
+├── tsconfig.json                    # TypeScript configuration
+├── package.json                     # Dependencies
+└── README.md
 ```
 
-## Running end-to-end tests
+## Architecture
 
-For end-to-end (e2e) testing, run:
+### State Management
+- **Angular Signals**: Reactive state management for component signals
+- **No RxJS Subjects**: Clean, predictable state handling
+- **Change Detection OnPush**: Performance optimization throughout the app
+
+### Services
+All services follow the same pattern:
+- Single responsibility principle
+- HTTP client for API communication
+- Observable return types
+- Error handling via interceptors
+
+### Components
+- **Standalone Components**: No NgModule dependencies
+- **Reactive Forms**: Typed form controls with validation
+- **Material Design**: Consistent UI with Angular Material
+- **MatDialog**: Modals for create/edit operations
+
+### HTTP Layer
+- **JWT Interceptor**: Automatically adds Bearer token to requests
+- **Error Interceptor**: Centralized error handling with snackbar notifications
+- **Environment-based URLs**: Development vs Production API endpoints
+
+## Key Features
+
+### Authentication
+- User registration and login
+- JWT token storage (localStorage)
+- Automatic token injection in HTTP requests
+- Login/logout functionality
+
+### Tasks
+- Create, read, update, delete (CRUD) operations
+- Pagination and filtering
+- Priority levels (Low, Medium, High)
+- Status tracking (Not Started, In Progress, Completed, Overdue)
+- Soft delete support
+
+### SubTasks
+- Break down tasks into manageable pieces
+- Track completion status
+- Automatic progress calculation
+- Full CRUD operations
+
+### Milestones
+- Define project checkpoints
+- Track milestone status
+- Export to multiple formats:
+  - **JSON**: For data integration
+  - **XML**: For system integration
+  - **iCalendar**: For calendar applications (Google Calendar, Outlook, Apple Calendar)
+
+## Material Design Components Used
+
+- **MatTable**: Data display and pagination
+- **MatDialog**: Modal dialogs for create/edit
+- **MatForm**: Form inputs and validation
+- **MatButton**: Action buttons
+- **MatIcon**: Icons throughout
+- **MatCard**: Card layouts
+- **MatDatepicker**: Date selection
+- **MatSelect**: Dropdown selection
+- **MatSnackBar**: Toast notifications
+
+## Development Workflow
+
+### Creating a New Component
 
 ```bash
-ng e2e
+ng generate component features/your-feature/your-component
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+The component will be:
+- Standalone (no NgModule)
+- Using OnPush change detection
+- With SCSS stylesheet
 
-## Additional Resources
+### Adding a New Service
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+```bash
+ng generate service core/services/your-service
+```
+
+Services should:
+- Depend on HttpClient
+- Return Observables
+- Handle API communication
+
+### Forms Best Practices
+
+```typescript
+// Use FormGroup with typed controls
+form = new FormGroup({
+  title: new FormControl('', Validators.required),
+  description: new FormControl('', Validators.required),
+});
+
+// Access typed control values
+this.form.value.title
+```
+
+## Environment Configuration
+
+### Development (`environment.ts`)
+```typescript
+apiUrl: 'http://localhost:5141/api/v1'
+production: false
+```
+
+### Production (`environment.prod.ts`)
+```typescript
+apiUrl: '/api/v1'
+production: true
+```
+
+## Error Handling
+
+Errors are handled centrally via `error.interceptor.ts`:
+- Network errors → Snackbar notification
+- 401/403 Unauthorized → Redirect to login
+- 4xx/5xx Errors → Display error message
+- Automatic retry for certain errors
+
+## Testing
+
+Component testing pattern:
+```typescript
+it('should create', () => {
+  expect(component).toBeTruthy();
+});
+
+it('should load tasks', fakeAsync(() => {
+  // Test implementation
+}));
+```
+
+## Performance Optimization
+
+- **OnPush Change Detection**: Only updates when inputs change
+- **Lazy Loading**: Features loaded on demand via routing
+- **Signals**: Minimal re-renders compared to RxJS
+- **Production Build**: Minification, tree-shaking, bundling
+
+## Build Output
+
+```bash
+npm run build
+```
+
+Produces optimized production build in `dist/` directory:
+- Minified JavaScript
+- Optimized CSS
+- Lazy-loaded feature bundles
+- Source maps (if enabled)
+
+## Browser Support
+
+- Chrome/Chromium (latest)
+- Firefox (latest)
+- Safari (latest)
+- Edge (latest)
+
+## Styling
+
+- **SCSS**: For component and global styles
+- **CSS Variables**: For theming
+- **Material Theme**: Built on Material Design system
+- **Responsive**: Mobile, tablet, and desktop layouts
+
+## HTTP Interceptors
+
+### JWT Interceptor
+```typescript
+// Automatically adds token to all requests
+Authorization: 'Bearer {token}'
+```
+
+### Error Interceptor
+```typescript
+// Catches and handles errors centrally
+// Shows snackbar notifications
+// Logs errors for debugging
+```
+
+## Troubleshooting
+
+### Port Already in Use
+```bash
+# macOS/Linux
+lsof -i :4200
+
+# Windows
+netstat -ano | findstr :4200
+```
+
+### Dependencies Not Installing
+```bash
+rm -rf node_modules package-lock.json
+npm install
+```
+
+### Build Failures
+```bash
+npm run build -- --verbose
+```
+
+### Clear Cache
+```bash
+rm -rf .angular/cache
+npm start
+```
+
+## Related Documentation
+
+- **Backend Setup**: See `src/MyApp/README.md`
+- **Database Management**: See `DATABASE_SETUP.md` in project root
+- **Full Project Overview**: See `README.md` in project root
+
+## Angular Resources
+
+- [Angular Official Docs](https://angular.dev/)
+- [Angular Material Docs](https://material.angular.io/)
+- [TypeScript Handbook](https://www.typescriptlang.org/docs/)
+- [Angular Signals](https://angular.dev/guide/signals)
+
+## Support
+
+For API-related issues, ensure the backend server is running at the configured API URL.

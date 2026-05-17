@@ -1,309 +1,75 @@
 # TaskManagerPro
 
-A comprehensive task management system with support for tasks, subtasks, and milestones. Build complex projects with clarity and organization.
+A comprehensive task management system with multi-level organization: tasks, subtasks, and milestones. Built with .NET 10 and Angular 21.
 
-## Features
+## Key Features
 
-✅ **Task Management**
-- Create, read, update, and delete tasks
-- Track task state: Not Started, In Progress, Completed, Overdue
-- Set priorities: Low, Medium, High
-- Define start and end dates
-
-✅ **Subtasks**
-- Break down tasks into manageable subtasks
-- Track subtask completion status
-- Auto-calculate task progress based on subtasks
-
-✅ **Milestones**
-- Define important checkpoints in your project
-- Track milestone status: Pending, Completed, Overdue
-- Export milestones in multiple formats
-
-✅ **Export Functionality**
-- Export milestones to **JSON** (data integration)
-- Export milestones to **XML** (standard format)
-- Export milestones to **iCal** (calendar integration: Google Calendar, Outlook, Apple Calendar)
-
-✅ **Multi-User & Security**
-- User registration and JWT authentication
-- Each user sees only their own data (multi-tenancy)
-- Secure password hashing with BCrypt
-- Proper authorization checks on all operations
-
-✅ **Search & Organization**
-- Pagination with configurable page size
-- Filter by status, priority, or search term
-- View all subtasks and milestones for any task
+- **Task Management**: Create, track, and organize tasks with priority levels and status tracking
+- **Subtasks**: Break down work into manageable pieces  
+- **Milestones**: Define key checkpoints and deliverables
+- **Multi-User**: JWT authentication with user isolation (multi-tenancy)
+- **Export**: Milestones to JSON, XML, or iCalendar format
 
 ## Quick Start
 
-### Prerequisites
-- **.NET 10** or higher
-- **Node.js 18+** and npm
-- **SQLite** (included with .NET)
-
-### Backend Setup
-
-**Option 1: Use the Included Example Database (Fastest)**
+### Option 1: Use Example Database (Fastest)
 ```bash
 cd src/MyApp
 cp ../../TaskManagerPro.db.example ./TaskManagerPro.db
 dotnet run
+# In another terminal:
+cd frontend && npm start
 ```
 
-**Option 2: Create a Fresh Database Automatically**
+### Option 2: Create Fresh Database
 ```bash
-cd src/MyApp
-dotnet run
+cd src/MyApp && dotnet run
+# In another terminal:
+cd frontend && npm start
 ```
 
-The application will:
-- Create the SQLite database (`TaskManagerPro.db`) automatically via EF Core migrations
-- Apply all database migrations
-- Load seed data (development mode only)
-- Start on `http://localhost:5141`
-
-**For detailed database setup instructions, seeding data, and cleanup**, see [DATABASE_SETUP.md](DATABASE_SETUP.md)
-
-### Frontend Setup
-
-```bash
-cd frontend
-npm install
-npm start
-```
-
-The frontend will start on `http://localhost:4200`
-
-### Access the Application
-
-1. Open `http://localhost:4200` in your browser
-2. Click **Register** to create a new account
-3. Enter username and password
-4. Start creating tasks!
-
-## API Endpoints
-
-### Authentication
-- `POST /api/v1/auth/register` - Create new user
-- `POST /api/v1/auth/login` - Login user
-
-### Tasks
-- `GET /api/v1/tasks?page=1&pageSize=10` - List tasks with pagination
-- `POST /api/v1/tasks` - Create task
-- `PUT /api/v1/tasks/{id}` - Update task
-- `DELETE /api/v1/tasks/{id}` - Delete task (soft delete)
-
-### Subtasks
-- `GET /api/v1/subtasks/bytask/{taskId}` - Get subtasks for a task
-- `POST /api/v1/subtasks` - Create subtask
-- `PUT /api/v1/subtasks/{id}` - Update subtask
-- `DELETE /api/v1/subtasks/{id}` - Delete subtask
-
-### Milestones
-- `GET /api/v1/milestones/bytask/{taskId}` - Get milestones for a task
-- `POST /api/v1/milestones` - Create milestone
-- `PUT /api/v1/milestones/{id}` - Update milestone
-- `DELETE /api/v1/milestones/{id}` - Delete milestone
-
-### Export Milestones
-- `GET /api/v1/milestones/bytask/{taskId}/export/json` - Export as JSON
-- `GET /api/v1/milestones/bytask/{taskId}/export/xml` - Export as XML
-- `GET /api/v1/milestones/bytask/{taskId}/export/ical` - Export as iCalendar (.ics)
-
-**All endpoints require JWT authentication** (except registration and login)
+Access at `http://localhost:4200`
 
 ## Project Structure
 
-```
-TaskManagerPro/
-├── src/MyApp/
-│   ├── Domain/              # Entities (Task, SubTask, Milestone, User)
-│   ├── Application/         # Services, DTOs, Business Logic
-│   ├── Infrastructure/      # Database, EF Core, Migrations
-│   ├── API/                 # Controllers, Middleware, Validators
-│   └── Program.cs           # Startup configuration
-├── tests/MyApp.Tests.Integration/
-│   ├── Controllers/         # Controller tests
-│   ├── Infrastructure/      # Test factories and base classes
-│   └── *Tests.cs            # Integration test suites
-├── frontend/
-│   ├── src/app/
-│   │   ├── core/            # Models, Services, Interceptors
-│   │   ├── features/        # Feature modules (tasks, subtasks, milestones)
-│   │   ├── shared/          # Shared components and utilities
-│   │   └── app.component.ts # Root component
-│   └── angular.json         # Angular configuration
-├── TaskManagerPro.db.example # Example database (can be copied for quick start)
-├── DATABASE_SETUP.md         # Database setup, seeding, and cleanup
-└── README.md                 # This file
-```
+| Component | Location | Purpose |
+|-----------|----------|---------|
+| **Backend** | `src/MyApp/` | .NET 10 RESTful API, Clean Architecture |
+| **Frontend** | `frontend/` | Angular 21 UI, Material Design, Signals |
+| **Database** | `src/MyApp/TaskManagerPro.db` | SQLite (dev) |
+| **Tests** | `tests/` | 22+ integration tests |
+
+## Documentation
+
+### 🇬🇧 English
+- **[Backend Setup](src/MyApp/README.md)** - .NET configuration, API endpoints, architecture
+- **[Frontend Setup](frontend/README.md)** - Angular build, development server, components
+- **[Database Setup](DATABASE_SETUP.md)** - Database initialization, seeding, management
+- **[Testing Guide](tests/README.md)** - Running tests, test structure, patterns
+
+### 🇪🇸 Español
+- **[Setup del Backend](src/MyApp/README.es.md)** - Configuración de .NET, endpoints, arquitectura
+- **[Setup del Frontend](frontend/README.es.md)** - Build de Angular, servidor, componentes
+- **[Configuración de BD](DATABASE_SETUP.es.md)** - Inicialización, carga, gestión de datos
+- **[Guía de Testing](tests/README.es.md)** - Ejecutar tests, estructura, patrones
 
 ## Technology Stack
 
 | Layer | Technology |
 |-------|-----------|
-| **Backend** | .NET 10, ASP.NET Core, Entity Framework Core |
+| **Backend** | .NET 10, ASP.NET Core, Entity Framework Core, JWT |
 | **Frontend** | Angular 21, Angular Material, TypeScript, Signals |
-| **Database** | SQLite (dev), SQL Server (production) |
-| **Authentication** | JWT Bearer Tokens |
-| **Validation** | FluentValidation, Angular Reactive Forms |
-| **Logging** | Serilog |
-| **Export** | System.Text.Json, System.Xml, Ical.Net |
-
-## Testing
-
-### Run Integration Tests
-
-```bash
-# From repository root
-dotnet test
-```
-
-Expected: **22/22 tests passing** ✓
-
-### Manual Testing
-
-1. **Register**: Create a new user account
-2. **Create Task**: Add a task with title, description, dates, and priority
-3. **Add Subtasks**: Create subtasks to break down the work
-4. **Add Milestones**: Define important checkpoints
-5. **Export**: Download milestones in JSON, XML, or iCal format
-6. **Update**: Edit tasks and track progress
-7. **Delete**: Remove completed tasks
-
-## Database Management
-
-### Quick Start with Example Database
-```bash
-cd src/MyApp
-cp ../../TaskManagerPro.db.example ./TaskManagerPro.db
-dotnet run
-```
-
-### Add Data to Database
-
-**Method 1: Through the Web UI**
-- Register a user and use the application interface
-
-**Method 2: Through the API**
-- Use curl or Postman to create tasks via REST API
-
-**Method 3: Automatic Seed Data**
-- Data is automatically loaded in Development mode
-
-See [DATABASE_SETUP.md](DATABASE_SETUP.md) for detailed instructions and examples.
-
-### Clear Database
-
-```bash
-# Option 1: Delete and recreate from example
-cd src/MyApp
-rm TaskManagerPro.db
-cp ../../TaskManagerPro.db.example ./TaskManagerPro.db
-
-# Option 2: Reset completely (fresh database)
-rm TaskManagerPro.db TaskManagerPro.db-shm TaskManagerPro.db-wal 2>/dev/null
-dotnet run
-```
-
-See [DATABASE_SETUP.md](DATABASE_SETUP.md) for more options and detailed cleanup instructions.
-
-## Security Features
-
-✅ **Authentication**
-- JWT Bearer tokens with configurable expiry
-- Secure password hashing (BCrypt)
-- Automatic token validation on all protected endpoints
-
-✅ **Authorization**
-- User-scoped data access (users only see their own data)
-- Permission validation on all operations
-- Multi-tenancy enforcement at database level
-
-✅ **Data Protection**
-- Soft delete (data not permanently removed)
-- Proper error handling (no schema leakage)
-- Environment variable secrets management
-- CORS policy for frontend access
-
-## Configuration
-
-### Development
-
-Backend configuration: `src/MyApp/appsettings.Development.json`
-- JWT key: Default development key
-- Database: Local SQLite file (`TaskManagerPro.db`)
-- Logging: Information level
-- Seed data: Auto-loaded on startup
-
-### Production
-
-Set environment variables:
-```bash
-JWT_KEY="your-256-bit-secret-key"
-ASPNETCORE_ENVIRONMENT="Production"
-```
-
-Database: SQL Server or other production database via connection string.
-
-## Troubleshooting
-
-### Port Already in Use
-```bash
-# Backend (port 5141)
-lsof -i :5141              # macOS/Linux
-netstat -ano | findstr :5141  # Windows
-
-# Frontend (port 4200)
-lsof -i :4200
-```
-
-### Database Issues
-See [DATABASE_SETUP.md](DATABASE_SETUP.md) for detailed troubleshooting.
-
-### Build Errors
-```bash
-# Backend
-cd src/MyApp
-dotnet clean
-dotnet build
-
-# Frontend
-cd frontend
-rm -rf node_modules
-npm install
-npm start
-```
-
-## File Organization Notes
-
-⚠️ **Database Files**: `TaskManagerPro.db` and WAL files (`*.db-shm`, `*.db-wal`) are **NOT committed to Git**.
-- They are created locally when you first run the application
-- Use `TaskManagerPro.db.example` included in Git for a quick start
-- Each developer has their own local database instance
-- See [DATABASE_SETUP.md](DATABASE_SETUP.md) for details
-
-## Contributing
-
-1. Create a feature branch: `git checkout -b feature/your-feature`
-2. Make your changes
-3. Run tests: `dotnet test`
-4. Commit with clear message: `git commit -m "feat: your feature"`
-5. Push and create a Pull Request
+| **Database** | SQLite (development), SQL Server (production) |
+| **Testing** | xUnit, FluentAssertions, In-Memory SQLite |
 
 ## License
 
-This project is provided as-is for educational and demonstration purposes.
+Provided as-is for educational and demonstration purposes.
 
 ## Support
 
-For issues, questions, or suggestions:
-1. Check [DATABASE_SETUP.md](DATABASE_SETUP.md) for database questions
-2. Review integration tests for usage examples
-3. Check API responses for error details
-
----
-
-**Built with** ❤️ using .NET 10 and Angular 21
+For detailed setup and troubleshooting:
+- **Backend** → [Backend README](src/MyApp/README.md)
+- **Frontend** → [Frontend README](frontend/README.md)  
+- **Database** → [Database Setup](DATABASE_SETUP.md)
+- **Tests** → [Testing Guide](tests/README.md)
