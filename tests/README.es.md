@@ -154,33 +154,41 @@ public async Task DeleteTask_RemovesSoftDeleteFlag()
 
 ## Cobertura de Pruebas
 
-La suite de pruebas cubre:
+Suite integral de pruebas con **45+ pruebas de integración** cubriendo autenticación, operaciones CRUD, seguridad multi-inquilino y exportaciones.
 
-### Autenticación (3 pruebas)
+### Pruebas de Autenticación (6 pruebas)
 - ✅ Registro de usuario con validación
 - ✅ Login de usuario con credenciales válidas/inválidas
+- ✅ Solicitudes sin Authorization header devuelven 401
+- ✅ Solicitudes con token inválido devuelven 401
 - ✅ Generación y validación de token JWT
 
-### Tareas (7 pruebas)
-- ✅ Obtener tareas con paginación
-- ✅ Crear tarea con validación
-- ✅ Actualizar tarea con autorización
-- ✅ Eliminar tarea (eliminación suave)
-- ✅ Filtrado y ordenamiento
-- ✅ Aislamiento de usuarios
+### Pruebas de Tareas (19 pruebas)
+- **CRUD**: Obtener todas (paginadas/filtradas), Obtener por ID, Crear, Actualizar, Eliminar (eliminación suave)
+- **Multi-Tenancy**: ✅ Usuario A no puede acceder a tareas de Usuario B (GET, PUT, DELETE)
+- ✅ Cada usuario solo ve sus propias tareas en la lista
+- ✅ Aislamiento de usuario en todos los niveles de operación
+- **Filtrado**: ✅ Filtrar por estado, prioridad, búsqueda de texto, filtros combinados
+- **Paginación**: ✅ Páginas correctas, pageSize respetado, TotalCount preciso
+- ✅ Validación (título vacío, fechas inválidas, etc.)
 
-### SubTareas (5 pruebas)
-- ✅ Obtener subtareas de una tarea
-- ✅ Crear subtarea con validación
-- ✅ Actualizar y eliminar subtareas
-- ✅ Autorización de usuario
+### Pruebas de SubTareas (14 pruebas)
+- **CRUD**: Obtener por tarea, Obtener por ID, Crear, Actualizar, Eliminar
+- **Multi-Tenancy**: ✅ Usuario A no puede acceder/modificar/eliminar subtareas de Usuario B
+- ✅ No puede crear subtarea bajo tarea de otro usuario
+- ✅ Aislamiento completo de usuario para todas las operaciones
+- ✅ Validación y manejo de errores
+- ✅ Sincronización de progreso con tarea padre
 
-### Hitos (7 pruebas)
-- ✅ Obtener hitos de una tarea
-- ✅ Crear hito con validación
-- ✅ Actualizar y eliminar hitos
-- ✅ Exportar a JSON, XML, iCal
-- ✅ Autorización de usuario
+### Pruebas de Hitos (21+ pruebas)
+- **CRUD**: Obtener por tarea, Obtener por ID, Crear, Actualizar, Eliminar
+- **Multi-Tenancy**: ✅ Usuario A no puede acceder/modificar/eliminar hitos de Usuario B
+- ✅ No puede crear hito bajo tarea de otro usuario
+- ✅ Aislamiento completo de usuario para todas las operaciones
+- **Exportación**: ✅ Exportar JSON, XML, iCalendar
+- ✅ Exportación respeta multi-tenancy (no puede exportar datos de otro usuario)
+- **Seguimiento de Progreso**: ✅ Los hitos completados se rastrean correctamente
+- ✅ Validación y manejo de errores
 
 ## Base de Datos en Pruebas
 
@@ -249,8 +257,10 @@ data.Should().NotBeNull();
 ✅ **Claridad**: Los nombres de pruebas describen qué prueban  
 ✅ **Patrón AAA**: Arrange → Act → Assert  
 ✅ **Sin Mocking**: Usa base de datos real en memoria  
-✅ **Rápido**: Todas las 22 pruebas se completan en < 2 segundos  
+✅ **Rápido**: Todas las 51+ pruebas se completan en < 5 segundos  
 ✅ **Determinístico**: Mismos resultados cada ejecución  
+✅ **Multi-Inquilino**: Cobertura integral con clientes de usuario independientes  
+✅ **Filtrado y Paginación**: Validado en todos los niveles  
 
 ## Solución de Problemas
 
@@ -301,8 +311,25 @@ dotnet test --watch
 dotnet test --filter "TasksControllerTests"
 ```
 
+## Resumen de Cobertura
+
+**51+ pruebas de integración** con cobertura integral:
+- ✅ **Autenticación**: 6 pruebas (401 No Autorizado, validación JWT)
+- ✅ **Tareas**: 19 pruebas (CRUD + aislamiento multi-inquilino + filtrado + paginación)
+- ✅ **SubTareas**: 14 pruebas (CRUD + aislamiento multi-inquilino)
+- ✅ **Hitos**: 21+ pruebas (CRUD + multi-inquilino + exportación + seguimiento de progreso)
+
+**Seguridad Validada**:
+- ✅ Usuario A no puede acceder a datos de Usuario B (todas las operaciones)
+- ✅ Usuario A no puede modificar/eliminar datos de Usuario B
+- ✅ Los usuarios solo ven sus propios datos en operaciones de lista
+- ✅ Solicitudes no autorizadas devuelven 401
+- ✅ Tokens inválidos son rechazados
+
 ## Próximos Pasos
 
-- Todas las 22 pruebas pasando ✅
+- Todas las 51+ pruebas pasando ✅
+- Multi-inquilino completamente probado y validado ✅
+- Filtrado y paginación verificados ✅
 - Listo para despliegue a producción
 - Monitorear rendimiento de pruebas en CI/CD

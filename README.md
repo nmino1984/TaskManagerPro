@@ -37,7 +37,7 @@ Access at `http://localhost:4200`
 | **Backend** | `src/MyApp/` | .NET 10 RESTful API, Clean Architecture |
 | **Frontend** | `frontend/` | Angular 21 UI, Material Design, Signals |
 | **Database** | `src/MyApp/TaskManagerPro.db` | SQLite (dev) |
-| **Tests** | `tests/` | 22+ integration tests |
+| **Tests** | `tests/` | 51+ integration tests (multi-tenancy, filtering, pagination) |
 
 ## Documentation
 

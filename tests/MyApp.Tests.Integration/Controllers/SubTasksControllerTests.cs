@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.Http.Json;
 using FluentAssertions;
+using MyApp.Application.DTOs.MyTask;
 using MyApp.Application.DTOs.SubTask;
 using MyApp.Domain.Enums;
 using MyApp.Tests.Integration.Infrastructure;
@@ -168,5 +169,161 @@ public class SubTasksControllerTests : IntegrationTestBase, IClassFixture<Custom
         var response = await Client.DeleteAsync("/api/v1/subtasks/99999");
 
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+    }
+
+    // ===== AUTHENTICATION TESTS =====
+
+    [Fact]
+    public async Task GetByTask_WithoutAuthorizationHeader_Returns401Unauthorized()
+    {
+        var client = Factory.CreateClient();
+
+        var response = await client.GetAsync("/api/v1/subtasks/bytask/1");
+
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
+    public async Task Create_WithoutAuthorizationHeader_Returns401Unauthorized()
+    {
+        var client = Factory.CreateClient();
+        var body = new SubTaskCreateDto { TaskId = 1, Description = "Unauthorized" };
+
+        var response = await client.PostAsJsonAsync("/api/v1/subtasks", body, JsonOptions);
+
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    // ===== MULTI-TENANCY TESTS =====
+
+    [Fact]
+    public async Task GetByTask_DifferentUserCannotAccessOthersSubtasks()
+    {
+        // User 1: Create task and subtask
+        var (user1Client, _, _) = await CreateAuthenticatedClientAsync();
+        var user1Task = await CreateTaskViaClient(user1Client, "User1 Task");
+        var user1Subtask = await CreateSubtaskViaClient(user1Client, user1Task.MyTaskId, "User1 Subtask");
+
+        // User 2: Try to get User 1's subtasks
+        var (user2Client, _, _) = await CreateAuthenticatedClientAsync();
+        var response = await user2Client.GetAsync($"/api/v1/subtasks/bytask/{user1Task.MyTaskId}");
+
+        // Should return 404 (task not found from user 2's perspective)
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+    }
+
+    [Fact]
+    public async Task GetById_DifferentUserCannotAccessOthersSubtask()
+    {
+        // User 1: Create task and subtask
+        var (user1Client, _, _) = await CreateAuthenticatedClientAsync();
+        var user1Task = await CreateTaskViaClient(user1Client, "User1 Task");
+        var user1Subtask = await CreateSubtaskViaClient(user1Client, user1Task.MyTaskId, "User1 Subtask");
+
+        // User 2: Try to get User 1's subtask
+        var (user2Client, _, _) = await CreateAuthenticatedClientAsync();
+        var response = await user2Client.GetAsync($"/api/v1/subtasks/{user1Subtask.SubTaskId}");
+
+        // Should return 404
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+    }
+
+    [Fact]
+    public async Task Create_CannotCreateSubtaskForOthersTask()
+    {
+        // User 1: Create task
+        var (user1Client, _, _) = await CreateAuthenticatedClientAsync();
+        var user1Task = await CreateTaskViaClient(user1Client, "User1 Task");
+
+        // User 2: Try to create subtask under User 1's task
+        var (user2Client, _, _) = await CreateAuthenticatedClientAsync();
+        var body = new SubTaskCreateDto
+        {
+            TaskId = user1Task.MyTaskId,
+            Description = "User2 tries to hijack User1's task"
+        };
+
+        var response = await user2Client.PostAsJsonAsync("/api/v1/subtasks", body, JsonOptions);
+
+        // Should fail with 404 (task not found from user 2's perspective)
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+    }
+
+    [Fact]
+    public async Task Update_DifferentUserCannotModifyOthersSubtask()
+    {
+        // User 1: Create task and subtask
+        var (user1Client, _, _) = await CreateAuthenticatedClientAsync();
+        var user1Task = await CreateTaskViaClient(user1Client, "User1 Task");
+        var user1Subtask = await CreateSubtaskViaClient(user1Client, user1Task.MyTaskId, "Original Subtask");
+
+        // User 2: Try to update User 1's subtask
+        var (user2Client, _, _) = await CreateAuthenticatedClientAsync();
+        var updateBody = new SubTaskUpdateDto
+        {
+            Description = "Hacked subtask",
+            Status = SubTaskStatus.Completed,
+            Notes = "Malicious edit"
+        };
+
+        var response = await user2Client.PutAsJsonAsync($"/api/v1/subtasks/{user1Subtask.SubTaskId}", updateBody, JsonOptions);
+
+        // Should return 404
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+
+        // Verify original is unchanged
+        var verifyResponse = await user1Client.GetAsync($"/api/v1/subtasks/{user1Subtask.SubTaskId}");
+        var original = await verifyResponse.Content.ReadFromJsonAsync<SubTaskResponseDto>(JsonOptions);
+        original!.Description.Should().Be("Original Subtask");
+        original.Status.Should().Be(SubTaskStatus.Pending);
+    }
+
+    [Fact]
+    public async Task Delete_DifferentUserCannotDeleteOthersSubtask()
+    {
+        // User 1: Create task and subtask
+        var (user1Client, _, _) = await CreateAuthenticatedClientAsync();
+        var user1Task = await CreateTaskViaClient(user1Client, "User1 Task");
+        var user1Subtask = await CreateSubtaskViaClient(user1Client, user1Task.MyTaskId, "Protected Subtask");
+
+        // User 2: Try to delete User 1's subtask
+        var (user2Client, _, _) = await CreateAuthenticatedClientAsync();
+        var deleteResponse = await user2Client.DeleteAsync($"/api/v1/subtasks/{user1Subtask.SubTaskId}");
+
+        // Should return 404
+        deleteResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
+
+        // Verify subtask still exists for User 1
+        var verifyResponse = await user1Client.GetAsync($"/api/v1/subtasks/{user1Subtask.SubTaskId}");
+        verifyResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+    }
+
+    // ===== HELPER METHODS =====
+
+    private async Task<MyTaskResponseDto> CreateTaskViaClient(HttpClient client, string title)
+    {
+        var body = new MyTaskCreateDto
+        {
+            Title = title,
+            Description = "Test task",
+            StartDate = DateTime.UtcNow,
+            EndDate = DateTime.UtcNow.AddDays(10),
+            Priority = TaskPriority.Medium
+        };
+        var response = await client.PostAsJsonAsync("/api/v1/tasks", body, JsonOptions);
+        response.EnsureSuccessStatusCode();
+        return (await response.Content.ReadFromJsonAsync<MyTaskResponseDto>(JsonOptions))!;
+    }
+
+    private async Task<SubTaskResponseDto> CreateSubtaskViaClient(HttpClient client, int taskId, string description)
+    {
+        var body = new SubTaskCreateDto
+        {
+            TaskId = taskId,
+            Description = description
+        };
+        var response = await client.PostAsJsonAsync("/api/v1/subtasks", body, JsonOptions);
+        response.EnsureSuccessStatusCode();
+        return (await response.Content.ReadFromJsonAsync<SubTaskResponseDto>(JsonOptions))!;
     }
 }
