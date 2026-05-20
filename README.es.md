@@ -25,6 +25,14 @@ Un sistema completo de gestión de tareas con soporte para tareas, subtareas e h
 - Exportar hitos a **XML** (formato estándar)
 - Exportar hitos a **iCal** (integración con calendario: Google Calendar, Outlook, Apple Calendar)
 
+✅ **Notificaciones Asincrónicas**
+- Trabajos en segundo plano con Hangfire
+- Notificaciones cuando se crean tareas
+- Notificaciones cuando se completan tareas
+- Verificación automática cada hora de tareas vencidas
+- Badge en tiempo real en la barra de navegación con contador de no leídas
+- Menú desplegable con notificaciones recientes
+
 ✅ **Multi-Usuario y Seguridad**
 - Registro de usuarios y autenticación JWT
 - Cada usuario ve solo sus propios datos (multi-inquilino)
@@ -112,6 +120,12 @@ El frontend se iniciará en `http://localhost:4200`
 - `GET /api/v1/milestones/bytask/{taskId}/export/xml` - Exportar como XML
 - `GET /api/v1/milestones/bytask/{taskId}/export/ical` - Exportar como iCalendar (.ics)
 
+### Notificaciones
+- `GET /api/v1/notifications` - Obtener todas las notificaciones del usuario actual
+- `GET /api/v1/notifications/unread` - Obtener número de notificaciones no leídas
+- `PATCH /api/v1/notifications/{id}/read` - Marcar una notificación como leída
+- `PATCH /api/v1/notifications/read-all` - Marcar todas las notificaciones como leídas
+
 **Todos los puntos de acceso requieren autenticación JWT** (excepto registro e inicio de sesión)
 
 ## Estructura del Proyecto
@@ -144,13 +158,23 @@ TaskManagerPro/
 
 | Capa | Tecnología |
 |------|-----------|
-| **Backend** | .NET 10, ASP.NET Core, Entity Framework Core |
+| **Backend** | .NET 10, ASP.NET Core, Entity Framework Core, Hangfire |
 | **Frontend** | Angular 21, Angular Material, TypeScript, Signals |
 | **Base de Datos** | SQLite (desarrollo), SQL Server (producción) |
+| **Trabajos en Segundo Plano** | Hangfire 1.8.6 con MemoryStorage (dev) / SqlServer (prod) |
 | **Autenticación** | JWT Bearer Tokens |
 | **Validación** | FluentValidation, Angular Reactive Forms |
 | **Logging** | Serilog |
 | **Exportación** | System.Text.Json, System.Xml, Ical.Net |
+
+## Trabajos en Segundo Plano (Hangfire)
+
+Las notificaciones asincrónicas se ejecutan a través de trabajos en segundo plano de Hangfire:
+- **Tarea Creada**: Se genera una notificación cuando se crea una nueva tarea
+- **Tarea Completada**: Se genera una notificación cuando el estado de una tarea cambia a Completada
+- **Verificación de Tareas Vencidas**: Trabajo recurrente (cada hora) para detectar y notificar tareas vencidas
+
+**Panel de Control**: Accede a `http://localhost:5141/hangfire` en desarrollo para monitorear trabajos.
 
 ## Pruebas
 

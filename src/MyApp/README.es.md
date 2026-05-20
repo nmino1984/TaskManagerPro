@@ -83,7 +83,22 @@ dotnet ef database update
 - `GET /api/v1/milestones/bytask/{taskId}/export/xml` - Exportar como XML
 - `GET /api/v1/milestones/bytask/{taskId}/export/ical` - Exportar como iCalendar (.ics)
 
+### Notificaciones (Asincrónicas)
+- `GET /api/v1/notifications` - Obtener todas las notificaciones del usuario actual
+- `GET /api/v1/notifications/unread` - Obtener cantidad de notificaciones no leídas
+- `PATCH /api/v1/notifications/{id}/read` - Marcar una notificación como leída
+- `PATCH /api/v1/notifications/read-all` - Marcar todas las notificaciones como leídas
+
 **Todos los puntos de acceso requieren autenticación JWT Bearer** (excepto `/auth/register` y `/auth/login`)
+
+## Trabajos en Segundo Plano (Hangfire)
+
+Las notificaciones asincrónicas se ejecutan mediante trabajos en segundo plano de Hangfire:
+- **Task Created**: Se genera una notificación cuando se crea una nueva tarea
+- **Task Completed**: Se genera una notificación cuando el estado de una tarea cambia a Completed
+- **Task Overdue Check**: Trabajo recurrente (cada hora) para detectar y notificar tareas vencidas
+
+**Panel de Control**: Accede a `http://localhost:5141/hangfire` en desarrollo para monitorear trabajos.
 
 ## Estructura del Proyecto
 
@@ -248,6 +263,10 @@ Paquetes NuGet clave:
 - **Ical.Net**: Formato de exportación iCalendar
 - **Serilog**: Logging estructurado
 - **AutoMapper**: Mapeo de objetos
+- **Hangfire.Core**: Programación de trabajos en segundo plano
+- **Hangfire.AspNetCore**: Integración con ASP.NET Core
+- **Hangfire.MemoryStorage**: Almacenamiento en memoria (desarrollo)
+- **Hangfire.SqlServer**: Almacenamiento en SQL Server (producción)
 - **xUnit**: Framework de pruebas
 - **FluentAssertions**: Aserciones de pruebas
 

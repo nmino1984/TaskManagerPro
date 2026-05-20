@@ -1,6 +1,6 @@
-# TaskManagerPro - Aplicación Frontend
+﻿# TaskManagerPro - Aplicación Frontend
 
-Una interfaz moderna y responsiva para gestión de tareas construida con Angular 21 y Angular Material. Incluye gestión de estado basada en señales, formularios reactivos y componentes Material Design.
+Una interfaz de gestión de tareas responsiva y moderna construida con Angular 21 y Angular Material. Presenta gestión de estado basada en signals, formularios reactivos y componentes Material Design.
 
 ## Inicio Rápido
 
@@ -16,7 +16,7 @@ npm install
 npm start
 ```
 
-La aplicación se ejecutará en `http://localhost:4200` y se recargará automáticamente al hacer cambios.
+La aplicación se ejecutará en `http://localhost:4200` y se recargará automáticamente en los cambios.
 
 ## Comandos de Desarrollo
 
@@ -24,10 +24,10 @@ La aplicación se ejecutará en `http://localhost:4200` y se recargará automát
 # Iniciar servidor de desarrollo
 npm start
 
-# Construir para producción
+# Compilar para producción
 npm run build
 
-# Ejecutar construcción de producción localmente
+# Ejecutar compilación de producción localmente
 npm run serve:ssr
 
 # Ejecutar linter
@@ -39,7 +39,7 @@ npm run format
 # Ejecutar pruebas unitarias (si está configurado)
 npm test
 
-# Solo construir (sin servir)
+# Solo compilar (sin servir)
 ng build
 ```
 
@@ -51,9 +51,9 @@ frontend/
 │   ├── app/
 │   │   ├── core/
 │   │   │   ├── models/              # Interfaces y enums de TypeScript
-│   │   │   ├── services/            # Servicios HTTP (tareas, hitos, auth)
+│   │   │   ├── services/            # Servicios HTTP (tareas, hitos, autenticación)
 │   │   │   ├── interceptors/        # Interceptores HTTP (JWT, manejo de errores)
-│   │   │   └── guards/              # Guards de ruta (autenticación)
+│   │   │   └── guards/              # Guardias de rutas (autenticación)
 │   │   ├── features/
 │   │   │   ├── auth/                # Componentes de Login/Registro
 │   │   │   ├── tasks/               # Componentes de lista y detalle de tareas
@@ -61,12 +61,12 @@ frontend/
 │   │   │   ├── subtasks/            # Componentes de subtareas
 │   │   │   └── milestones/          # Componentes de hitos
 │   │   ├── shared/
-│   │   │   ├── components/          # Componentes reutilizables
+│   │   │   ├── components/          # Componentes UI reutilizables
 │   │   │   └── pipes/               # Pipes personalizados
 │   │   ├── app.component.*          # Componente raíz
 │   │   ├── app.routes.ts            # Configuración de rutas
 │   │   └── app.config.ts            # Configuración de la aplicación
-│   ├── environments/                # Configuraciones de entorno (dev, prod)
+│   ├── environments/                # Configuración de entornos (dev, prod)
 │   ├── index.html
 │   ├── styles.scss
 │   └── main.ts
@@ -79,56 +79,70 @@ frontend/
 ## Arquitectura
 
 ### Gestión de Estado
-- **Angular Signals**: Gestión de estado reactivo para señales de componentes
-- **Sin RxJS Subjects**: Manejo de estado limpio y predecible
+- **Angular Signals**: Gestión de estado reactivo para signals de componentes
+- **Sin RxJS Subjects**: Gestión de estado limpia y predecible
 - **Change Detection OnPush**: Optimización de rendimiento en toda la aplicación
 
 ### Servicios
 Todos los servicios siguen el mismo patrón:
 - Principio de responsabilidad única
 - HttpClient para comunicación con API
-- Tipos de retorno Observable
+- Tipos de retorno Observable (o basados en Signals para polling)
 - Manejo de errores vía interceptores
 
+Servicios clave:
+- **AuthService**: Autenticación de usuarios y gestión de tokens JWT
+- **TaskService**: CRUD y consultas de tareas
+- **SubTaskService**: Gestión de subtareas
+- **MilestoneService**: Operaciones de hitos y exportaciones
+- **NotificationService**: Polling de notificaciones, lectura y gestión de estado (basado en Signals)
+
 ### Componentes
-- **Componentes Standalone**: Sin dependencias NgModule
+- **Componentes Standalone**: Sin dependencias de NgModule
 - **Formularios Reactivos**: Controles de formulario tipados con validación
-- **Material Design**: Interfaz consistente con Angular Material
+- **Material Design**: UI consistente con Angular Material
 - **MatDialog**: Modales para operaciones de crear/editar
 
 ### Capa HTTP
-- **JWT Interceptor**: Agrega automáticamente token Bearer a solicitudes
-- **Error Interceptor**: Manejo centralizado de errores con notificaciones snackbar
-- **URLs basadas en entorno**: Puntos finales de API de desarrollo vs producción
+- **JWT Interceptor**: Añade automáticamente el token Bearer a las solicitudes
+- **Error Interceptor**: Manejo de errores centralizado con notificaciones snackbar
+- **URLs basadas en entorno**: Puntos de acceso de API para desarrollo vs producción
 
-## Características Principales
+## Características Clave
 
 ### Autenticación
 - Registro e inicio de sesión de usuarios
-- Almacenamiento de token JWT (localStorage)
-- Inyección automática de token en solicitudes HTTP
-- Funcionalidad de login/logout
+- Almacenamiento de tokens JWT (localStorage)
+- Inyección automática de tokens en solicitudes HTTP
+- Funcionalidad de inicio/cierre de sesión
 
 ### Tareas
-- Operaciones CRUD (Crear, Leer, Actualizar, Eliminar)
+- Operaciones de crear, leer, actualizar, eliminar (CRUD)
 - Paginación y filtrado
-- Niveles de prioridad (Baja, Media, Alta)
-- Seguimiento de estado (No Iniciada, En Progreso, Completada, Retrasada)
+- Niveles de prioridad (Bajo, Medio, Alto)
+- Seguimiento de estado (No iniciada, En progreso, Completada, Retrasada)
 - Soporte de eliminación suave
 
 ### SubTareas
-- Desglosar tareas en partes manejables
+- Desglosar tareas en piezas manejables
 - Rastrear estado de completación
 - Cálculo automático de progreso
 - Operaciones CRUD completas
 
 ### Hitos
 - Definir puntos de control del proyecto
-- Rastrear estado de hitos
+- Rastrear estado del hito
 - Exportar a múltiples formatos:
   - **JSON**: Para integración de datos
   - **XML**: Para integración de sistemas
   - **iCalendar**: Para aplicaciones de calendario (Google Calendar, Outlook, Apple Calendar)
+
+### Notificaciones
+- **Badge en Tiempo Real**: Icono en la barra de navegación con contador de no leídas
+- **Menú Desplegable de Notificaciones**: Haz clic en el icono de campana para ver notificaciones recientes
+- **Actualizaciones Asincrónicas**: Notificaciones consultadas cada 30 segundos
+- **Marcar como Leído**: Marcado individual o en lote de notificaciones
+- **Disparadores de Eventos**: Notificaciones para creación de tareas, completación y alertas de vencimiento
 
 ## Componentes Material Design Utilizados
 
@@ -138,11 +152,15 @@ Todos los servicios siguen el mismo patrón:
 - **MatButton**: Botones de acción
 - **MatIcon**: Iconos en toda la aplicación
 - **MatCard**: Diseños de tarjeta
-- **MatDatepicker**: Selección de fechas
+- **MatDatepicker**: Selección de fecha
 - **MatSelect**: Selección desplegable
-- **MatSnackBar**: Notificaciones toast
+- **MatSnackBar**: Notificaciones tipo toast
+- **MatBadge**: Badge de contador de notificaciones en barra de navegación
+- **MatMenu**: Menú desplegable para notificaciones
+- **MatToolbar**: Barra de encabezado y navegación
+- **MatTooltip**: Tooltips al pasar el ratón
 
-## Flujo de Desarrollo
+## Flujo de Trabajo de Desarrollo
 
 ### Crear un Nuevo Componente
 
@@ -152,7 +170,7 @@ ng generate component features/tu-caracteristica/tu-componente
 
 El componente será:
 - Standalone (sin NgModule)
-- Usando change detection OnPush
+- Usando detección de cambios OnPush
 - Con hoja de estilos SCSS
 
 ### Agregar un Nuevo Servicio
@@ -163,7 +181,7 @@ ng generate service core/services/tu-servicio
 
 Los servicios deben:
 - Depender de HttpClient
-- Retornar Observables
+- Devolver Observables
 - Manejar comunicación con API
 
 ### Mejores Prácticas de Formularios
@@ -175,19 +193,19 @@ form = new FormGroup({
   description: new FormControl('', Validators.required),
 });
 
-// Acceder a valores de control tipado
+// Acceder a valores de control tipados
 this.form.value.title
 ```
 
 ## Configuración de Entorno
 
-### Development (`environment.ts`)
+### Desarrollo (`environment.ts`)
 ```typescript
 apiUrl: 'http://localhost:5141/api/v1'
 production: false
 ```
 
-### Production (`environment.prod.ts`)
+### Producción (`environment.prod.ts`)
 ```typescript
 apiUrl: '/api/v1'
 production: true
@@ -197,9 +215,9 @@ production: true
 
 Los errores se manejan centralmente vía `error.interceptor.ts`:
 - Errores de red → Notificación snackbar
-- 401/403 No Autorizado → Redirigir a login
+- 401/403 No autorizado → Redirigir a inicio de sesión
 - Errores 4xx/5xx → Mostrar mensaje de error
-- Reintentos automáticos para ciertos errores
+- Reintento automático para ciertos errores
 
 ## Pruebas
 
@@ -216,22 +234,22 @@ it('should load tasks', fakeAsync(() => {
 
 ## Optimización de Rendimiento
 
-- **Change Detection OnPush**: Solo se actualiza cuando cambian las entradas
+- **OnPush Change Detection**: Solo actualiza cuando las entradas cambian
 - **Lazy Loading**: Características cargadas bajo demanda vía routing
-- **Signals**: Re-renders mínimos en comparación con RxJS
-- **Production Build**: Minificación, eliminación de código no utilizado, empaquetamiento
+- **Signals**: Menos re-renders comparado con RxJS
+- **Production Build**: Minificación, tree-shaking, bundling
 
-## Salida de Construcción
+## Salida de Compilación
 
 ```bash
 npm run build
 ```
 
-Produce una construcción de producción optimizada en el directorio `dist/`:
+Produce compilación de producción optimizada en directorio `dist/`:
 - JavaScript minificado
 - CSS optimizado
 - Bundles de características cargadas perezosamente
-- Mapas de origen (si está habilitado)
+- Source maps (si está habilitado)
 
 ## Compatibilidad de Navegadores
 
@@ -243,15 +261,15 @@ Produce una construcción de producción optimizada en el directorio `dist/`:
 ## Estilos
 
 - **SCSS**: Para estilos de componentes y globales
-- **CSS Variables**: Para temas
-- **Material Theme**: Basado en sistema Material Design
+- **CSS Variables**: Para tematización
+- **Material Theme**: Construido sobre el sistema Material Design
 - **Responsivo**: Diseños para móvil, tablet y escritorio
 
 ## Interceptores HTTP
 
 ### JWT Interceptor
 ```typescript
-// Agrega automáticamente token a todas las solicitudes
+// Añade automáticamente token a todas las solicitudes
 Authorization: 'Bearer {token}'
 ```
 
@@ -261,6 +279,23 @@ Authorization: 'Bearer {token}'
 // Muestra notificaciones snackbar
 // Registra errores para depuración
 ```
+
+## Sistema de Notificaciones
+
+### NotificationService
+El `NotificationService` gestiona notificaciones en tiempo real con:
+- **Estado basado en Signals**: La signal `notifications` contiene la lista, `unreadCount` contiene el contador
+- **Auto-polling**: Llama al backend cada 30 segundos
+- **Carga Perezosa**: Comienza a hacer polling en login de usuario, se detiene en logout
+- **Marcar como Leído**: Operaciones individuales o en lote
+- **Manejo de Errores**: Fallos silenciosos con registro en consola
+
+### Integración en la Barra de Navegación
+- **Icono de Campana de Notificaciones**: Se muestra en el encabezado de la barra de navegación
+- **Badge de No Leídas**: Badge rojo que muestra el contador de no leídas (oculto si es 0)
+- **Menú Desplegable**: Haz clic en la campana para abrir el panel de notificaciones
+- **Notificaciones Recientes**: Muestra hasta 10 más recientes
+- **Marcar Todo**: Botón para marcar todo como leído de una vez
 
 ## Solución de Problemas
 
@@ -273,7 +308,7 @@ lsof -i :4200
 netstat -ano | findstr :4200
 ```
 
-### Dependencias No Se Instalan
+### Dependencias Sin Instalar
 ```bash
 rm -rf node_modules package-lock.json
 npm install
@@ -300,9 +335,9 @@ npm start
 
 - [Documentos Oficiales de Angular](https://angular.dev/)
 - [Documentos de Angular Material](https://material.angular.io/)
-- [Manual de TypeScript](https://www.typescriptlang.org/docs/)
+- [TypeScript Handbook](https://www.typescriptlang.org/docs/)
 - [Angular Signals](https://angular.dev/guide/signals)
 
 ## Soporte
 
-Para problemas relacionados con la API, asegúrate de que el servidor backend se esté ejecutando en la URL de API configurada.
+Para problemas relacionados con la API, asegúrate de que el servidor backend se ejecute en la URL de API configurada.
