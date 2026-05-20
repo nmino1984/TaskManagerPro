@@ -18,6 +18,12 @@ Usuarios manejan proyectos complejos que requieren múltiples niveles de organiz
 - Exportar hitos a JSON, XML e iCal
 - Integración con calendarios externos (Google Calendar, Outlook, etc.)
 
+**Notificaciones Asincrónicas** (BONUS)
+- Sistema de eventos que genera notificaciones cuando se crean/completan tareas
+- Jobs en background con Hangfire (sin bloquear API)
+- Endpoints para consultar y marcar notificaciones como leídas
+- Verificación automática de tareas vencidas cada hora
+
 **Autenticación**
 - Registro e inicio de sesión con JWT
 - Cada usuario solo ve sus propios datos
@@ -42,6 +48,9 @@ Usuarios manejan proyectos complejos que requieren múltiples niveles de organiz
 ✅ Exportación a JSON, XML e iCal funciona  
 ✅ Interfaz distingue claramente SubTask vs Milestone  
 ✅ Clean Architecture sin acoplamiento  
+✅ **[BONUS] Notificaciones asincrónicas con Hangfire implementadas**  
+✅ **[BONUS] Endpoints de notificaciones funcionan (GET, PATCH)**  
+✅ **[BONUS] Jobs automáticos para eventos de tareas y verificación de vencidas**  
 
 ---
 

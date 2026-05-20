@@ -66,6 +66,33 @@ Actualmente, usuarios tienen que usar múltiples herramientas: una para tareas, 
 - Ver todas las subtareas de una tarea
 - Ver todos los hitos de una tarea
 
+### Notificaciones Asincrónicas (BONUS FEATURE)
+
+- Sistema de notificaciones basado en eventos de tareas
+- Las notificaciones se crean de forma **asincrónica** sin bloquear al usuario
+- **Eventos que generan notificaciones:**
+  - Cuando se crea una tarea: "Nueva Tarea Creada - [título]"
+  - Cuando se completa una tarea: "Tarea Completada - [título]"
+  - Verificación automática cada hora: "Tarea Vencida - [título]" para tareas con EndDate vencida
+- **Endpoints de Notificaciones:**
+  - `GET /api/v1/notifications` - Obtener todas las notificaciones del usuario (paginadas)
+  - `GET /api/v1/notifications/unread` - Contar notificaciones no leídas
+  - `PATCH /api/v1/notifications/{id}/read` - Marcar notificación específica como leída
+  - `PATCH /api/v1/notifications/read-all` - Marcar todas las notificaciones como leídas
+- **Estructura de Notificación:**
+  - `notificationId` - ID único
+  - `userId` - Usuario propietario (aislamiento de datos)
+  - `title` - Título corto ("Nueva Tarea Creada")
+  - `message` - Detalle completo ("Se creó la tarea: Hacer reportes")
+  - `type` - Tipo de evento ("TaskCreated", "TaskCompleted", "TaskOverdue")
+  - `isRead` - Estado de lectura
+  - `createdAt` - Timestamp de creación
+- **Implementación técnica:**
+  - Usa **Hangfire** para ejecutar jobs en background
+  - No bloquea al usuario al crear/completar tareas
+  - Reintentos automáticos si un job falla
+  - Dashboard de Hangfire para monitoreo en `/hangfire`
+
 ---
 
 ## Requisitos No Funcionales
@@ -89,6 +116,9 @@ Debes pensar en:
 - ¿Cómo hacer que cada usuario solo vea sus propios datos?
 - ¿Cómo implementar múltiples exportadores sin duplicar código? (Patrón Strategy, Factory)
 - ¿Cómo manejar eliminación segura de tareas sin perder el historial?
+- ¿Cómo desacoplar la creación de notificaciones del flujo principal de tareas? (Hangfire + Background Jobs)
+- ¿Cómo garantizar que un job que falla se reintente sin perder datos?
+- ¿Cómo ejecutar verificaciones periódicas (tareas vencidas) sin bloquear la API?
 
 ### Frontend
 
@@ -121,7 +151,11 @@ Debes pensar en:
 ✅ Paginación y búsqueda funcionan  
 ✅ Código sigue Clean Architecture sin acoplamiento  
 ✅ Sin errores de consola  
-✅ UI es profesional y accesible
+✅ UI es profesional y accesible  
+✅ **[BONUS] Notificaciones se crean asincronicamente sin bloquear al usuario**  
+✅ **[BONUS] Endpoints de notificaciones funcionan (GET, PATCH)**  
+✅ **[BONUS] Verificación automática de tareas vencidas cada hora**  
+✅ **[BONUS] Hangfire dashboard accesible para monitoreo**
 
 ---
 
