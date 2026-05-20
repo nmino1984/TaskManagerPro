@@ -1,4 +1,6 @@
 using FluentValidation;
+using Hangfire;
+using Hangfire.MemoryStorage;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -9,6 +11,7 @@ using MyApp.Application.Interfaces;
 using MyApp.Application.Mapping;
 using MyApp.Application.Services;
 using MyApp.Infrastructure.Data;
+using MyApp.Infrastructure.Jobs;
 using Scalar.AspNetCore;
 using Serilog;
 using System.Text;
@@ -96,10 +99,31 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITaskService, TaskService>();
 builder.Services.AddScoped<ISubTaskService, SubTaskService>();
 builder.Services.AddScoped<IMilestoneService, MilestoneService>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
+
+builder.Services.AddHangfire(config =>
+{
+    if (builder.Environment.IsDevelopment())
+    {
+        config.UseMemoryStorage();
+    }
+    else
+    {
+        var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+        config.UseSqlServerStorage(connectionString);
+    }
+});
+builder.Services.AddHangfireServer();
+builder.Services.AddScoped<TaskNotificationJob>();
 
 var app = builder.Build();
 
 app.UseCors("Angular");
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseHangfireDashboard("/hangfire");
+}
 
 app.UseMiddleware<ErrorHandlingMiddleware>();
 
@@ -143,6 +167,11 @@ if (app.Environment.IsDevelopment())
         Log.Error(ex, "Error during database migration or seeding");
     }
 }
+
+RecurringJob.AddOrUpdate<TaskNotificationJob>(
+    "task-overdue-check",
+    j => j.TaskOverdueCheckAsync(),
+    Cron.Hourly);
 
 app.MapControllers();
 

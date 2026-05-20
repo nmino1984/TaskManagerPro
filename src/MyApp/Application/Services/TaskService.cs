@@ -1,11 +1,14 @@
 using AutoMapper;
+using Hangfire;
 using Microsoft.EntityFrameworkCore;
 using MyApp.Application.DTOs.Common;
 using MyApp.Application.DTOs.MyTask;
 using MyApp.Application.Exceptions;
 using MyApp.Application.Interfaces;
 using MyApp.Domain.Entities;
+using MyApp.Domain.Enums;
 using MyApp.Infrastructure.Data;
+using MyApp.Infrastructure.Jobs;
 
 namespace MyApp.Application.Services;
 
@@ -76,6 +79,8 @@ public class TaskService : ITaskService
         _db.MyTasks.Add(task);
         await _db.SaveChangesAsync();
 
+        BackgroundJob.Enqueue<TaskNotificationJob>(j => j.TaskCreatedAsync(task.MyTaskId, userId));
+
         return _mapper.Map<MyTaskResponseDto>(task);
     }
 
@@ -84,10 +89,14 @@ public class TaskService : ITaskService
         var task = await _db.MyTasks.FirstOrDefaultAsync(t => t.MyTaskId == id && t.UserId == userId)
             ?? throw new NotFoundException("MyTask", id);
 
+        var oldStatus = task.Status;
         _mapper.Map(dto, task);
         task.UpdatedAt = DateTime.UtcNow;
 
         await _db.SaveChangesAsync();
+
+        if (oldStatus != MyTaskStatus.Completed && task.Status == MyTaskStatus.Completed)
+            BackgroundJob.Enqueue<TaskNotificationJob>(j => j.TaskCompletedAsync(task.MyTaskId, userId));
 
         return _mapper.Map<MyTaskResponseDto>(task);
     }

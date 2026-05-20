@@ -3,6 +3,7 @@ using MyApp.Application.DTOs;
 using MyApp.Application.DTOs.MyTask;
 using MyApp.Application.DTOs.SubTask;
 using MyApp.Application.DTOs.Milestone;
+using MyApp.Application.DTOs.Notification;
 using MyApp.Domain.Entities;
 
 namespace MyApp.Application.Mapping;
@@ -61,5 +62,14 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore());
 
         CreateMap<Milestone, MilestoneResponseDto>();
+
+
+        //
+        // ─────────────────────────────────────────────
+        //   NOTIFICATION
+        // ─────────────────────────────────────────────
+        //
+
+        CreateMap<Notification, NotificationResponseDto>();
     }
 }

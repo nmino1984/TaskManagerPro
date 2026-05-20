@@ -16,6 +16,7 @@ public class AppDbContext : DbContext
     public DbSet<MyTask> MyTasks { get; set; }
     public DbSet<SubTask> SubTasks { get; set; }
     public DbSet<Milestone> Milestones { get; set; }
+    public DbSet<Notification> Notifications { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -72,5 +73,22 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<Milestone>()
             .Property(m => m.Status)
             .HasConversion(new EnumToStringConverter<MilestoneStatus>());
+
+        modelBuilder.Entity<Notification>()
+            .HasOne(n => n.User)
+            .WithMany()
+            .HasForeignKey(n => n.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Notification>()
+            .HasOne(n => n.RelatedTask)
+            .WithMany()
+            .HasForeignKey(n => n.RelatedTaskId)
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        modelBuilder.Entity<Notification>()
+            .HasIndex(n => new { n.UserId, n.IsRead, n.CreatedAt })
+            .HasDatabaseName("IX_Notifications_UserId_IsRead_CreatedAt");
     }
 }
