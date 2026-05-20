@@ -15,6 +15,7 @@ using MyApp.Infrastructure.Jobs;
 using Scalar.AspNetCore;
 using Serilog;
 using System.Text;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 Log.Logger = new LoggerConfiguration()
@@ -52,7 +53,7 @@ builder.Services.AddControllers(options =>
     })
     .AddJsonOptions(options =>
     {
-        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
     });
 
 builder.Services.AddDbContext<AppDbContext>(options =>

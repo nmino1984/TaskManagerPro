@@ -18,3 +18,74 @@ mat-toolbar {
     margin-right: 1rem;
   }
 }
+
+::ng-deep .notification-panel {
+  min-width: 320px;
+  max-width: 400px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.notification-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 16px;
+  gap: 12px;
+
+  .notification-title {
+    font-weight: 500;
+    flex: 1;
+  }
+
+  .mark-all-btn {
+    flex-shrink: 0;
+    font-size: 0.8rem;
+    height: 32px;
+  }
+}
+
+.notification-item {
+  display: flex;
+  padding: 10px 16px;
+  gap: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+
+  &.unread {
+    background: rgba(63, 81, 181, 0.05);
+  }
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.04);
+  }
+
+  .notification-icon {
+    flex-shrink: 0;
+    color: rgba(0, 0, 0, 0.54);
+  }
+
+  .notification-content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .notification-message {
+    font-size: 0.95rem;
+    color: rgba(0, 0, 0, 0.87);
+    margin-bottom: 4px;
+    word-wrap: break-word;
+  }
+
+  .notification-time {
+    font-size: 0.8rem;
+    color: rgba(0, 0, 0, 0.54);
+  }
+}
+
+.no-notifications {
+  padding: 24px 16px;
+  text-align: center;
+  color: rgba(0, 0, 0, 0.38);
+  font-size: 0.9rem;
+}
