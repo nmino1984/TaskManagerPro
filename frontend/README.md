@@ -87,8 +87,15 @@ frontend/
 All services follow the same pattern:
 - Single responsibility principle
 - HTTP client for API communication
-- Observable return types
+- Observable return types (or Signal-based for polling)
 - Error handling via interceptors
+
+Key services:
+- **AuthService**: User authentication and JWT token management
+- **TaskService**: Task CRUD and querying
+- **SubTaskService**: Subtask management
+- **MilestoneService**: Milestone operations and exports
+- **NotificationService**: Notification polling, reading, and state management (Signals-based)
 
 ### Components
 - **Standalone Components**: No NgModule dependencies
@@ -130,6 +137,13 @@ All services follow the same pattern:
   - **XML**: For system integration
   - **iCalendar**: For calendar applications (Google Calendar, Outlook, Apple Calendar)
 
+### Notifications
+- **Real-time Badge**: Navbar icon with unread notification count
+- **Notification Dropdown**: Click bell icon to view recent notifications
+- **Async Updates**: Notifications polled every 30 seconds
+- **Mark as Read**: Individual or bulk marking of notifications
+- **Event Triggers**: Notifications for task creation, completion, and overdue alerts
+
 ## Material Design Components Used
 
 - **MatTable**: Data display and pagination
@@ -141,6 +155,10 @@ All services follow the same pattern:
 - **MatDatepicker**: Date selection
 - **MatSelect**: Dropdown selection
 - **MatSnackBar**: Toast notifications
+- **MatBadge**: Notification count badge on navbar
+- **MatMenu**: Dropdown menu for notifications
+- **MatToolbar**: Header and navigation bar
+- **MatTooltip**: Hover tooltips
 
 ## Development Workflow
 
@@ -261,6 +279,23 @@ Authorization: 'Bearer {token}'
 // Shows snackbar notifications
 // Logs errors for debugging
 ```
+
+## Notification System
+
+### NotificationService
+The `NotificationService` manages real-time notifications with:
+- **Signals-based State**: `notifications` signal holds the list, `unreadCount` holds count
+- **Auto-polling**: Calls backend every 30 seconds
+- **Lazy Loading**: Starts polling on user login, stops on logout
+- **Mark as Read**: Individual or bulk operations
+- **Error Handling**: Silent failures with console logging
+
+### Navbar Integration
+- **Notification Bell Icon**: Shows in navbar header
+- **Unread Badge**: Red badge displays unread count (hidden if 0)
+- **Dropdown Menu**: Click bell to open notification panel
+- **Recent Notifications**: Shows up to 10 most recent
+- **Mark All**: Button to mark all as read at once
 
 ## Troubleshooting
 

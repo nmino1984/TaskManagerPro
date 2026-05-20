@@ -7,6 +7,8 @@ A comprehensive task management system with multi-level organization: tasks, sub
 - **Task Management**: Create, track, and organize tasks with priority levels and status tracking
 - **Subtasks**: Break down work into manageable pieces  
 - **Milestones**: Define key checkpoints and deliverables
+- **Async Notifications**: Hangfire background jobs trigger notifications on task events (creation, completion, overdue)
+- **Real-Time Notifications**: Navbar badge with unread count, dropdown menu showing recent notifications
 - **Multi-User**: JWT authentication with user isolation (multi-tenancy)
 - **Export**: Milestones to JSON, XML, or iCalendar format
 
@@ -57,9 +59,10 @@ Access at `http://localhost:4200`
 
 | Layer | Technology |
 |-------|-----------|
-| **Backend** | .NET 10, ASP.NET Core, Entity Framework Core, JWT |
+| **Backend** | .NET 10, ASP.NET Core, Entity Framework Core, JWT, Hangfire |
 | **Frontend** | Angular 21, Angular Material, TypeScript, Signals |
 | **Database** | SQLite (development), SQL Server (production) |
+| **Background Jobs** | Hangfire 1.8.6 with MemoryStorage (dev) / SqlServer (prod) |
 | **Testing** | xUnit, FluentAssertions, In-Memory SQLite |
 
 ## License

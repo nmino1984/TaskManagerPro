@@ -83,7 +83,22 @@ dotnet ef database update
 - `GET /api/v1/milestones/bytask/{taskId}/export/xml` - Export as XML
 - `GET /api/v1/milestones/bytask/{taskId}/export/ical` - Export as iCalendar (.ics)
 
+### Notifications (Async)
+- `GET /api/v1/notifications` - Get all notifications for current user
+- `GET /api/v1/notifications/unread` - Get count of unread notifications
+- `PATCH /api/v1/notifications/{id}/read` - Mark single notification as read
+- `PATCH /api/v1/notifications/read-all` - Mark all notifications as read
+
 **All endpoints require JWT Bearer token authentication** (except `/auth/register` and `/auth/login`)
+
+## Background Jobs (Hangfire)
+
+Async notifications are triggered via Hangfire background jobs:
+- **Task Created**: Notification when a new task is created
+- **Task Completed**: Notification when task status changes to Completed
+- **Task Overdue Check**: Recurring job (hourly) to detect and notify overdue tasks
+
+**Dashboard**: Access at `http://localhost:5141/hangfire` (Development only)
 
 ## Project Structure
 
@@ -248,6 +263,10 @@ Key NuGet packages:
 - **Ical.Net**: iCalendar export format
 - **Serilog**: Structured logging
 - **AutoMapper**: Object mapping
+- **Hangfire.Core**: Background job scheduling
+- **Hangfire.AspNetCore**: ASP.NET Core integration
+- **Hangfire.MemoryStorage**: In-memory job storage (development)
+- **Hangfire.SqlServer**: SQL Server job storage (production)
 - **xUnit**: Testing framework
 - **FluentAssertions**: Test assertions
 
