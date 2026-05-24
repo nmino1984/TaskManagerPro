@@ -19,6 +19,9 @@ public class MyTask
     public string UserId { get; set; } = string.Empty;
     public User User { get; set; } = null!;
 
+    public string? AssignedToUserId { get; set; }
+    public User? AssignedToUser { get; set; }
+
     public List<SubTask> SubTasks { get; set; } = new();
     public List<Milestone> Milestones { get; set; } = new();
 

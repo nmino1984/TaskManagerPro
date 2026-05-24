@@ -3,31 +3,31 @@ using Microsoft.EntityFrameworkCore;
 using MyApp.Application.DTOs.SubTask;
 using MyApp.Application.Exceptions;
 using MyApp.Application.Interfaces;
+using MyApp.Application.Interfaces.Repositories;
 using MyApp.Domain.Entities;
-using MyApp.Infrastructure.Data;
 
 namespace MyApp.Application.Services;
 
 public class SubTaskService : ISubTaskService
 {
-    private readonly AppDbContext _db;
+    private readonly IUnitOfWork _uow;
     private readonly IMapper _mapper;
 
-    public SubTaskService(AppDbContext db, IMapper mapper)
+    public SubTaskService(IUnitOfWork uow, IMapper mapper)
     {
-        _db = db;
+        _uow = uow;
         _mapper = mapper;
     }
 
     public async Task<List<SubTaskResponseDto>> GetByTaskAsync(int taskId, string userId)
     {
-        var taskExists = await _db.MyTasks
+        var taskExists = await _uow.Tasks.Query()
             .AnyAsync(t => t.MyTaskId == taskId && t.UserId == userId);
 
         if (!taskExists)
             throw new NotFoundException("MyTask", taskId);
 
-        var subtasks = await _db.SubTasks
+        var subtasks = await _uow.SubTasks.Query()
             .Where(s => s.TaskId == taskId)
             .ToListAsync();
 
@@ -36,9 +36,9 @@ public class SubTaskService : ISubTaskService
 
     public async Task<SubTaskResponseDto> GetByIdAsync(int id, string userId)
     {
-        var subtask = await _db.SubTasks
+        var subtask = await _uow.SubTasks.Query()
             .Where(s => s.SubTaskId == id)
-            .Join(_db.MyTasks, st => st.TaskId, t => t.MyTaskId, (st, t) => new { SubTask = st, Task = t })
+            .Join(_uow.Tasks.Query(), st => st.TaskId, t => t.MyTaskId, (st, t) => new { SubTask = st, Task = t })
             .FirstOrDefaultAsync(x => x.Task.UserId == userId)
             ?? throw new NotFoundException("SubTask", id);
 
@@ -47,7 +47,8 @@ public class SubTaskService : ISubTaskService
 
     public async Task<SubTaskResponseDto> CreateAsync(SubTaskCreateDto dto, string userId)
     {
-        var task = await _db.MyTasks.FirstOrDefaultAsync(t => t.MyTaskId == dto.TaskId)
+        var task = await _uow.Tasks.Query()
+            .FirstOrDefaultAsync(t => t.MyTaskId == dto.TaskId)
             ?? throw new NotFoundException("MyTask", dto.TaskId);
 
         if (task.UserId != userId)
@@ -57,8 +58,8 @@ public class SubTaskService : ISubTaskService
         subtask.CreatedAt = DateTime.UtcNow;
         subtask.UpdatedAt = DateTime.UtcNow;
 
-        _db.SubTasks.Add(subtask);
-        await _db.SaveChangesAsync();
+        await _uow.SubTasks.AddAsync(subtask);
+        await _uow.SaveChangesAsync();
 
         await SyncTaskProgressAsync(dto.TaskId);
 
@@ -67,16 +68,17 @@ public class SubTaskService : ISubTaskService
 
     public async Task<SubTaskResponseDto> UpdateAsync(int id, SubTaskUpdateDto dto, string userId)
     {
-        var subtask = await _db.SubTasks
+        var subtask = await _uow.SubTasks.Query()
             .Where(s => s.SubTaskId == id)
-            .Join(_db.MyTasks, st => st.TaskId, t => t.MyTaskId, (st, t) => new { SubTask = st, Task = t })
+            .Join(_uow.Tasks.Query(), st => st.TaskId, t => t.MyTaskId, (st, t) => new { SubTask = st, Task = t })
             .FirstOrDefaultAsync(x => x.Task.UserId == userId)
             ?? throw new NotFoundException("SubTask", id);
 
         _mapper.Map(dto, subtask.SubTask);
         subtask.SubTask.UpdatedAt = DateTime.UtcNow;
 
-        await _db.SaveChangesAsync();
+        _uow.SubTasks.Update(subtask.SubTask);
+        await _uow.SaveChangesAsync();
 
         await SyncTaskProgressAsync(subtask.SubTask.TaskId);
 
@@ -85,23 +87,23 @@ public class SubTaskService : ISubTaskService
 
     public async Task DeleteAsync(int id, string userId)
     {
-        var subtask = await _db.SubTasks
+        var subtask = await _uow.SubTasks.Query()
             .Where(s => s.SubTaskId == id)
-            .Join(_db.MyTasks, st => st.TaskId, t => t.MyTaskId, (st, t) => new { SubTask = st, Task = t })
+            .Join(_uow.Tasks.Query(), st => st.TaskId, t => t.MyTaskId, (st, t) => new { SubTask = st, Task = t })
             .FirstOrDefaultAsync(x => x.Task.UserId == userId)
             ?? throw new NotFoundException("SubTask", id);
 
         var taskId = subtask.SubTask.TaskId;
 
-        _db.SubTasks.Remove(subtask.SubTask);
-        await _db.SaveChangesAsync();
+        _uow.SubTasks.Remove(subtask.SubTask);
+        await _uow.SaveChangesAsync();
 
         await SyncTaskProgressAsync(taskId);
     }
 
     private async Task SyncTaskProgressAsync(int taskId)
     {
-        var task = await _db.MyTasks
+        var task = await _uow.Tasks.Query()
             .Include(t => t.SubTasks)
             .FirstOrDefaultAsync(t => t.MyTaskId == taskId);
 
@@ -109,6 +111,7 @@ public class SubTaskService : ISubTaskService
 
         task.UpdateProgress();
         task.UpdatedAt = DateTime.UtcNow;
-        await _db.SaveChangesAsync();
+        _uow.Tasks.Update(task);
+        await _uow.SaveChangesAsync();
     }
 }

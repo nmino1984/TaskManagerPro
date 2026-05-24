@@ -4,6 +4,7 @@ using MyApp.Application.DTOs.MyTask;
 using MyApp.Application.DTOs.SubTask;
 using MyApp.Application.DTOs.Milestone;
 using MyApp.Application.DTOs.Notification;
+using MyApp.Application.DTOs.User;
 using MyApp.Domain.Entities;
 
 namespace MyApp.Application.Mapping;
@@ -27,7 +28,8 @@ public class MappingProfile : Profile
 
         CreateMap<MyTask, MyTaskResponseDto>()
             .ForMember(dest => dest.SubTasks, opt => opt.MapFrom(src => src.SubTasks))
-            .ForMember(dest => dest.Milestones, opt => opt.MapFrom(src => src.Milestones));
+            .ForMember(dest => dest.Milestones, opt => opt.MapFrom(src => src.Milestones))
+            .ForMember(dest => dest.AssignedToUsername, opt => opt.MapFrom(src => src.AssignedToUser != null ? src.AssignedToUser.Username : null));
 
 
         //
@@ -71,5 +73,14 @@ public class MappingProfile : Profile
         //
 
         CreateMap<Notification, NotificationResponseDto>();
+
+
+        //
+        // ─────────────────────────────────────────────
+        //   USER
+        // ─────────────────────────────────────────────
+        //
+
+        CreateMap<User, UserDto>();
     }
 }

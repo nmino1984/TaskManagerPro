@@ -1,24 +1,23 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using MyApp.Application.DTOs.Auth;
 using MyApp.Application.Exceptions;
 using MyApp.Application.Interfaces;
+using MyApp.Application.Interfaces.Repositories;
 using MyApp.Domain.Entities;
-using MyApp.Infrastructure.Data;
 
 namespace MyApp.Application.Services;
 
 public class AuthService : IAuthService
 {
-    private readonly AppDbContext _db;
+    private readonly IUnitOfWork _uow;
     private readonly IConfiguration _config;
 
-    public AuthService(AppDbContext db, IConfiguration config)
+    public AuthService(IUnitOfWork uow, IConfiguration config)
     {
-        _db = db;
+        _uow = uow;
         _config = config;
     }
 
@@ -27,7 +26,6 @@ public class AuthService : IAuthService
         var key = Environment.GetEnvironmentVariable("JWT_KEY");
         if (string.IsNullOrEmpty(key))
         {
-            // Use development default if not set (matches Program.cs behavior)
             key = "development-key-that-must-be-at-least-32-characters-long!!!";
         }
         return key;
@@ -35,8 +33,7 @@ public class AuthService : IAuthService
 
     public async Task<AuthResponseDto> RegisterAsync(RegisterDto dto)
     {
-        var existingUser = await _db.Users
-            .FirstOrDefaultAsync(u => u.Username == dto.Username);
+        var existingUser = await _uow.Users.GetByUsernameAsync(dto.Username);
 
         if (existingUser != null)
             throw new ValidationException($"Username '{dto.Username}' is already taken. Please choose a different username.");
@@ -47,8 +44,8 @@ public class AuthService : IAuthService
             PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password)
         };
 
-        _db.Users.Add(user);
-        await _db.SaveChangesAsync();
+        await _uow.Users.AddAsync(user);
+        await _uow.SaveChangesAsync();
 
         var token = GenerateJwtToken(user);
         return new AuthResponseDto { Token = token, UserId = user.UserId, Username = user.Username };
@@ -56,8 +53,7 @@ public class AuthService : IAuthService
 
     public async Task<AuthResponseDto> LoginAsync(LoginDto dto)
     {
-        var user = await _db.Users
-            .FirstOrDefaultAsync(u => u.Username == dto.Username)
+        var user = await _uow.Users.GetByUsernameAsync(dto.Username)
             ?? throw new ValidationException($"Username or password is incorrect.");
 
         if (!BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash))

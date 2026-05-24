@@ -13,7 +13,9 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatTabsModule } from '@angular/material/tabs';
 
 import { TaskService } from '../../../core/services/task.service';
+import { UserService } from '../../../core/services/user.service';
 import { MyTask, TaskPriority, MyTaskStatus } from '../../../core/models/task.models';
+import { User } from '../../../core/models/user.models';
 import { SubTaskListComponent } from '../subtask-list/subtask-list.component';
 import { MilestoneListComponent } from '../milestone-list/milestone-list.component';
 
@@ -47,6 +49,7 @@ interface TaskFormData {
 })
 export class TaskFormComponent {
   private taskService = inject(TaskService);
+  private userService = inject(UserService);
   private fb = inject(FormBuilder);
   private dialogRef = inject(MatDialogRef<TaskFormComponent>);
   data: TaskFormData = inject(MAT_DIALOG_DATA);
@@ -54,6 +57,7 @@ export class TaskFormComponent {
   form: FormGroup;
   loading = signal(false);
   error = signal<string | null>(null);
+  users = signal<User[]>([]);
   TaskPriority = TaskPriority;
   MyTaskStatus = MyTaskStatus;
 
@@ -68,7 +72,8 @@ export class TaskFormComponent {
       startDate: [new Date(), Validators.required],
       endDate: [new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), Validators.required],
       priority: [TaskPriority.Medium, Validators.required],
-      status: [MyTaskStatus.NotStarted, Validators.required]
+      status: [MyTaskStatus.NotStarted, Validators.required],
+      assignedToUserId: [null]
     });
 
     if (this.data.mode === 'edit' && this.data.task) {
@@ -78,9 +83,23 @@ export class TaskFormComponent {
         startDate: new Date(this.data.task.startDate),
         endDate: new Date(this.data.task.endDate),
         priority: this.data.task.priority,
-        status: this.data.task.status
+        status: this.data.task.status,
+        assignedToUserId: this.data.task.assignedToUserId || null
       });
     }
+
+    this.loadUsers();
+  }
+
+  private loadUsers(): void {
+    this.userService.getAll().subscribe({
+      next: (response) => {
+        this.users.set(response.items);
+      },
+      error: () => {
+        // Silently fail on user load
+      }
+    });
   }
 
   onSubmit(): void {

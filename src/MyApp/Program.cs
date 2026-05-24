@@ -8,10 +8,12 @@ using Microsoft.OpenApi;
 using MyApp.Api.Filters;
 using MyApp.Api.Middleware;
 using MyApp.Application.Interfaces;
+using MyApp.Application.Interfaces.Repositories;
 using MyApp.Application.Mapping;
 using MyApp.Application.Services;
 using MyApp.Infrastructure.Data;
 using MyApp.Infrastructure.Jobs;
+using MyApp.Infrastructure.Repositories;
 using Scalar.AspNetCore;
 using Serilog;
 using System.Text;
@@ -53,6 +55,7 @@ builder.Services.AddControllers(options =>
     })
     .AddJsonOptions(options =>
     {
+        options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
     });
 
@@ -62,6 +65,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddAutoMapper(cfg => cfg.AddProfile<MappingProfile>());
 
 builder.Services.AddValidatorsFromAssemblyContaining<MyTaskValidator>();
+
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 var jwtSettings = builder.Configuration.GetSection("Jwt");
 var jwtKey = Environment.GetEnvironmentVariable("JWT_KEY")
@@ -101,6 +106,7 @@ builder.Services.AddScoped<ITaskService, TaskService>();
 builder.Services.AddScoped<ISubTaskService, SubTaskService>();
 builder.Services.AddScoped<IMilestoneService, MilestoneService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddHangfire(config =>
 {

@@ -13,14 +13,14 @@ export interface SubTaskCreateRequest {
   taskId: number;
   description: string;
   status?: SubTaskStatus;
-  dueDate?: Date;
+  dueDate?: string | null;
   notes?: string;
 }
 
 export interface SubTaskUpdateRequest {
   description: string;
   status: SubTaskStatus;
-  dueDate?: Date;
+  dueDate?: string | null;
   notes?: string;
 }
 

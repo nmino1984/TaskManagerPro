@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore;
 using MyApp.Application.DTOs.Milestone;
 using MyApp.Application.Exceptions;
 using MyApp.Application.Interfaces;
+using MyApp.Application.Interfaces.Repositories;
 using MyApp.Domain.Entities;
 using MyApp.Domain.Enums;
-using MyApp.Infrastructure.Data;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Xml.Serialization;
@@ -14,24 +14,24 @@ namespace MyApp.Application.Services;
 
 public class MilestoneService : IMilestoneService
 {
-    private readonly AppDbContext _db;
+    private readonly IUnitOfWork _uow;
     private readonly IMapper _mapper;
 
-    public MilestoneService(AppDbContext db, IMapper mapper)
+    public MilestoneService(IUnitOfWork uow, IMapper mapper)
     {
-        _db = db;
+        _uow = uow;
         _mapper = mapper;
     }
 
     public async Task<List<MilestoneResponseDto>> GetByTaskAsync(int taskId, string userId)
     {
-        var taskExists = await _db.MyTasks
+        var taskExists = await _uow.Tasks.Query()
             .AnyAsync(t => t.MyTaskId == taskId && t.UserId == userId);
 
         if (!taskExists)
             throw new NotFoundException("MyTask", taskId);
 
-        var milestones = await _db.Milestones
+        var milestones = await _uow.Milestones.Query()
             .Where(m => m.TaskId == taskId)
             .ToListAsync();
 
@@ -40,9 +40,9 @@ public class MilestoneService : IMilestoneService
 
     public async Task<MilestoneResponseDto> GetByIdAsync(int id, string userId)
     {
-        var milestone = await _db.Milestones
+        var milestone = await _uow.Milestones.Query()
             .Where(m => m.MilestoneId == id)
-            .Join(_db.MyTasks, m => m.TaskId, t => t.MyTaskId, (m, t) => new { Milestone = m, Task = t })
+            .Join(_uow.Tasks.Query(), m => m.TaskId, t => t.MyTaskId, (m, t) => new { Milestone = m, Task = t })
             .FirstOrDefaultAsync(x => x.Task.UserId == userId)
             ?? throw new NotFoundException("Milestone", id);
 
@@ -51,7 +51,8 @@ public class MilestoneService : IMilestoneService
 
     public async Task<MilestoneResponseDto> CreateAsync(MilestoneCreateDto dto, string userId)
     {
-        var task = await _db.MyTasks.FirstOrDefaultAsync(t => t.MyTaskId == dto.TaskId)
+        var task = await _uow.Tasks.Query()
+            .FirstOrDefaultAsync(t => t.MyTaskId == dto.TaskId)
             ?? throw new NotFoundException("MyTask", dto.TaskId);
 
         if (task.UserId != userId)
@@ -61,38 +62,39 @@ public class MilestoneService : IMilestoneService
         milestone.CreatedAt = DateTime.UtcNow;
         milestone.UpdatedAt = DateTime.UtcNow;
 
-        _db.Milestones.Add(milestone);
-        await _db.SaveChangesAsync();
+        await _uow.Milestones.AddAsync(milestone);
+        await _uow.SaveChangesAsync();
 
         return _mapper.Map<MilestoneResponseDto>(milestone);
     }
 
     public async Task<MilestoneResponseDto> UpdateAsync(int id, MilestoneUpdateDto dto, string userId)
     {
-        var milestone = await _db.Milestones
+        var milestone = await _uow.Milestones.Query()
             .Where(m => m.MilestoneId == id)
-            .Join(_db.MyTasks, m => m.TaskId, t => t.MyTaskId, (m, t) => new { Milestone = m, Task = t })
+            .Join(_uow.Tasks.Query(), m => m.TaskId, t => t.MyTaskId, (m, t) => new { Milestone = m, Task = t })
             .FirstOrDefaultAsync(x => x.Task.UserId == userId)
             ?? throw new NotFoundException("Milestone", id);
 
         _mapper.Map(dto, milestone.Milestone);
         milestone.Milestone.UpdatedAt = DateTime.UtcNow;
 
-        await _db.SaveChangesAsync();
+        _uow.Milestones.Update(milestone.Milestone);
+        await _uow.SaveChangesAsync();
 
         return _mapper.Map<MilestoneResponseDto>(milestone.Milestone);
     }
 
     public async Task DeleteAsync(int id, string userId)
     {
-        var milestone = await _db.Milestones
+        var milestone = await _uow.Milestones.Query()
             .Where(m => m.MilestoneId == id)
-            .Join(_db.MyTasks, m => m.TaskId, t => t.MyTaskId, (m, t) => new { Milestone = m, Task = t })
+            .Join(_uow.Tasks.Query(), m => m.TaskId, t => t.MyTaskId, (m, t) => new { Milestone = m, Task = t })
             .FirstOrDefaultAsync(x => x.Task.UserId == userId)
             ?? throw new NotFoundException("Milestone", id);
 
-        _db.Milestones.Remove(milestone.Milestone);
-        await _db.SaveChangesAsync();
+        _uow.Milestones.Remove(milestone.Milestone);
+        await _uow.SaveChangesAsync();
     }
 
     public async Task<byte[]> ExportToJsonAsync(int taskId, string userId)

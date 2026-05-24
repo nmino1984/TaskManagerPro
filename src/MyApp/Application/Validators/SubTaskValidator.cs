@@ -18,10 +18,6 @@ public class SubTaskCreateDtoValidator : AbstractValidator<SubTaskCreateDto>
         RuleFor(x => x.Status)
             .IsInEnum().WithMessage("Status must be valid (Pending, Completed).");
 
-        RuleFor(x => x.DueDate)
-            .GreaterThanOrEqualTo(DateTime.UtcNow)
-            .When(x => x.DueDate.HasValue)
-            .WithMessage("Due date cannot be in the past.");
     }
 }
 
@@ -37,9 +33,5 @@ public class SubTaskUpdateDtoValidator : AbstractValidator<SubTaskUpdateDto>
         RuleFor(x => x.Status)
             .IsInEnum().WithMessage("Status must be valid (Pending, Completed).");
 
-        RuleFor(x => x.DueDate)
-            .GreaterThanOrEqualTo(DateTime.UtcNow)
-            .When(x => x.DueDate.HasValue)
-            .WithMessage("Due date cannot be in the past.");
     }
 }

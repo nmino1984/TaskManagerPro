@@ -2,6 +2,43 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## 🔄 Current Status (2026-05-24)
+
+**Phase:** Bug Fixes + Feature Foundation Complete ✅
+
+### Recent Fixes (Today's Work)
+1. **SubTask Creation Error** - FIXED
+   - Issue: Frontend was sending `undefined` taskId, causing 400 errors
+   - Solution: Added validation in SubTaskFormComponent constructor and onSubmit
+   - Frontend now validates taskId before API call
+
+2. **Enum Serialization Error** - FIXED
+   - Issue: Frontend sending "Pending" (PascalCase), backend expecting "pending" (camelCase)
+   - Root cause: JsonStringEnumConverter(JsonNamingPolicy.CamelCase) in Program.cs
+   - Solution: Frontend converts status to lowercase before sending
+
+3. **Date Validation Error** - FIXED
+   - Issue: SubTask validator rejected any date ≤ DateTime.UtcNow
+   - Problem: Validation logic made no sense for educational app
+   - Solution: Removed date validation completely (user can set any date)
+
+### Frontend Components Working
+- ✅ Task List (with pagination, filters, search)
+- ✅ Task Form (Create + Edit modes)
+- ✅ SubTask List (with CRUD operations)
+- ✅ SubTask Form (Create + Edit with proper validation)
+- ✅ Milestone List and Form
+- ✅ Authentication (Login/Register)
+- ✅ Notifications with Hangfire background jobs
+
+### Next Phase
+Ready to implement one of:
+- **Task Assignment** (assign tasks to other users)
+- **Task History/Audit** (track all changes)
+- **Task Comments** (collaborative feature)
+
+---
+
 ## Quick Commands
 
 ### Backend (.NET 10)

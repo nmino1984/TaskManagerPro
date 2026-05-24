@@ -10,4 +10,5 @@ public interface ITaskService
     Task<MyTaskResponseDto> CreateAsync(MyTaskCreateDto dto, string userId);
     Task<MyTaskResponseDto> UpdateAsync(int id, MyTaskUpdateDto dto, string userId);
     Task DeleteAsync(int id, string userId);
+    Task<TaskAssignmentResponseDto> AssignAsync(int id, AssignTaskDto dto, string userId);
 }

@@ -12,4 +12,5 @@ public class MyTaskUpdateDto
 
     public TaskPriority Priority { get; set; } = TaskPriority.Medium;
     public MyTaskStatus Status { get; set; } = MyTaskStatus.NotStarted;
+    public string? AssignedToUserId { get; set; }
 }

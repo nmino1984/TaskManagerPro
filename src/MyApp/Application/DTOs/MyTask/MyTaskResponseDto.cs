@@ -17,6 +17,9 @@ public class MyTaskResponseDto
     public MyTaskStatus Status { get; set; }
     public int Progress { get; set; }
 
+    public string? AssignedToUserId { get; set; }
+    public string? AssignedToUsername { get; set; }
+
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
 

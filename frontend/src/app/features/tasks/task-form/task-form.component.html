@@ -122,6 +122,16 @@
             </mat-form-field>
           </div>
 
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Assign To</mat-label>
+            <mat-select formControlName="assignedToUserId">
+              <mat-option [value]="null">Unassigned</mat-option>
+              <mat-option *ngFor="let user of users()" [value]="user.userId">
+                {{ user.username }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
           <div *ngIf="error()" class="error-message">
             {{ error() }}
           </div>

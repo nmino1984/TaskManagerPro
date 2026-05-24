@@ -8,6 +8,8 @@ export interface MyTask {
   status: MyTaskStatus;
   progress: number;
   userId: string;
+  assignedToUserId?: string;
+  assignedToUsername?: string;
   createdAt: Date;
   updatedAt: Date;
   isDeleted: boolean;
@@ -29,6 +31,7 @@ export interface UpdateTaskRequest {
   endDate: Date;
   priority: TaskPriority;
   status: MyTaskStatus;
+  assignedToUserId?: string | null;
 }
 
 export enum TaskPriority {

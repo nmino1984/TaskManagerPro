@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using MyApp.Application.Interfaces;
+using MyApp.Application.Interfaces.Repositories;
 using MyApp.Domain.Enums;
 using MyApp.Infrastructure.Data;
 
@@ -54,6 +55,31 @@ public class TaskNotificationJob
             "Task Completed",
             $"Task '{task.Title}' has been marked as completed",
             "TaskCompleted",
+            taskId
+        );
+    }
+
+    public async Task TaskAssignedAsync(int taskId, string assignedToUserId)
+    {
+        using var scope = _scopeFactory.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        var notificationService = scope.ServiceProvider.GetRequiredService<INotificationService>();
+
+        var task = await db.MyTasks
+            .IgnoreQueryFilters()
+            .FirstOrDefaultAsync(t => t.MyTaskId == taskId);
+
+        if (task == null)
+            return;
+
+        if (task.UserId == assignedToUserId)
+            return;
+
+        await notificationService.CreateAsync(
+            assignedToUserId,
+            "Task Assigned",
+            $"Task '{task.Title}' has been assigned to you",
+            "TaskAssigned",
             taskId
         );
     }

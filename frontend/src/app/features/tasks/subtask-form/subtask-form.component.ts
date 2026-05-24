@@ -54,8 +54,12 @@ export class SubTaskFormComponent {
       this.data = { mode: 'create', taskId: 0 };
     }
 
+    if (!this.data.taskId) {
+      this.error.set('Error: Task ID is missing. Cannot create subtask.');
+    }
+
     this.form = this.fb.group({
-      description: ['', [Validators.required, Validators.minLength(3)]],
+      description: ['', [Validators.required, Validators.minLength(5)]],
       status: [SubTaskStatus.Pending, Validators.required],
       dueDate: [null],
       notes: ['']
@@ -74,13 +78,22 @@ export class SubTaskFormComponent {
   onSubmit(): void {
     if (this.form.invalid) return;
 
+    if (!this.data.taskId) {
+      this.error.set('Task ID is missing. Cannot create subtask.');
+      return;
+    }
+
     this.loading.set(true);
     this.error.set(null);
 
     if (this.data.mode === 'create') {
+      const formValue = this.form.value;
       const createRequest: SubTaskCreateRequest = {
         taskId: this.data.taskId,
-        ...this.form.value
+        description: formValue.description,
+        status: (formValue.status?.toLowerCase()) as any || 'pending',
+        dueDate: formValue.dueDate ? new Date(formValue.dueDate).toISOString() : null,
+        notes: formValue.notes
       };
 
       this.subTaskService.create(createRequest).subscribe({
@@ -95,7 +108,13 @@ export class SubTaskFormComponent {
         }
       });
     } else if (this.data.mode === 'edit' && this.data.subTask) {
-      const updateRequest: SubTaskUpdateRequest = this.form.value;
+      const formValue = this.form.value;
+      const updateRequest: SubTaskUpdateRequest = {
+        description: formValue.description,
+        status: (formValue.status?.toLowerCase()) as any || 'pending',
+        dueDate: formValue.dueDate ? new Date(formValue.dueDate).toISOString() : null,
+        notes: formValue.notes
+      };
 
       this.subTaskService.update(this.data.subTask.subTaskId, updateRequest).subscribe({
         next: () => {

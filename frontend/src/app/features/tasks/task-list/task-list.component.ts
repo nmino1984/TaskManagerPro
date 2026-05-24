@@ -62,7 +62,7 @@ export class TaskListComponent implements OnInit {
   selectedStatus = signal<string | null>(null);
   selectedPriority = signal<string | null>(null);
 
-  displayedColumns: string[] = ['title', 'priority', 'status', 'progress', 'endDate', 'actions'];
+  displayedColumns: string[] = ['title', 'priority', 'assignedTo', 'status', 'progress', 'endDate', 'actions'];
   TaskPriority = TaskPriority;
   MyTaskStatus = MyTaskStatus;
 
