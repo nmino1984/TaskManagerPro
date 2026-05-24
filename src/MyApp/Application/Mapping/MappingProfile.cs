@@ -5,6 +5,7 @@ using MyApp.Application.DTOs.SubTask;
 using MyApp.Application.DTOs.Milestone;
 using MyApp.Application.DTOs.Notification;
 using MyApp.Application.DTOs.User;
+using MyApp.Application.DTOs.AuditLog;
 using MyApp.Domain.Entities;
 
 namespace MyApp.Application.Mapping;
@@ -82,5 +83,24 @@ public class MappingProfile : Profile
         //
 
         CreateMap<User, UserDto>();
+
+
+        //
+        // ─────────────────────────────────────────────
+        //   AUDIT LOG
+        // ─────────────────────────────────────────────
+        //
+
+        CreateMap<TaskAuditLog, TaskAuditLogResponseDto>()
+            .ForMember(dest => dest.ChangedByUsername,
+                       opt => opt.MapFrom(src => src.ChangedByUser != null ? src.ChangedByUser.Username : null));
+
+        CreateMap<SubTaskAuditLog, SubTaskAuditLogResponseDto>()
+            .ForMember(dest => dest.ChangedByUsername,
+                       opt => opt.MapFrom(src => src.ChangedByUser != null ? src.ChangedByUser.Username : null));
+
+        CreateMap<MilestoneAuditLog, MilestoneAuditLogResponseDto>()
+            .ForMember(dest => dest.ChangedByUsername,
+                       opt => opt.MapFrom(src => src.ChangedByUser != null ? src.ChangedByUser.Username : null));
     }
 }

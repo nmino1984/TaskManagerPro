@@ -11,6 +11,9 @@ public class UnitOfWork : IUnitOfWork
     private IMilestoneRepository? _milestoneRepository;
     private INotificationRepository? _notificationRepository;
     private IUserRepository? _userRepository;
+    private IAuditLogRepository? _auditLogRepository;
+    private ISubTaskAuditLogRepository? _subTaskAuditLogRepository;
+    private IMilestoneAuditLogRepository? _milestoneAuditLogRepository;
 
     public UnitOfWork(AppDbContext context)
     {
@@ -22,6 +25,9 @@ public class UnitOfWork : IUnitOfWork
     public IMilestoneRepository Milestones => _milestoneRepository ??= new MilestoneRepository(_context);
     public INotificationRepository Notifications => _notificationRepository ??= new NotificationRepository(_context);
     public IUserRepository Users => _userRepository ??= new UserRepository(_context);
+    public IAuditLogRepository AuditLogs => _auditLogRepository ??= new AuditLogRepository(_context);
+    public ISubTaskAuditLogRepository SubTaskAuditLogs => _subTaskAuditLogRepository ??= new SubTaskAuditLogRepository(_context);
+    public IMilestoneAuditLogRepository MilestoneAuditLogs => _milestoneAuditLogRepository ??= new MilestoneAuditLogRepository(_context);
 
     public async Task<int> SaveChangesAsync() => await _context.SaveChangesAsync();
 

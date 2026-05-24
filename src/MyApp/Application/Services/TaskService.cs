@@ -54,6 +54,10 @@ public class TaskService : ITaskService
         await _uow.Tasks.AddAsync(task);
         await _uow.SaveChangesAsync();
 
+        await WriteAuditLogsAsync(task.MyTaskId, userId, "Created",
+            new List<(string, string?, string?)> { ("Title", null, task.Title) });
+        await _uow.SaveChangesAsync();
+
         BackgroundJob.Enqueue<TaskNotificationJob>(j => j.TaskCreatedAsync(task.MyTaskId, userId));
 
         return _mapper.Map<MyTaskResponseDto>(task);
@@ -64,6 +68,11 @@ public class TaskService : ITaskService
         var task = await _uow.Tasks.GetByIdWithIncludesAsync(id, userId)
             ?? throw new NotFoundException("MyTask", id);
 
+        var oldTitle = task.Title;
+        var oldDescription = task.Description;
+        var oldStartDate = task.StartDate;
+        var oldEndDate = task.EndDate;
+        var oldPriority = task.Priority;
         var oldStatus = task.Status;
         var oldAssignedToUserId = task.AssignedToUserId;
 
@@ -71,6 +80,24 @@ public class TaskService : ITaskService
         task.UpdatedAt = DateTime.UtcNow;
 
         _uow.Tasks.Update(task);
+
+        var changes = new List<(string, string?, string?)>();
+        if (oldTitle != task.Title)
+            changes.Add(("Title", oldTitle, task.Title));
+        if (oldDescription != task.Description)
+            changes.Add(("Description", oldDescription, task.Description));
+        if (oldStartDate != task.StartDate)
+            changes.Add(("StartDate", oldStartDate.ToString("O"), task.StartDate.ToString("O")));
+        if (oldEndDate != task.EndDate)
+            changes.Add(("EndDate", oldEndDate.ToString("O"), task.EndDate.ToString("O")));
+        if (oldPriority != task.Priority)
+            changes.Add(("Priority", oldPriority.ToString(), task.Priority.ToString()));
+        if (oldStatus != task.Status)
+            changes.Add(("Status", oldStatus.ToString(), task.Status.ToString()));
+        if (oldAssignedToUserId != task.AssignedToUserId)
+            changes.Add(("AssignedToUserId", oldAssignedToUserId, task.AssignedToUserId));
+
+        await WriteAuditLogsAsync(task.MyTaskId, userId, "Updated", changes);
         await _uow.SaveChangesAsync();
 
         if (oldStatus != MyTaskStatus.Completed && task.Status == MyTaskStatus.Completed)
@@ -90,6 +117,10 @@ public class TaskService : ITaskService
         task.IsDeleted = true;
         task.DeletedAt = DateTime.UtcNow;
         _uow.Tasks.Update(task);
+
+        await WriteAuditLogsAsync(task.MyTaskId, userId, "Deleted",
+            new List<(string, string?, string?)> { ("IsDeleted", "false", "true") });
+
         await _uow.SaveChangesAsync();
     }
 
@@ -101,6 +132,8 @@ public class TaskService : ITaskService
         if (task.UserId != userId)
             throw new UnauthorizedAccessException("You can only assign tasks you own.");
 
+        var oldAssignedToUserId = task.AssignedToUserId;
+
         if (!string.IsNullOrEmpty(dto.AssignToUserId))
         {
             var assignedUser = await _uow.Users.Query()
@@ -110,6 +143,9 @@ public class TaskService : ITaskService
             task.AssignedToUserId = dto.AssignToUserId;
             task.UpdatedAt = DateTime.UtcNow;
             _uow.Tasks.Update(task);
+
+            await WriteAuditLogsAsync(task.MyTaskId, userId, "Updated",
+                new List<(string, string?, string?)> { ("AssignedToUserId", oldAssignedToUserId, task.AssignedToUserId) });
             await _uow.SaveChangesAsync();
 
             BackgroundJob.Enqueue<TaskNotificationJob>(j => j.TaskAssignedAsync(task.MyTaskId, dto.AssignToUserId));
@@ -126,6 +162,9 @@ public class TaskService : ITaskService
         task.AssignedToUserId = null;
         task.UpdatedAt = DateTime.UtcNow;
         _uow.Tasks.Update(task);
+
+        await WriteAuditLogsAsync(task.MyTaskId, userId, "Updated",
+            new List<(string, string?, string?)> { ("AssignedToUserId", oldAssignedToUserId, null) });
         await _uow.SaveChangesAsync();
 
         return new TaskAssignmentResponseDto
@@ -135,5 +174,27 @@ public class TaskService : ITaskService
             AssignedToUserId = null,
             AssignedToUsername = null
         };
+    }
+
+    private async Task WriteAuditLogsAsync(
+        int taskId,
+        string userId,
+        string action,
+        IReadOnlyCollection<(string FieldName, string? OldValue, string? NewValue)> changes)
+    {
+        foreach (var (fieldName, oldValue, newValue) in changes)
+        {
+            var log = new TaskAuditLog
+            {
+                TaskId = taskId,
+                Action = action,
+                FieldName = fieldName,
+                OldValue = oldValue,
+                NewValue = newValue,
+                ChangedByUserId = userId,
+                ChangedAt = DateTime.UtcNow
+            };
+            await _uow.AuditLogs.AddAsync(log);
+        }
     }
 }

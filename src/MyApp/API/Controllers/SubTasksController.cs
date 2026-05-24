@@ -17,10 +17,12 @@ namespace MyApp.Api.Controllers;
 public class SubTasksController : ControllerBase
 {
     private readonly ISubTaskService _subTaskService;
+    private readonly IAuditLogService _auditLogService;
 
-    public SubTasksController(ISubTaskService subTaskService)
+    public SubTasksController(ISubTaskService subTaskService, IAuditLogService auditLogService)
     {
         _subTaskService = subTaskService;
+        _auditLogService = auditLogService;
     }
 
     /// <summary>
@@ -94,5 +96,20 @@ public class SubTasksController : ControllerBase
             ?? throw new InvalidOperationException("User ID not found in token");
         await _subTaskService.DeleteAsync(id, userId);
         return NoContent();
+    }
+
+    /// <summary>
+    /// Retrieves the audit history for a specific subtask.
+    /// </summary>
+    /// <param name="id">The subtask ID.</param>
+    [HttpGet("{id:int}/history")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetHistory(int id)
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+            ?? throw new InvalidOperationException("User ID not found in token");
+        var history = await _auditLogService.GetSubTaskHistoryAsync(id, userId);
+        return Ok(history);
     }
 }

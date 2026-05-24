@@ -9,9 +9,11 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatTabsModule } from '@angular/material/tabs';
 
 import { SubTaskService } from '../../../core/services/subtask.service';
 import { SubTask, SubTaskStatus, SubTaskCreateRequest, SubTaskUpdateRequest } from '../../../core/models/subtask.models';
+import { SubTaskHistoryListComponent } from '../subtask-history-list/subtask-history-list.component';
 
 interface SubTaskFormData {
   mode: 'create' | 'edit';
@@ -32,7 +34,9 @@ interface SubTaskFormData {
     MatButtonModule,
     MatDatepickerModule,
     MatProgressSpinnerModule,
-    MatDividerModule
+    MatDividerModule,
+    MatTabsModule,
+    SubTaskHistoryListComponent
   ],
   templateUrl: './subtask-form.component.html',
   styleUrls: ['./subtask-form.component.scss'],

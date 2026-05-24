@@ -65,6 +65,10 @@ public class MilestoneService : IMilestoneService
         await _uow.Milestones.AddAsync(milestone);
         await _uow.SaveChangesAsync();
 
+        await WriteAuditLogsAsync(milestone.MilestoneId, userId, "Created",
+            new List<(string, string?, string?)> { ("Title", null, milestone.Title) });
+        await _uow.SaveChangesAsync();
+
         return _mapper.Map<MilestoneResponseDto>(milestone);
     }
 
@@ -76,10 +80,27 @@ public class MilestoneService : IMilestoneService
             .FirstOrDefaultAsync(x => x.Task.UserId == userId)
             ?? throw new NotFoundException("Milestone", id);
 
+        var oldTitle = milestone.Milestone.Title;
+        var oldDescription = milestone.Milestone.Description;
+        var oldTargetDate = milestone.Milestone.TargetDate;
+        var oldStatus = milestone.Milestone.Status;
+
         _mapper.Map(dto, milestone.Milestone);
         milestone.Milestone.UpdatedAt = DateTime.UtcNow;
 
         _uow.Milestones.Update(milestone.Milestone);
+
+        var changes = new List<(string, string?, string?)>();
+        if (oldTitle != milestone.Milestone.Title)
+            changes.Add(("Title", oldTitle, milestone.Milestone.Title));
+        if (oldDescription != milestone.Milestone.Description)
+            changes.Add(("Description", oldDescription, milestone.Milestone.Description));
+        if (oldTargetDate != milestone.Milestone.TargetDate)
+            changes.Add(("TargetDate", oldTargetDate.ToString("O"), milestone.Milestone.TargetDate.ToString("O")));
+        if (oldStatus != milestone.Milestone.Status)
+            changes.Add(("Status", oldStatus.ToString(), milestone.Milestone.Status.ToString()));
+
+        await WriteAuditLogsAsync(milestone.Milestone.MilestoneId, userId, "Updated", changes);
         await _uow.SaveChangesAsync();
 
         return _mapper.Map<MilestoneResponseDto>(milestone.Milestone);
@@ -94,6 +115,10 @@ public class MilestoneService : IMilestoneService
             ?? throw new NotFoundException("Milestone", id);
 
         _uow.Milestones.Remove(milestone.Milestone);
+
+        await WriteAuditLogsAsync(milestone.Milestone.MilestoneId, userId, "Deleted",
+            new List<(string, string?, string?)> { ("IsDeleted", "false", "true") });
+
         await _uow.SaveChangesAsync();
     }
 
@@ -162,5 +187,27 @@ public class MilestoneService : IMilestoneService
                     .Replace("\n", "\\n")
                     .Replace(",", "\\,")
                     .Replace(";", "\\;");
+    }
+
+    private async Task WriteAuditLogsAsync(
+        int milestoneId,
+        string userId,
+        string action,
+        IReadOnlyCollection<(string FieldName, string? OldValue, string? NewValue)> changes)
+    {
+        foreach (var (fieldName, oldValue, newValue) in changes)
+        {
+            var log = new MilestoneAuditLog
+            {
+                MilestoneId = milestoneId,
+                Action = action,
+                FieldName = fieldName,
+                OldValue = oldValue,
+                NewValue = newValue,
+                ChangedByUserId = userId,
+                ChangedAt = DateTime.UtcNow
+            };
+            await _uow.MilestoneAuditLogs.AddAsync(log);
+        }
     }
 }

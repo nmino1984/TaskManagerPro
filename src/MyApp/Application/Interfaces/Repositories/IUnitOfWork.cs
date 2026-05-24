@@ -7,6 +7,9 @@ public interface IUnitOfWork : IDisposable
     IMilestoneRepository Milestones { get; }
     INotificationRepository Notifications { get; }
     IUserRepository Users { get; }
+    IAuditLogRepository AuditLogs { get; }
+    ISubTaskAuditLogRepository SubTaskAuditLogs { get; }
+    IMilestoneAuditLogRepository MilestoneAuditLogs { get; }
 
     Task<int> SaveChangesAsync();
 }

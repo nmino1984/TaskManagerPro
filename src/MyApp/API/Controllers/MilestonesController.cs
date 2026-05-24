@@ -18,10 +18,12 @@ namespace MyApp.Api.Controllers;
 public class MilestonesController : ControllerBase
 {
     private readonly IMilestoneService _milestoneService;
+    private readonly IAuditLogService _auditLogService;
 
-    public MilestonesController(IMilestoneService milestoneService)
+    public MilestonesController(IMilestoneService milestoneService, IAuditLogService auditLogService)
     {
         _milestoneService = milestoneService;
+        _auditLogService = auditLogService;
     }
 
     /// <summary>
@@ -143,5 +145,20 @@ public class MilestonesController : ControllerBase
             ?? throw new InvalidOperationException("User ID not found in token");
         var data = await _milestoneService.ExportToICalAsync(taskId, userId);
         return File(data, "text/calendar", "milestones.ics");
+    }
+
+    /// <summary>
+    /// Retrieves the audit history for a specific milestone.
+    /// </summary>
+    /// <param name="id">The milestone ID.</param>
+    [HttpGet("{id:int}/history")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetHistory(int id)
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+            ?? throw new InvalidOperationException("User ID not found in token");
+        var history = await _auditLogService.GetMilestoneHistoryAsync(id, userId);
+        return Ok(history);
     }
 }

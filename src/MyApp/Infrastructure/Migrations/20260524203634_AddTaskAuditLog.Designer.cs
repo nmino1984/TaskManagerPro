@@ -2,17 +2,20 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MyApp.Infrastructure.Data;
 
 #nullable disable
 
-namespace MyApp.Migrations
+namespace MyApp.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260524203634_AddTaskAuditLog")]
+    partial class AddTaskAuditLog
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.7");
@@ -52,45 +55,6 @@ namespace MyApp.Migrations
                     b.HasIndex("TaskId");
 
                     b.ToTable("Milestones");
-                });
-
-            modelBuilder.Entity("MyApp.Domain.Entities.MilestoneAuditLog", b =>
-                {
-                    b.Property<int>("MilestoneAuditLogId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Action")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("ChangedAt")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("ChangedByUserId")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("FieldName")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("MilestoneId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("NewValue")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("OldValue")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("MilestoneAuditLogId");
-
-                    b.HasIndex("ChangedByUserId");
-
-                    b.HasIndex("MilestoneId", "ChangedAt")
-                        .HasDatabaseName("IX_MilestoneAuditLogs_MilestoneId_ChangedAt");
-
-                    b.ToTable("MilestoneAuditLogs");
                 });
 
             modelBuilder.Entity("MyApp.Domain.Entities.MyTask", b =>
@@ -235,45 +199,6 @@ namespace MyApp.Migrations
                     b.ToTable("SubTasks");
                 });
 
-            modelBuilder.Entity("MyApp.Domain.Entities.SubTaskAuditLog", b =>
-                {
-                    b.Property<int>("SubTaskAuditLogId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Action")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("ChangedAt")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("ChangedByUserId")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("FieldName")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("NewValue")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("OldValue")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("SubTaskId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("SubTaskAuditLogId");
-
-                    b.HasIndex("ChangedByUserId");
-
-                    b.HasIndex("SubTaskId", "ChangedAt")
-                        .HasDatabaseName("IX_SubTaskAuditLogs_SubTaskId_ChangedAt");
-
-                    b.ToTable("SubTaskAuditLogs");
-                });
-
             modelBuilder.Entity("MyApp.Domain.Entities.TaskAuditLog", b =>
                 {
                     b.Property<int>("TaskAuditLogId")
@@ -347,25 +272,6 @@ namespace MyApp.Migrations
                     b.Navigation("Task");
                 });
 
-            modelBuilder.Entity("MyApp.Domain.Entities.MilestoneAuditLog", b =>
-                {
-                    b.HasOne("MyApp.Domain.Entities.User", "ChangedByUser")
-                        .WithMany()
-                        .HasForeignKey("ChangedByUserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("MyApp.Domain.Entities.Milestone", "Milestone")
-                        .WithMany()
-                        .HasForeignKey("MilestoneId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ChangedByUser");
-
-                    b.Navigation("Milestone");
-                });
-
             modelBuilder.Entity("MyApp.Domain.Entities.MyTask", b =>
                 {
                     b.HasOne("MyApp.Domain.Entities.User", "AssignedToUser")
@@ -409,25 +315,6 @@ namespace MyApp.Migrations
                         .HasForeignKey("TaskId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("MyApp.Domain.Entities.SubTaskAuditLog", b =>
-                {
-                    b.HasOne("MyApp.Domain.Entities.User", "ChangedByUser")
-                        .WithMany()
-                        .HasForeignKey("ChangedByUserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("MyApp.Domain.Entities.SubTask", "SubTask")
-                        .WithMany()
-                        .HasForeignKey("SubTaskId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ChangedByUser");
-
-                    b.Navigation("SubTask");
                 });
 
             modelBuilder.Entity("MyApp.Domain.Entities.TaskAuditLog", b =>

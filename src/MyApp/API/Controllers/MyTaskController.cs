@@ -2,6 +2,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MyApp.Application.DTOs.MyTask;
+using MyApp.Application.DTOs.AuditLog;
 using MyApp.Application.Interfaces;
 using MyApp.Domain.Entities;
 using MyApp.Infrastructure.Data;
@@ -20,10 +21,12 @@ namespace MyApp.Api.Controllers;
 public class MyTaskController : ControllerBase
 {
     private readonly ITaskService _taskService;
+    private readonly IAuditLogService _auditLogService;
 
-    public MyTaskController(ITaskService taskService)
+    public MyTaskController(ITaskService taskService, IAuditLogService auditLogService)
     {
         _taskService = taskService;
+        _auditLogService = auditLogService;
     }
 
     /// <summary>
@@ -111,6 +114,20 @@ public class MyTaskController : ControllerBase
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
             ?? throw new InvalidOperationException("User ID not found in token");
         return Ok(await _taskService.AssignAsync(id, dto, userId));
+    }
+
+    /// <summary>
+    /// Retrieves the audit history (change log) for a task.
+    /// </summary>
+    /// <param name="id">The task ID.</param>
+    [HttpGet("{id:int}/history")]
+    [ProducesResponseType<IEnumerable<TaskAuditLogResponseDto>>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetHistory(int id)
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+            ?? throw new InvalidOperationException("User ID not found in token");
+        return Ok(await _auditLogService.GetTaskHistoryAsync(id, userId));
     }
 
     /// <summary>

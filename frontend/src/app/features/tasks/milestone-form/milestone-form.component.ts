@@ -8,9 +8,11 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTabsModule } from '@angular/material/tabs';
 
 import { MilestoneService } from '../../../core/services/milestone.service';
 import { Milestone, MilestoneCreateRequest, MilestoneUpdateRequest, MilestoneStatus } from '../../../core/models/milestone.models';
+import { MilestoneHistoryListComponent } from '../milestone-history-list/milestone-history-list.component';
 
 interface MilestoneFormData {
   mode: 'create' | 'edit';
@@ -30,7 +32,9 @@ interface MilestoneFormData {
     MatSelectModule,
     MatButtonModule,
     MatDatepickerModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatTabsModule,
+    MilestoneHistoryListComponent
   ],
   templateUrl: './milestone-form.component.html',
   styleUrls: ['./milestone-form.component.scss'],

@@ -17,6 +17,9 @@ public class AppDbContext : DbContext
     public DbSet<SubTask> SubTasks { get; set; }
     public DbSet<Milestone> Milestones { get; set; }
     public DbSet<Notification> Notifications { get; set; }
+    public DbSet<TaskAuditLog> TaskAuditLogs { get; set; }
+    public DbSet<SubTaskAuditLog> SubTaskAuditLogs { get; set; }
+    public DbSet<MilestoneAuditLog> MilestoneAuditLogs { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -97,5 +100,53 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<Notification>()
             .HasIndex(n => new { n.UserId, n.IsRead, n.CreatedAt })
             .HasDatabaseName("IX_Notifications_UserId_IsRead_CreatedAt");
+
+        modelBuilder.Entity<TaskAuditLog>()
+            .HasOne(a => a.Task)
+            .WithMany()
+            .HasForeignKey(a => a.TaskId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<TaskAuditLog>()
+            .HasOne(a => a.ChangedByUser)
+            .WithMany()
+            .HasForeignKey(a => a.ChangedByUserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<TaskAuditLog>()
+            .HasIndex(a => new { a.TaskId, a.ChangedAt })
+            .HasDatabaseName("IX_TaskAuditLogs_TaskId_ChangedAt");
+
+        modelBuilder.Entity<SubTaskAuditLog>()
+            .HasOne(a => a.SubTask)
+            .WithMany()
+            .HasForeignKey(a => a.SubTaskId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<SubTaskAuditLog>()
+            .HasOne(a => a.ChangedByUser)
+            .WithMany()
+            .HasForeignKey(a => a.ChangedByUserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<SubTaskAuditLog>()
+            .HasIndex(a => new { a.SubTaskId, a.ChangedAt })
+            .HasDatabaseName("IX_SubTaskAuditLogs_SubTaskId_ChangedAt");
+
+        modelBuilder.Entity<MilestoneAuditLog>()
+            .HasOne(a => a.Milestone)
+            .WithMany()
+            .HasForeignKey(a => a.MilestoneId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<MilestoneAuditLog>()
+            .HasOne(a => a.ChangedByUser)
+            .WithMany()
+            .HasForeignKey(a => a.ChangedByUserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<MilestoneAuditLog>()
+            .HasIndex(a => new { a.MilestoneId, a.ChangedAt })
+            .HasDatabaseName("IX_MilestoneAuditLogs_MilestoneId_ChangedAt");
     }
 }

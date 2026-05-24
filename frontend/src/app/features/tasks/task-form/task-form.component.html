@@ -152,6 +152,13 @@
         <app-milestone-list [taskId]="data.task.myTaskId"></app-milestone-list>
       </div>
     </mat-tab>
+
+    <!-- Tab 4: History -->
+    <mat-tab label="History">
+      <div class="tab-content">
+        <app-task-history-list [taskId]="data.task.myTaskId"></app-task-history-list>
+      </div>
+    </mat-tab>
   </mat-tab-group>
 </mat-dialog-content>
 

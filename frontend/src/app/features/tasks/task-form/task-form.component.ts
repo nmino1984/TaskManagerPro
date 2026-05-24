@@ -18,6 +18,7 @@ import { MyTask, TaskPriority, MyTaskStatus } from '../../../core/models/task.mo
 import { User } from '../../../core/models/user.models';
 import { SubTaskListComponent } from '../subtask-list/subtask-list.component';
 import { MilestoneListComponent } from '../milestone-list/milestone-list.component';
+import { TaskHistoryListComponent } from '../task-history-list/task-history-list.component';
 
 interface TaskFormData {
   mode: 'create' | 'edit';
@@ -41,7 +42,8 @@ interface TaskFormData {
     MatDividerModule,
     MatTabsModule,
     SubTaskListComponent,
-    MilestoneListComponent
+    MilestoneListComponent,
+    TaskHistoryListComponent
   ],
   templateUrl: './task-form.component.html',
   styleUrls: ['./task-form.component.scss'],

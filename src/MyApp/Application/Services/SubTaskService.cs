@@ -61,6 +61,10 @@ public class SubTaskService : ISubTaskService
         await _uow.SubTasks.AddAsync(subtask);
         await _uow.SaveChangesAsync();
 
+        await WriteAuditLogsAsync(subtask.SubTaskId, userId, "Created",
+            new List<(string, string?, string?)> { ("Description", null, subtask.Description) });
+        await _uow.SaveChangesAsync();
+
         await SyncTaskProgressAsync(dto.TaskId);
 
         return _mapper.Map<SubTaskResponseDto>(subtask);
@@ -74,10 +78,21 @@ public class SubTaskService : ISubTaskService
             .FirstOrDefaultAsync(x => x.Task.UserId == userId)
             ?? throw new NotFoundException("SubTask", id);
 
+        var oldDescription = subtask.SubTask.Description;
+        var oldStatus = subtask.SubTask.Status;
+
         _mapper.Map(dto, subtask.SubTask);
         subtask.SubTask.UpdatedAt = DateTime.UtcNow;
 
         _uow.SubTasks.Update(subtask.SubTask);
+
+        var changes = new List<(string, string?, string?)>();
+        if (oldDescription != subtask.SubTask.Description)
+            changes.Add(("Description", oldDescription, subtask.SubTask.Description));
+        if (oldStatus != subtask.SubTask.Status)
+            changes.Add(("Status", oldStatus.ToString(), subtask.SubTask.Status.ToString()));
+
+        await WriteAuditLogsAsync(subtask.SubTask.SubTaskId, userId, "Updated", changes);
         await _uow.SaveChangesAsync();
 
         await SyncTaskProgressAsync(subtask.SubTask.TaskId);
@@ -96,6 +111,10 @@ public class SubTaskService : ISubTaskService
         var taskId = subtask.SubTask.TaskId;
 
         _uow.SubTasks.Remove(subtask.SubTask);
+
+        await WriteAuditLogsAsync(subtask.SubTask.SubTaskId, userId, "Deleted",
+            new List<(string, string?, string?)> { ("IsDeleted", "false", "true") });
+
         await _uow.SaveChangesAsync();
 
         await SyncTaskProgressAsync(taskId);
@@ -113,5 +132,27 @@ public class SubTaskService : ISubTaskService
         task.UpdatedAt = DateTime.UtcNow;
         _uow.Tasks.Update(task);
         await _uow.SaveChangesAsync();
+    }
+
+    private async Task WriteAuditLogsAsync(
+        int subTaskId,
+        string userId,
+        string action,
+        IReadOnlyCollection<(string FieldName, string? OldValue, string? NewValue)> changes)
+    {
+        foreach (var (fieldName, oldValue, newValue) in changes)
+        {
+            var log = new SubTaskAuditLog
+            {
+                SubTaskId = subTaskId,
+                Action = action,
+                FieldName = fieldName,
+                OldValue = oldValue,
+                NewValue = newValue,
+                ChangedByUserId = userId,
+                ChangedAt = DateTime.UtcNow
+            };
+            await _uow.SubTaskAuditLogs.AddAsync(log);
+        }
     }
 }

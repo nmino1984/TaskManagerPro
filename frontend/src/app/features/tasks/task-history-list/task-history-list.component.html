@@ -1,0 +1,64 @@
+<div class="history-container">
+  <div *ngIf="loading()" class="loading-spinner">
+    <mat-spinner></mat-spinner>
+  </div>
+
+  <div *ngIf="!loading()">
+    <table mat-table [dataSource]="auditLogs()" class="history-table">
+      <!-- Changed At Column -->
+      <ng-container matColumnDef="changedAt">
+        <th mat-header-cell *matHeaderCellDef>Date</th>
+        <td mat-cell *matCellDef="let log">{{ log.changedAt | date: 'short' }}</td>
+      </ng-container>
+
+      <!-- Action Column -->
+      <ng-container matColumnDef="action">
+        <th mat-header-cell *matHeaderCellDef>Action</th>
+        <td mat-cell *matCellDef="let log">
+          <span class="action-badge" [ngClass]="'action-' + log.action.toLowerCase()">
+            {{ log.action }}
+          </span>
+        </td>
+      </ng-container>
+
+      <!-- Field Name Column -->
+      <ng-container matColumnDef="fieldName">
+        <th mat-header-cell *matHeaderCellDef>Field</th>
+        <td mat-cell *matCellDef="let log">
+          {{ log.fieldName || '—' }}
+        </td>
+      </ng-container>
+
+      <!-- Old Value Column -->
+      <ng-container matColumnDef="oldValue">
+        <th mat-header-cell *matHeaderCellDef>Old Value</th>
+        <td mat-cell *matCellDef="let log">
+          {{ log.oldValue || '—' }}
+        </td>
+      </ng-container>
+
+      <!-- New Value Column -->
+      <ng-container matColumnDef="newValue">
+        <th mat-header-cell *matHeaderCellDef>New Value</th>
+        <td mat-cell *matCellDef="let log">
+          {{ log.newValue || '—' }}
+        </td>
+      </ng-container>
+
+      <!-- Changed By User Column -->
+      <ng-container matColumnDef="changedByUsername">
+        <th mat-header-cell *matHeaderCellDef>Changed By</th>
+        <td mat-cell *matCellDef="let log">
+          {{ log.changedByUsername || 'Unknown' }}
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+
+    <div *ngIf="auditLogs().length === 0" class="no-history">
+      <p>No changes recorded yet</p>
+    </div>
+  </div>
+</div>
