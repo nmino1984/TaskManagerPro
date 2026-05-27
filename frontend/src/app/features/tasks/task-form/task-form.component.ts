@@ -19,6 +19,7 @@ import { User } from '../../../core/models/user.models';
 import { SubTaskListComponent } from '../subtask-list/subtask-list.component';
 import { MilestoneListComponent } from '../milestone-list/milestone-list.component';
 import { TaskHistoryListComponent } from '../task-history-list/task-history-list.component';
+import { TaskCommentListComponent } from '../task-comment-list/task-comment-list.component';
 
 interface TaskFormData {
   mode: 'create' | 'edit';
@@ -43,7 +44,8 @@ interface TaskFormData {
     MatTabsModule,
     SubTaskListComponent,
     MilestoneListComponent,
-    TaskHistoryListComponent
+    TaskHistoryListComponent,
+    TaskCommentListComponent
   ],
   templateUrl: './task-form.component.html',
   styleUrls: ['./task-form.component.scss'],

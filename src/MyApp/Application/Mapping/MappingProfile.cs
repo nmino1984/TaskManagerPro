@@ -6,6 +6,7 @@ using MyApp.Application.DTOs.Milestone;
 using MyApp.Application.DTOs.Notification;
 using MyApp.Application.DTOs.User;
 using MyApp.Application.DTOs.AuditLog;
+using MyApp.Application.DTOs.TaskComment;
 using MyApp.Domain.Entities;
 
 namespace MyApp.Application.Mapping;
@@ -102,5 +103,18 @@ public class MappingProfile : Profile
         CreateMap<MilestoneAuditLog, MilestoneAuditLogResponseDto>()
             .ForMember(dest => dest.ChangedByUsername,
                        opt => opt.MapFrom(src => src.ChangedByUser != null ? src.ChangedByUser.Username : null));
+
+
+        //
+        // ─────────────────────────────────────────────
+        //   TASK COMMENT
+        // ─────────────────────────────────────────────
+        //
+
+        CreateMap<TaskComment, TaskCommentResponseDto>()
+            .ForMember(dest => dest.CreatedByUsername,
+                       opt => opt.MapFrom(src => src.CreatedByUser != null ? src.CreatedByUser.Username : null))
+            .ForMember(dest => dest.Replies,
+                       opt => opt.MapFrom(src => src.Replies));
     }
 }

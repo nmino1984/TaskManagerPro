@@ -1,0 +1,122 @@
+<div class="comments-container">
+  <!-- Comment Form -->
+  <div class="comment-form-wrapper">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="comment-form">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{ replyingToId() ? 'Add a reply...' : 'Add a comment...' }}</mat-label>
+        <textarea
+          matInput
+          formControlName="text"
+          rows="3"
+          placeholder="Type @ to mention someone"
+        ></textarea>
+        <mat-error *ngIf="form.get('text')?.hasError('required')">
+          Comment cannot be empty
+        </mat-error>
+      </mat-form-field>
+
+      <div class="form-actions">
+        <button
+          type="submit"
+          mat-raised-button
+          color="primary"
+          [disabled]="form.invalid || loading()"
+        >
+          <mat-spinner diameter="20" *ngIf="loading()"></mat-spinner>
+          <span *ngIf="!loading()">
+            {{ editingCommentId() ? 'Update' : (replyingToId() ? 'Reply' : 'Comment') }}
+          </span>
+        </button>
+        <button
+          *ngIf="editingCommentId() || replyingToId()"
+          type="button"
+          mat-button
+          (click)="resetForm()"
+        >
+          Cancel
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Comments List -->
+  <div class="comments-list">
+    <div *ngIf="comments().length === 0 && !loading()" class="no-comments">
+      <p>No comments yet. Be the first to comment!</p>
+    </div>
+
+    <div *ngFor="let comment of comments()" class="comment-thread">
+      <!-- Main Comment -->
+      <div class="comment-item">
+        <div class="comment-header">
+          <span class="author">{{ comment.createdByUsername || 'Unknown' }}</span>
+          <span class="timestamp" [matTooltip]="comment.createdAt | date: 'medium'">
+            {{ getTimeAgo(comment.createdAt) }}
+            <span *ngIf="comment.isEdited" class="edited">(edited)</span>
+          </span>
+        </div>
+
+        <div class="comment-text" [innerHTML]="highlightMentions(comment.text)"></div>
+
+        <div class="comment-actions">
+          <button mat-button (click)="onReply(comment.taskCommentId)">
+            <mat-icon>reply</mat-icon>
+            Reply
+          </button>
+          <button
+            *ngIf="canEditOrDelete(comment)"
+            mat-button
+            (click)="onEdit(comment)"
+          >
+            <mat-icon>edit</mat-icon>
+            Edit
+          </button>
+          <button
+            *ngIf="canEditOrDelete(comment)"
+            mat-button
+            (click)="onDelete(comment.taskCommentId, comment)"
+            color="warn"
+          >
+            <mat-icon>delete</mat-icon>
+            Delete
+          </button>
+        </div>
+      </div>
+
+      <!-- Replies -->
+      <div *ngIf="comment.replies && comment.replies.length > 0" class="replies">
+        <div *ngFor="let reply of comment.replies" class="comment-item reply">
+          <div class="comment-header">
+            <span class="author">{{ reply.createdByUsername || 'Unknown' }}</span>
+            <span class="timestamp" [matTooltip]="reply.createdAt | date: 'medium'">
+              {{ getTimeAgo(reply.createdAt) }}
+              <span *ngIf="reply.isEdited" class="edited">(edited)</span>
+            </span>
+          </div>
+
+          <div class="comment-text" [innerHTML]="highlightMentions(reply.text)"></div>
+
+          <div class="comment-actions">
+            <button
+              *ngIf="canEditOrDelete(reply)"
+              mat-button
+              (click)="onEdit(reply)"
+            >
+              <mat-icon>edit</mat-icon>
+              Edit
+            </button>
+            <button
+              *ngIf="canEditOrDelete(reply)"
+              mat-button
+              (click)="onDelete(reply.taskCommentId, reply)"
+              color="warn"
+            >
+              <mat-icon>delete</mat-icon>
+              Delete
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

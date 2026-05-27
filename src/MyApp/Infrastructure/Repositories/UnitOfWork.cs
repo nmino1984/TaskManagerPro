@@ -14,6 +14,7 @@ public class UnitOfWork : IUnitOfWork
     private IAuditLogRepository? _auditLogRepository;
     private ISubTaskAuditLogRepository? _subTaskAuditLogRepository;
     private IMilestoneAuditLogRepository? _milestoneAuditLogRepository;
+    private ITaskCommentRepository? _taskCommentRepository;
 
     public UnitOfWork(AppDbContext context)
     {
@@ -28,6 +29,7 @@ public class UnitOfWork : IUnitOfWork
     public IAuditLogRepository AuditLogs => _auditLogRepository ??= new AuditLogRepository(_context);
     public ISubTaskAuditLogRepository SubTaskAuditLogs => _subTaskAuditLogRepository ??= new SubTaskAuditLogRepository(_context);
     public IMilestoneAuditLogRepository MilestoneAuditLogs => _milestoneAuditLogRepository ??= new MilestoneAuditLogRepository(_context);
+    public ITaskCommentRepository TaskComments => _taskCommentRepository ??= new TaskCommentRepository(_context);
 
     public async Task<int> SaveChangesAsync() => await _context.SaveChangesAsync();
 

@@ -20,6 +20,7 @@ public class AppDbContext : DbContext
     public DbSet<TaskAuditLog> TaskAuditLogs { get; set; }
     public DbSet<SubTaskAuditLog> SubTaskAuditLogs { get; set; }
     public DbSet<MilestoneAuditLog> MilestoneAuditLogs { get; set; }
+    public DbSet<TaskComment> TaskComments { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -148,5 +149,28 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<MilestoneAuditLog>()
             .HasIndex(a => new { a.MilestoneId, a.ChangedAt })
             .HasDatabaseName("IX_MilestoneAuditLogs_MilestoneId_ChangedAt");
+
+        modelBuilder.Entity<TaskComment>()
+            .HasOne(c => c.Task)
+            .WithMany()
+            .HasForeignKey(c => c.TaskId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<TaskComment>()
+            .HasOne(c => c.CreatedByUser)
+            .WithMany()
+            .HasForeignKey(c => c.CreatedByUserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<TaskComment>()
+            .HasOne(c => c.ParentComment)
+            .WithMany(c => c.Replies)
+            .HasForeignKey(c => c.ParentCommentId)
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<TaskComment>()
+            .HasIndex(c => new { c.TaskId, c.CreatedAt })
+            .HasDatabaseName("IX_TaskComments_TaskId_CreatedAt");
     }
 }

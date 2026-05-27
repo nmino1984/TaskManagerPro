@@ -10,6 +10,7 @@ public interface IUnitOfWork : IDisposable
     IAuditLogRepository AuditLogs { get; }
     ISubTaskAuditLogRepository SubTaskAuditLogs { get; }
     IMilestoneAuditLogRepository MilestoneAuditLogs { get; }
+    ITaskCommentRepository TaskComments { get; }
 
     Task<int> SaveChangesAsync();
 }
