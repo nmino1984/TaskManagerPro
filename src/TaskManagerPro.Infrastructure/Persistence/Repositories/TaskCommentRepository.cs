@@ -1,0 +1,24 @@
+using Microsoft.EntityFrameworkCore;
+using TaskManagerPro.Application.Interfaces.Repositories;
+using TaskManagerPro.Domain.Entities;
+using TaskManagerPro.Infrastructure.Persistence;
+
+namespace TaskManagerPro.Infrastructure.Persistence.Repositories;
+
+public class TaskCommentRepository : Repository<TaskComment>, ITaskCommentRepository
+{
+    public TaskCommentRepository(AppDbContext context) : base(context)
+    {
+    }
+
+    public async Task<List<TaskComment>> GetByTaskIdAsync(int taskId)
+    {
+        return await _context.TaskComments
+            .Where(c => c.TaskId == taskId && c.ParentCommentId == null)
+            .Include(c => c.CreatedByUser)
+            .Include(c => c.Replies)
+            .ThenInclude(r => r.CreatedByUser)
+            .OrderByDescending(c => c.CreatedAt)
+            .ToListAsync();
+    }
+}

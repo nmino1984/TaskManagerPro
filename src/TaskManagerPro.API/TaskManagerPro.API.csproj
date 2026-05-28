@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../TaskManagerPro.Domain/TaskManagerPro.Domain.csproj" />
+    <ProjectReference Include="../TaskManagerPro.Application/TaskManagerPro.Application.csproj" />
+    <ProjectReference Include="../TaskManagerPro.Infrastructure/TaskManagerPro.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Scalar.AspNetCore" Version="1.23.10" />
+  </ItemGroup>
+</Project>
