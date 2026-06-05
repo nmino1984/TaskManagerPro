@@ -498,6 +498,7 @@ logs/
 
 # IDE and Tool Configuration
 .claude/
+CLAUDE.md
 .idea/
 .vscode/*
 !.vscode/settings.json
