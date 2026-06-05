@@ -1,6 +1,4 @@
-using Microsoft.EntityFrameworkCore;
 using TaskManagerPro.Application.Interfaces.Repositories;
-using TaskManagerPro.Infrastructure.Persistence;
 
 namespace TaskManagerPro.Infrastructure.Persistence.Repositories;
 

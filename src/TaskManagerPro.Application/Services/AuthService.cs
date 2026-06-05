@@ -25,7 +25,9 @@ public class AuthService : IAuthService
         var existingUser = await _uow.Users.GetByUsernameAsync(dto.Username);
 
         if (existingUser != null)
+        {
             throw new ValidationException($"Username '{dto.Username}' is already taken. Please choose a different username.");
+        }
 
         var user = new User
         {
@@ -46,7 +48,9 @@ public class AuthService : IAuthService
             ?? throw new ValidationException("Username or password is incorrect.");
 
         if (!_passwordHasher.Verify(dto.Password, user.PasswordHash))
+        {
             throw new ValidationException("Username or password is incorrect.");
+        }
 
         var token = _jwtTokenService.GenerateToken(user.UserId, user.Username);
         return new AuthResponseDto { Token = token, UserId = user.UserId, Username = user.Username };

@@ -70,7 +70,7 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 var jwtSettings = builder.Configuration.GetSection("Jwt");
 var jwtKey = Environment.GetEnvironmentVariable("JWT_KEY")
-    ?? (builder.Environment.IsDevelopment()
+    ?? (builder.Environment.IsDevelopment() || builder.Environment.IsEnvironment("Testing")
         ? "development-key-that-must-be-at-least-32-characters-long!!!"
         : throw new InvalidOperationException("JWT_KEY environment variable not configured"));
 var key = Encoding.UTF8.GetBytes(jwtKey);
@@ -112,14 +112,14 @@ builder.Services.AddScoped<IAuditLogService, AuditLogService>();
 
 builder.Services.AddHangfire(config =>
 {
-    if (builder.Environment.IsDevelopment())
-    {
-        config.UseMemoryStorage();
-    }
-    else
+    if (builder.Environment.IsProduction())
     {
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
         config.UseSqlServerStorage(connectionString);
+    }
+    else
+    {
+        config.UseMemoryStorage();
     }
 });
 builder.Services.AddHangfireServer();
@@ -177,10 +177,14 @@ if (app.Environment.IsDevelopment())
     }
 }
 
-RecurringJob.AddOrUpdate<TaskNotificationJob>(
-    "task-overdue-check",
-    j => j.TaskOverdueCheckAsync(),
-    Cron.Hourly);
+if (!app.Environment.IsEnvironment("Testing"))
+{
+    var recurringJobs = app.Services.GetRequiredService<IRecurringJobManager>();
+    recurringJobs.AddOrUpdate<TaskNotificationJob>(
+        "task-overdue-check",
+        j => j.TaskOverdueCheckAsync(),
+        Cron.Hourly);
+}
 
 app.MapControllers();
 

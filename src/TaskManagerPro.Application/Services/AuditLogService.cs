@@ -1,6 +1,6 @@
+using AutoMapper;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using AutoMapper;
 using TaskManagerPro.Application.DTOs.AuditLog;
 using TaskManagerPro.Application.Exceptions;
 using TaskManagerPro.Application.Interfaces;
@@ -24,7 +24,9 @@ public class AuditLogService : IAuditLogService
             ?? throw new NotFoundException("MyTask", taskId);
 
         if (task.UserId != userId)
+        {
             throw new NotFoundException("MyTask", taskId);
+        }
 
         var logs = await _uow.AuditLogs.GetByTaskIdAsync(taskId, userId);
         return _mapper.Map<IEnumerable<TaskAuditLogResponseDto>>(logs);
@@ -39,7 +41,9 @@ public class AuditLogService : IAuditLogService
             ?? throw new NotFoundException("MyTask", subtask.TaskId);
 
         if (task.UserId != userId)
+        {
             throw new NotFoundException("SubTask", subTaskId);
+        }
 
         var logs = await _uow.SubTaskAuditLogs.GetBySubTaskIdAsync(subTaskId);
         return _mapper.Map<IEnumerable<SubTaskAuditLogResponseDto>>(logs);
@@ -54,7 +58,9 @@ public class AuditLogService : IAuditLogService
             ?? throw new NotFoundException("MyTask", milestone.TaskId);
 
         if (task.UserId != userId)
+        {
             throw new NotFoundException("Milestone", milestoneId);
+        }
 
         var logs = await _uow.MilestoneAuditLogs.GetByMilestoneIdAsync(milestoneId);
         return _mapper.Map<IEnumerable<MilestoneAuditLogResponseDto>>(logs);

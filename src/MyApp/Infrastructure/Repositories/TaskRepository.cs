@@ -20,13 +20,19 @@ public class TaskRepository : Repository<MyTask>, ITaskRepository
             .AsQueryable();
 
         if (q.Status.HasValue)
+        {
             query = query.Where(t => t.Status == q.Status);
+        }
 
         if (q.Priority.HasValue)
+        {
             query = query.Where(t => t.Priority == q.Priority);
+        }
 
         if (!string.IsNullOrWhiteSpace(q.Search))
+        {
             query = query.Where(t => t.Title.Contains(q.Search) || (t.Description != null && t.Description.Contains(q.Search)));
+        }
 
         var totalCount = await query.CountAsync();
 

@@ -1,4 +1,3 @@
-using Microsoft.EntityFrameworkCore;
 using MyApp.Application.Interfaces.Repositories;
 using MyApp.Infrastructure.Data;
 

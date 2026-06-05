@@ -1,3 +1,4 @@
+using AutoMapper;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -5,7 +6,6 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
-using AutoMapper;
 using TaskManagerPro.Application.DTOs.Milestone;
 using TaskManagerPro.Application.Exceptions;
 using TaskManagerPro.Application.Interfaces;
@@ -30,7 +30,9 @@ public class MilestoneService : IMilestoneService
         var taskExists = await _uow.Tasks.ExistsForUserAsync(taskId, userId);
 
         if (!taskExists)
+        {
             throw new NotFoundException("MyTask", taskId);
+        }
 
         var milestones = await _uow.Milestones.GetByTaskIdAsync(taskId);
 
@@ -51,7 +53,9 @@ public class MilestoneService : IMilestoneService
             ?? throw new NotFoundException("MyTask", dto.TaskId);
 
         if (task.UserId != userId)
-            throw new UnauthorizedAccessException("You do not have access to this task.");
+        {
+            throw new NotFoundException("MyTask", dto.TaskId);
+        }
 
         var milestone = _mapper.Map<Milestone>(dto);
         milestone.CreatedAt = DateTime.UtcNow;
@@ -84,13 +88,24 @@ public class MilestoneService : IMilestoneService
 
         var changes = new List<(string, string?, string?)>();
         if (oldTitle != milestone.Title)
+        {
             changes.Add(("Title", oldTitle, milestone.Title));
+        }
+
         if (oldDescription != milestone.Description)
+        {
             changes.Add(("Description", oldDescription, milestone.Description));
+        }
+
         if (oldTargetDate != milestone.TargetDate)
+        {
             changes.Add(("TargetDate", oldTargetDate.ToString("O"), milestone.TargetDate.ToString("O")));
+        }
+
         if (oldStatus != milestone.Status)
+        {
             changes.Add(("Status", oldStatus.ToString(), milestone.Status.ToString()));
+        }
 
         await WriteAuditLogsAsync(milestone.MilestoneId, userId, "Updated", changes);
         await _uow.SaveChangesAsync();
@@ -170,7 +185,11 @@ public class MilestoneService : IMilestoneService
 
     private string EscapeICalValue(string value)
     {
-        if (string.IsNullOrEmpty(value)) return "";
+        if (string.IsNullOrEmpty(value))
+        {
+            return "";
+        }
+
         return value.Replace("\\", "\\\\")
                     .Replace("\r\n", "\\n")
                     .Replace("\n", "\\n")

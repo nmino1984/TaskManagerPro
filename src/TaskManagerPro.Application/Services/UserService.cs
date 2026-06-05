@@ -1,12 +1,9 @@
-using System;
 using AutoMapper;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using TaskManagerPro.Application.DTOs.User;
 using TaskManagerPro.Application.Interfaces;
 using TaskManagerPro.Application.Interfaces.Repositories;
-
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using TaskManagerPro.Application.DTOs;
 namespace TaskManagerPro.Application.Services;
 
 public class UserService : IUserService

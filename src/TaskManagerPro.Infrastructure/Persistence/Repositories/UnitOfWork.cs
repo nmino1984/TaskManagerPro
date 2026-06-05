@@ -1,5 +1,4 @@
 using TaskManagerPro.Application.Interfaces.Repositories;
-using TaskManagerPro.Infrastructure.Persistence;
 using TaskManagerPro.Infrastructure.Repositories;
 
 namespace TaskManagerPro.Infrastructure.Persistence.Repositories;

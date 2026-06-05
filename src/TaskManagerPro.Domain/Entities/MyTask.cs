@@ -1,8 +1,7 @@
 using System;
-using TaskManagerPro.Domain.Enums;
-
 using System.Collections.Generic;
 using System.Linq;
+using TaskManagerPro.Domain.Enums;
 namespace TaskManagerPro.Domain.Entities;
 
 public class MyTask

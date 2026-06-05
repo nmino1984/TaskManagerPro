@@ -1,8 +1,8 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MyApp.Application.DTOs.SubTask;
 using MyApp.Application.Interfaces;
+using System.Security.Claims;
 
 namespace MyApp.Api.Controllers;
 

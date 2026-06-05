@@ -26,7 +26,9 @@ public class TaskNotificationJob
             .FirstOrDefaultAsync(t => t.MyTaskId == taskId && t.UserId == userId);
 
         if (task == null)
+        {
             return;
+        }
 
         await notificationService.CreateAsync(
             userId,
@@ -48,7 +50,9 @@ public class TaskNotificationJob
             .FirstOrDefaultAsync(t => t.MyTaskId == taskId && t.UserId == userId);
 
         if (task == null)
+        {
             return;
+        }
 
         await notificationService.CreateAsync(
             userId,
@@ -70,10 +74,14 @@ public class TaskNotificationJob
             .FirstOrDefaultAsync(t => t.MyTaskId == taskId);
 
         if (task == null)
+        {
             return;
+        }
 
         if (task.UserId == assignedToUserId)
+        {
             return;
+        }
 
         await notificationService.CreateAsync(
             assignedToUserId,

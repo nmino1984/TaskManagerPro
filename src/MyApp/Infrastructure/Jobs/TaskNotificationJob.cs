@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using MyApp.Application.Interfaces;
-using MyApp.Application.Interfaces.Repositories;
 using MyApp.Domain.Enums;
 using MyApp.Infrastructure.Data;
 
@@ -26,7 +25,9 @@ public class TaskNotificationJob
             .FirstOrDefaultAsync(t => t.MyTaskId == taskId && t.UserId == userId);
 
         if (task == null)
+        {
             return;
+        }
 
         await notificationService.CreateAsync(
             userId,
@@ -48,7 +49,9 @@ public class TaskNotificationJob
             .FirstOrDefaultAsync(t => t.MyTaskId == taskId && t.UserId == userId);
 
         if (task == null)
+        {
             return;
+        }
 
         await notificationService.CreateAsync(
             userId,
@@ -70,10 +73,14 @@ public class TaskNotificationJob
             .FirstOrDefaultAsync(t => t.MyTaskId == taskId);
 
         if (task == null)
+        {
             return;
+        }
 
         if (task.UserId == assignedToUserId)
+        {
             return;
+        }
 
         await notificationService.CreateAsync(
             assignedToUserId,

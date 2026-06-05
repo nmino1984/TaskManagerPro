@@ -83,28 +83,52 @@ public class TaskService : ITaskService
 
         var changes = new List<(string, string?, string?)>();
         if (oldTitle != task.Title)
+        {
             changes.Add(("Title", oldTitle, task.Title));
+        }
+
         if (oldDescription != task.Description)
+        {
             changes.Add(("Description", oldDescription, task.Description));
+        }
+
         if (oldStartDate != task.StartDate)
+        {
             changes.Add(("StartDate", oldStartDate.ToString("O"), task.StartDate.ToString("O")));
+        }
+
         if (oldEndDate != task.EndDate)
+        {
             changes.Add(("EndDate", oldEndDate.ToString("O"), task.EndDate.ToString("O")));
+        }
+
         if (oldPriority != task.Priority)
+        {
             changes.Add(("Priority", oldPriority.ToString(), task.Priority.ToString()));
+        }
+
         if (oldStatus != task.Status)
+        {
             changes.Add(("Status", oldStatus.ToString(), task.Status.ToString()));
+        }
+
         if (oldAssignedToUserId != task.AssignedToUserId)
+        {
             changes.Add(("AssignedToUserId", oldAssignedToUserId, task.AssignedToUserId));
+        }
 
         await WriteAuditLogsAsync(task.MyTaskId, userId, "Updated", changes);
         await _uow.SaveChangesAsync();
 
         if (oldStatus != MyTaskStatus.Completed && task.Status == MyTaskStatus.Completed)
+        {
             BackgroundJob.Enqueue<TaskNotificationJob>(j => j.TaskCompletedAsync(task.MyTaskId, userId));
+        }
 
         if (oldAssignedToUserId != task.AssignedToUserId && !string.IsNullOrEmpty(task.AssignedToUserId))
+        {
             BackgroundJob.Enqueue<TaskNotificationJob>(j => j.TaskAssignedAsync(task.MyTaskId, task.AssignedToUserId));
+        }
 
         return _mapper.Map<MyTaskResponseDto>(task);
     }
@@ -130,7 +154,9 @@ public class TaskService : ITaskService
             ?? throw new NotFoundException("MyTask", id);
 
         if (task.UserId != userId)
+        {
             throw new UnauthorizedAccessException("You can only assign tasks you own.");
+        }
 
         var oldAssignedToUserId = task.AssignedToUserId;
 

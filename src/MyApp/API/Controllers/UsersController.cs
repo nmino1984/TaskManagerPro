@@ -1,7 +1,5 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using MyApp.Application.DTOs.User;
 using MyApp.Application.Interfaces;
 
 namespace MyApp.Api.Controllers;

@@ -1,11 +1,11 @@
-using System.Net.Http.Json;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using MyApp.Application.DTOs.Auth;
 using MyApp.Application.DTOs.Milestone;
 using MyApp.Application.DTOs.MyTask;
 using MyApp.Application.DTOs.SubTask;
 using MyApp.Domain.Enums;
+using System.Net.Http.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace MyApp.Tests.Integration.Infrastructure;
 
@@ -67,7 +67,9 @@ public abstract class IntegrationTestBase
         int daysUntilEnd = 30)
     {
         if (Token == null)
+        {
             await AuthenticateAsync();
+        }
 
         var body = new MyTaskCreateDto
         {
@@ -85,7 +87,9 @@ public abstract class IntegrationTestBase
     protected async Task<SubTaskResponseDto> SeedSubTaskAsync(int taskId, string description = "Seed SubTask")
     {
         if (Token == null)
+        {
             await AuthenticateAsync();
+        }
 
         var body = new SubTaskCreateDto { TaskId = taskId, Description = description };
         var response = await Client.PostAsJsonAsync("/api/v1/subtasks", body, JsonOptions);
@@ -99,7 +103,9 @@ public abstract class IntegrationTestBase
         int daysUntilTarget = 30)
     {
         if (Token == null)
+        {
             await AuthenticateAsync();
+        }
 
         var body = new MilestoneCreateDto
         {

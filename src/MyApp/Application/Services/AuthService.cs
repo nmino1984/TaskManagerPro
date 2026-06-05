@@ -1,12 +1,12 @@
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using MyApp.Application.DTOs.Auth;
 using MyApp.Application.Exceptions;
 using MyApp.Application.Interfaces;
 using MyApp.Application.Interfaces.Repositories;
 using MyApp.Domain.Entities;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace MyApp.Application.Services;
 
@@ -36,7 +36,9 @@ public class AuthService : IAuthService
         var existingUser = await _uow.Users.GetByUsernameAsync(dto.Username);
 
         if (existingUser != null)
+        {
             throw new ValidationException($"Username '{dto.Username}' is already taken. Please choose a different username.");
+        }
 
         var user = new User
         {
@@ -57,7 +59,9 @@ public class AuthService : IAuthService
             ?? throw new ValidationException($"Username or password is incorrect.");
 
         if (!BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash))
+        {
             throw new ValidationException("Username or password is incorrect.");
+        }
 
         var token = GenerateJwtToken(user);
         return new AuthResponseDto { Token = token, UserId = user.UserId, Username = user.Username };

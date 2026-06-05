@@ -28,7 +28,9 @@ public class TaskCommentService : ITaskCommentService
             ?? throw new NotFoundException("MyTask", taskId);
 
         if (task.UserId != userId)
+        {
             throw new NotFoundException("MyTask", taskId);
+        }
 
         var comments = await _uow.TaskComments.GetByTaskIdAsync(taskId);
         return _mapper.Map<List<TaskCommentResponseDto>>(comments);
@@ -40,7 +42,9 @@ public class TaskCommentService : ITaskCommentService
             ?? throw new NotFoundException("MyTask", dto.TaskId);
 
         if (task.UserId != userId)
+        {
             throw new UnauthorizedAccessException("You do not have access to this task.");
+        }
 
         var comment = new TaskComment
         {
@@ -59,7 +63,9 @@ public class TaskCommentService : ITaskCommentService
 
         var result = await _uow.TaskComments.GetByIdAsync(comment.TaskCommentId);
         if (result == null)
+        {
             throw new InvalidOperationException("Failed to retrieve created comment");
+        }
 
         return _mapper.Map<TaskCommentResponseDto>(result);
     }
@@ -70,7 +76,9 @@ public class TaskCommentService : ITaskCommentService
             ?? throw new NotFoundException("TaskComment", id);
 
         if (comment.CreatedByUserId != userId)
+        {
             throw new UnauthorizedAccessException("You can only edit your own comments.");
+        }
 
         comment.Text = dto.Text;
         comment.UpdatedAt = DateTime.UtcNow;
@@ -94,7 +102,9 @@ public class TaskCommentService : ITaskCommentService
             ?? throw new NotFoundException("MyTask", comment.TaskId);
 
         if (comment.CreatedByUserId != userId && task.UserId != userId)
+        {
             throw new UnauthorizedAccessException("You cannot delete this comment.");
+        }
 
         _uow.TaskComments.Remove(comment);
         await _uow.SaveChangesAsync();

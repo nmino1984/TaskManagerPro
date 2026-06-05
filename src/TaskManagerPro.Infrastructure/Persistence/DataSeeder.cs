@@ -9,7 +9,9 @@ public static class DataSeeder
     public static async Task SeedAsync(AppDbContext db)
     {
         if (await db.Users.AnyAsync(u => u.Username == "demo"))
+        {
             return;
+        }
 
         var user = new User
         {

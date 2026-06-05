@@ -1,5 +1,5 @@
-﻿using Swashbuckle.AspNetCore.Filters;
-using MyApp.Application.DTOs.MyTask;
+﻿using MyApp.Application.DTOs.MyTask;
+using Swashbuckle.AspNetCore.Filters;
 
 public class MyTaskCreateExample : IExamplesProvider<MyTaskCreateDto>
 {

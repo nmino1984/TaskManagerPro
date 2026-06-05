@@ -1,9 +1,8 @@
 using System;
+using System.Collections.Generic;
 using TaskManagerPro.Application.DTOs.Milestone;
 using TaskManagerPro.Application.DTOs.SubTask;
 using TaskManagerPro.Domain.Enums;
-
-using System.Collections.Generic;
 namespace TaskManagerPro.Application.DTOs.MyTask;
 
 public class MyTaskResponseDto

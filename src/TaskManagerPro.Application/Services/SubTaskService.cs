@@ -1,13 +1,12 @@
+using AutoMapper;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using AutoMapper;
 using TaskManagerPro.Application.DTOs.SubTask;
 using TaskManagerPro.Application.Exceptions;
 using TaskManagerPro.Application.Interfaces;
 using TaskManagerPro.Application.Interfaces.Repositories;
 using TaskManagerPro.Domain.Entities;
-using TaskManagerPro.Domain.Enums;
 namespace TaskManagerPro.Application.Services;
 
 public class SubTaskService : ISubTaskService
@@ -26,7 +25,9 @@ public class SubTaskService : ISubTaskService
         var taskExists = await _uow.Tasks.ExistsForUserAsync(taskId, userId);
 
         if (!taskExists)
+        {
             throw new NotFoundException("MyTask", taskId);
+        }
 
         var subtasks = await _uow.SubTasks.GetByTaskIdAsync(taskId);
 
@@ -47,7 +48,9 @@ public class SubTaskService : ISubTaskService
             ?? throw new NotFoundException("MyTask", dto.TaskId);
 
         if (task.UserId != userId)
-            throw new UnauthorizedAccessException("You do not have access to this task.");
+        {
+            throw new NotFoundException("MyTask", dto.TaskId);
+        }
 
         var subtask = _mapper.Map<SubTask>(dto);
         subtask.CreatedAt = DateTime.UtcNow;
@@ -80,9 +83,14 @@ public class SubTaskService : ISubTaskService
 
         var changes = new List<(string, string?, string?)>();
         if (oldDescription != subtask.Description)
+        {
             changes.Add(("Description", oldDescription, subtask.Description));
+        }
+
         if (oldStatus != subtask.Status)
+        {
             changes.Add(("Status", oldStatus.ToString(), subtask.Status.ToString()));
+        }
 
         await WriteAuditLogsAsync(subtask.SubTaskId, userId, "Updated", changes);
         await _uow.SaveChangesAsync();
@@ -113,7 +121,10 @@ public class SubTaskService : ISubTaskService
     {
         var task = await _uow.Tasks.GetByIdWithSubTasksAsync(taskId);
 
-        if (task is null) return;
+        if (task is null)
+        {
+            return;
+        }
 
         task.UpdateProgress();
         task.UpdatedAt = DateTime.UtcNow;

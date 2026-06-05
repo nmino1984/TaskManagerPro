@@ -25,7 +25,9 @@ public class SubTaskService : ISubTaskService
             .AnyAsync(t => t.MyTaskId == taskId && t.UserId == userId);
 
         if (!taskExists)
+        {
             throw new NotFoundException("MyTask", taskId);
+        }
 
         var subtasks = await _uow.SubTasks.Query()
             .Where(s => s.TaskId == taskId)
@@ -48,11 +50,8 @@ public class SubTaskService : ISubTaskService
     public async Task<SubTaskResponseDto> CreateAsync(SubTaskCreateDto dto, string userId)
     {
         var task = await _uow.Tasks.Query()
-            .FirstOrDefaultAsync(t => t.MyTaskId == dto.TaskId)
+            .FirstOrDefaultAsync(t => t.MyTaskId == dto.TaskId && t.UserId == userId)
             ?? throw new NotFoundException("MyTask", dto.TaskId);
-
-        if (task.UserId != userId)
-            throw new UnauthorizedAccessException("You do not have access to this task.");
 
         var subtask = _mapper.Map<SubTask>(dto);
         subtask.CreatedAt = DateTime.UtcNow;
@@ -88,9 +87,14 @@ public class SubTaskService : ISubTaskService
 
         var changes = new List<(string, string?, string?)>();
         if (oldDescription != subtask.SubTask.Description)
+        {
             changes.Add(("Description", oldDescription, subtask.SubTask.Description));
+        }
+
         if (oldStatus != subtask.SubTask.Status)
+        {
             changes.Add(("Status", oldStatus.ToString(), subtask.SubTask.Status.ToString()));
+        }
 
         await WriteAuditLogsAsync(subtask.SubTask.SubTaskId, userId, "Updated", changes);
         await _uow.SaveChangesAsync();
@@ -126,7 +130,10 @@ public class SubTaskService : ISubTaskService
             .Include(t => t.SubTasks)
             .FirstOrDefaultAsync(t => t.MyTaskId == taskId);
 
-        if (task is null) return;
+        if (task is null)
+        {
+            return;
+        }
 
         task.UpdateProgress();
         task.UpdatedAt = DateTime.UtcNow;

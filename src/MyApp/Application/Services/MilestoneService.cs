@@ -29,7 +29,9 @@ public class MilestoneService : IMilestoneService
             .AnyAsync(t => t.MyTaskId == taskId && t.UserId == userId);
 
         if (!taskExists)
+        {
             throw new NotFoundException("MyTask", taskId);
+        }
 
         var milestones = await _uow.Milestones.Query()
             .Where(m => m.TaskId == taskId)
@@ -52,11 +54,8 @@ public class MilestoneService : IMilestoneService
     public async Task<MilestoneResponseDto> CreateAsync(MilestoneCreateDto dto, string userId)
     {
         var task = await _uow.Tasks.Query()
-            .FirstOrDefaultAsync(t => t.MyTaskId == dto.TaskId)
+            .FirstOrDefaultAsync(t => t.MyTaskId == dto.TaskId && t.UserId == userId)
             ?? throw new NotFoundException("MyTask", dto.TaskId);
-
-        if (task.UserId != userId)
-            throw new UnauthorizedAccessException("You do not have access to this task.");
 
         var milestone = _mapper.Map<Milestone>(dto);
         milestone.CreatedAt = DateTime.UtcNow;
@@ -92,13 +91,24 @@ public class MilestoneService : IMilestoneService
 
         var changes = new List<(string, string?, string?)>();
         if (oldTitle != milestone.Milestone.Title)
+        {
             changes.Add(("Title", oldTitle, milestone.Milestone.Title));
+        }
+
         if (oldDescription != milestone.Milestone.Description)
+        {
             changes.Add(("Description", oldDescription, milestone.Milestone.Description));
+        }
+
         if (oldTargetDate != milestone.Milestone.TargetDate)
+        {
             changes.Add(("TargetDate", oldTargetDate.ToString("O"), milestone.Milestone.TargetDate.ToString("O")));
+        }
+
         if (oldStatus != milestone.Milestone.Status)
+        {
             changes.Add(("Status", oldStatus.ToString(), milestone.Milestone.Status.ToString()));
+        }
 
         await WriteAuditLogsAsync(milestone.Milestone.MilestoneId, userId, "Updated", changes);
         await _uow.SaveChangesAsync();
@@ -181,7 +191,11 @@ public class MilestoneService : IMilestoneService
 
     private string EscapeICalValue(string value)
     {
-        if (string.IsNullOrEmpty(value)) return "";
+        if (string.IsNullOrEmpty(value))
+        {
+            return "";
+        }
+
         return value.Replace("\\", "\\\\")
                     .Replace("\r\n", "\\n")
                     .Replace("\n", "\\n")

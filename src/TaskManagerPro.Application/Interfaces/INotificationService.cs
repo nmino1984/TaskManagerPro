@@ -1,8 +1,6 @@
-using System;
-using TaskManagerPro.Application.DTOs.Notification;
-
-using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using TaskManagerPro.Application.DTOs.Notification;
 namespace TaskManagerPro.Application.Interfaces;
 
 public interface INotificationService

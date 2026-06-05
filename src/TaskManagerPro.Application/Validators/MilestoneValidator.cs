@@ -1,6 +1,5 @@
-using System;
-using TaskManagerPro.Application.DTOs;
 using FluentValidation;
+using System;
 using TaskManagerPro.Application.DTOs.Milestone;
 
 namespace TaskManagerPro.Application.Validators;

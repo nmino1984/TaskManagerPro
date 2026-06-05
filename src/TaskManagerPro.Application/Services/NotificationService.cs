@@ -1,7 +1,7 @@
+using AutoMapper;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using AutoMapper;
 using TaskManagerPro.Application.DTOs.Notification;
 using TaskManagerPro.Application.Exceptions;
 using TaskManagerPro.Application.Interfaces;
@@ -36,7 +36,9 @@ public class NotificationService : INotificationService
         var notification = await _uow.Notifications.GetByIdAndUserIdAsync(notificationId, userId);
 
         if (notification == null)
+        {
             throw new NotFoundException("Notification not found");
+        }
 
         notification.IsRead = true;
         _uow.Notifications.Update(notification);
@@ -48,10 +50,14 @@ public class NotificationService : INotificationService
         var notifications = await _uow.Notifications.GetUnreadByUserIdAsync(userId);
 
         foreach (var notification in notifications)
+        {
             notification.IsRead = true;
+        }
 
         foreach (var notification in notifications)
+        {
             _uow.Notifications.Update(notification);
+        }
 
         await _uow.SaveChangesAsync();
     }

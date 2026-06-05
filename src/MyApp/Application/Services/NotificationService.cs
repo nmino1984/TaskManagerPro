@@ -42,7 +42,9 @@ public class NotificationService : INotificationService
             .FirstOrDefaultAsync(n => n.NotificationId == notificationId && n.UserId == userId);
 
         if (notification == null)
+        {
             throw new NotFoundException("Notification not found");
+        }
 
         notification.IsRead = true;
         _uow.Notifications.Update(notification);
@@ -56,10 +58,14 @@ public class NotificationService : INotificationService
             .ToListAsync();
 
         foreach (var notification in notifications)
+        {
             notification.IsRead = true;
+        }
 
         foreach (var notification in notifications)
+        {
             _uow.Notifications.Update(notification);
+        }
 
         await _uow.SaveChangesAsync();
     }

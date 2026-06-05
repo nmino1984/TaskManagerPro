@@ -1,10 +1,10 @@
-using System.Net;
-using System.Net.Http.Json;
 using FluentAssertions;
 using MyApp.Application.DTOs.Common;
 using MyApp.Application.DTOs.MyTask;
 using MyApp.Domain.Enums;
 using MyApp.Tests.Integration.Infrastructure;
+using System.Net;
+using System.Net.Http.Json;
 using Xunit;
 
 namespace MyApp.Tests.Integration.Controllers;

@@ -1,8 +1,6 @@
-using System;
-using TaskManagerPro.Application.DTOs.SubTask;
-
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using TaskManagerPro.Application.DTOs.SubTask;
 namespace TaskManagerPro.Application.Interfaces;
 
 public interface ISubTaskService

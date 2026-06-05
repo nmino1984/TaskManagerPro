@@ -1,15 +1,12 @@
 using AutoMapper;
-using TaskManagerPro.Application.DTOs;
-using TaskManagerPro.Application.DTOs.MyTask;
-using TaskManagerPro.Application.DTOs.SubTask;
-using TaskManagerPro.Application.DTOs.Milestone;
-using TaskManagerPro.Application.DTOs.Notification;
-using TaskManagerPro.Application.DTOs.User;
 using TaskManagerPro.Application.DTOs.AuditLog;
+using TaskManagerPro.Application.DTOs.Milestone;
+using TaskManagerPro.Application.DTOs.MyTask;
+using TaskManagerPro.Application.DTOs.Notification;
+using TaskManagerPro.Application.DTOs.SubTask;
 using TaskManagerPro.Application.DTOs.TaskComment;
+using TaskManagerPro.Application.DTOs.User;
 using TaskManagerPro.Domain.Entities;
-
-using System.Threading.Tasks;
 namespace TaskManagerPro.Application.Mapping;
 
 public class MappingProfile : Profile

@@ -1,8 +1,6 @@
-using System;
-using TaskManagerPro.Application.DTOs.Milestone;
-
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using TaskManagerPro.Application.DTOs.Milestone;
 namespace TaskManagerPro.Application.Interfaces;
 
 public interface IMilestoneService

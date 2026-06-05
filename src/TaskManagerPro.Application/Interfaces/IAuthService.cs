@@ -1,7 +1,5 @@
-using System;
-using TaskManagerPro.Application.DTOs.Auth;
-
 using System.Threading.Tasks;
+using TaskManagerPro.Application.DTOs.Auth;
 namespace TaskManagerPro.Application.Interfaces;
 
 public interface IAuthService

@@ -1,8 +1,6 @@
-using System;
-using TaskManagerPro.Application.DTOs.AuditLog;
-
-using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using TaskManagerPro.Application.DTOs.AuditLog;
 namespace TaskManagerPro.Application.Interfaces;
 
 public interface IAuditLogService

@@ -1,12 +1,12 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using MyApp.Application.DTOs.MyTask;
+using Microsoft.EntityFrameworkCore;
 using MyApp.Application.DTOs.AuditLog;
+using MyApp.Application.DTOs.MyTask;
 using MyApp.Application.Interfaces;
 using MyApp.Domain.Entities;
 using MyApp.Infrastructure.Data;
-using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace MyApp.Api.Controllers;
 
@@ -153,9 +153,12 @@ public class MyTaskController : ControllerBase
         {
             var task = await db.MyTasks.FirstOrDefaultAsync();
             if (task == null)
+            {
                 return Ok(new { message = "No tasks found in database" });
+            }
 
-            return Ok(new {
+            return Ok(new
+            {
                 message = "First task from database",
                 myTaskId = task.MyTaskId,
                 title = task.Title,

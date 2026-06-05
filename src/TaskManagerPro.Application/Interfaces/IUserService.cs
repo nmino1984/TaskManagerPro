@@ -1,8 +1,6 @@
-using System;
-using TaskManagerPro.Application.DTOs.User;
-
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using TaskManagerPro.Application.DTOs.User;
 namespace TaskManagerPro.Application.Interfaces;
 
 public interface IUserService

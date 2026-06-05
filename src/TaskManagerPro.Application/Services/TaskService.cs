@@ -1,5 +1,7 @@
-using System;
 using AutoMapper;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using TaskManagerPro.Application.DTOs.Common;
 using TaskManagerPro.Application.DTOs.MyTask;
 using TaskManagerPro.Application.Exceptions;
@@ -7,12 +9,6 @@ using TaskManagerPro.Application.Interfaces;
 using TaskManagerPro.Application.Interfaces.Repositories;
 using TaskManagerPro.Domain.Entities;
 using TaskManagerPro.Domain.Enums;
-
-using System.Linq;
-using System.Threading.Tasks;
-using TaskManagerPro.Application.DTOs;
-using TaskManagerPro.Application.Interfaces;
-using System.Collections.Generic;
 namespace TaskManagerPro.Application.Services;
 
 public class TaskService : ITaskService
@@ -88,28 +84,52 @@ public class TaskService : ITaskService
 
         var changes = new List<(string, string?, string?)>();
         if (oldTitle != task.Title)
+        {
             changes.Add(("Title", oldTitle, task.Title));
+        }
+
         if (oldDescription != task.Description)
+        {
             changes.Add(("Description", oldDescription, task.Description));
+        }
+
         if (oldStartDate != task.StartDate)
+        {
             changes.Add(("StartDate", oldStartDate.ToString("O"), task.StartDate.ToString("O")));
+        }
+
         if (oldEndDate != task.EndDate)
+        {
             changes.Add(("EndDate", oldEndDate.ToString("O"), task.EndDate.ToString("O")));
+        }
+
         if (oldPriority != task.Priority)
+        {
             changes.Add(("Priority", oldPriority.ToString(), task.Priority.ToString()));
+        }
+
         if (oldStatus != task.Status)
+        {
             changes.Add(("Status", oldStatus.ToString(), task.Status.ToString()));
+        }
+
         if (oldAssignedToUserId != task.AssignedToUserId)
+        {
             changes.Add(("AssignedToUserId", oldAssignedToUserId, task.AssignedToUserId));
+        }
 
         await WriteAuditLogsAsync(task.MyTaskId, userId, "Updated", changes);
         await _uow.SaveChangesAsync();
 
         if (oldStatus != MyTaskStatus.Completed && task.Status == MyTaskStatus.Completed)
+        {
             _jobs.EnqueueTaskCompleted(task.MyTaskId, userId);
+        }
 
         if (oldAssignedToUserId != task.AssignedToUserId && !string.IsNullOrEmpty(task.AssignedToUserId))
+        {
             _jobs.EnqueueTaskAssigned(task.MyTaskId, task.AssignedToUserId);
+        }
 
         return _mapper.Map<MyTaskResponseDto>(task);
     }
@@ -135,7 +155,9 @@ public class TaskService : ITaskService
             ?? throw new NotFoundException("MyTask", id);
 
         if (task.UserId != userId)
+        {
             throw new UnauthorizedAccessException("You can only assign tasks you own.");
+        }
 
         var oldAssignedToUserId = task.AssignedToUserId;
 

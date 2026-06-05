@@ -1,8 +1,6 @@
-using System;
-using TaskManagerPro.Domain.Entities;
-
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using TaskManagerPro.Domain.Entities;
 namespace TaskManagerPro.Application.Interfaces.Repositories;
 
 public interface ISubTaskAuditLogRepository : IRepository<SubTaskAuditLog>
