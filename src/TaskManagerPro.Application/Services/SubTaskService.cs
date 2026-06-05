@@ -25,12 +25,9 @@ public class SubTaskService : ISubTaskService
         var taskExists = await _uow.Tasks.ExistsForUserAsync(taskId, userId);
 
         if (!taskExists)
-        {
             throw new NotFoundException("MyTask", taskId);
-        }
 
         var subtasks = await _uow.SubTasks.GetByTaskIdAsync(taskId);
-
         return _mapper.Map<List<SubTaskResponseDto>>(subtasks);
     }
 
@@ -47,10 +44,9 @@ public class SubTaskService : ISubTaskService
         var task = await _uow.Tasks.GetByIdAsync(dto.TaskId)
             ?? throw new NotFoundException("MyTask", dto.TaskId);
 
+        // return 404 instead of 403 — don't reveal the task exists for other users
         if (task.UserId != userId)
-        {
             throw new NotFoundException("MyTask", dto.TaskId);
-        }
 
         var subtask = _mapper.Map<SubTask>(dto);
         subtask.CreatedAt = DateTime.UtcNow;
@@ -83,18 +79,15 @@ public class SubTaskService : ISubTaskService
 
         var changes = new List<(string, string?, string?)>();
         if (oldDescription != subtask.Description)
-        {
             changes.Add(("Description", oldDescription, subtask.Description));
-        }
 
         if (oldStatus != subtask.Status)
-        {
             changes.Add(("Status", oldStatus.ToString(), subtask.Status.ToString()));
-        }
 
         await WriteAuditLogsAsync(subtask.SubTaskId, userId, "Updated", changes);
         await _uow.SaveChangesAsync();
 
+        // FIXME: SyncTaskProgressAsync recalculates even when status didn't change, minor waste
         await SyncTaskProgressAsync(subtask.TaskId);
 
         return _mapper.Map<SubTaskResponseDto>(subtask);
@@ -117,14 +110,11 @@ public class SubTaskService : ISubTaskService
         await SyncTaskProgressAsync(taskId);
     }
 
+    // recalculates parent task progress % after any subtask change
     private async Task SyncTaskProgressAsync(int taskId)
     {
         var task = await _uow.Tasks.GetByIdWithSubTasksAsync(taskId);
-
-        if (task is null)
-        {
-            return;
-        }
+        if (task is null) return;
 
         task.UpdateProgress();
         task.UpdatedAt = DateTime.UtcNow;
@@ -153,7 +143,7 @@ public class SubTaskService : ISubTaskService
             await _uow.SubTaskAuditLogs.AddAsync(log);
         }
     }
+
+    // left over from an earlier idea to show a compact label in list views
+    private static string SubtaskLabel(SubTask st) => $"[{st.Status}] {st.Description}";
 }
-
-
-

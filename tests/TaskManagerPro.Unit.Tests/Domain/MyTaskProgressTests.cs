@@ -20,7 +20,9 @@ public class MyTaskProgressTests
         Status = status
     };
 
-    // --- Progress calculation ---
+    // TODO: add edge case for task with 0 subtasks that was manually set to InProgress
+
+    // --- Progress ---
 
     [Fact]
     public void UpdateProgress_NoSubtasks_SetsProgressToZero()
@@ -31,7 +33,7 @@ public class MyTaskProgressTests
     }
 
     [Fact]
-    public void UpdateProgress_AllCompleted_SetsProgress100()
+    public void all_completed_means_100_percent()
     {
         var task = CreateTask();
         task.SubTasks.Add(Subtask(SubTaskStatus.Completed));
@@ -74,10 +76,10 @@ public class MyTaskProgressTests
         task.Progress.Should().Be(66);
     }
 
-    // --- Status calculation ---
+    // --- Status ---
 
     [Fact]
-    public void UpdateStatus_NoSubtasks_FutureEndDate_SetsNotStarted()
+    public void no_subtasks_future_deadline_stays_not_started()
     {
         var task = CreateTask(endDate: DateTime.UtcNow.AddDays(10));
         task.UpdateProgress();
@@ -93,7 +95,7 @@ public class MyTaskProgressTests
     }
 
     [Fact]
-    public void UpdateStatus_AllCompleted_SetsCompleted_RegardlessOfDate()
+    public void completed_even_if_past_due_date()
     {
         var task = CreateTask(endDate: DateTime.UtcNow.AddDays(-5));
         task.SubTasks.Add(Subtask(SubTaskStatus.Completed));
@@ -112,7 +114,7 @@ public class MyTaskProgressTests
     }
 
     [Fact]
-    public void UpdateStatus_PartialCompletion_PastEndDate_SetsOverdue()
+    public void overdue_if_partial_and_past_deadline()
     {
         var task = CreateTask(endDate: DateTime.UtcNow.AddDays(-1));
         task.SubTasks.Add(Subtask(SubTaskStatus.Completed));
@@ -130,4 +132,7 @@ public class MyTaskProgressTests
         task.UpdateProgress();
         task.Status.Should().Be(MyTaskStatus.Overdue);
     }
+
+    // not used yet but might be handy for future overdue-notification tests
+    private static MyTask OverdueTask() => CreateTask(endDate: DateTime.UtcNow.AddDays(-30));
 }

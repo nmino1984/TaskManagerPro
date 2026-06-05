@@ -17,6 +17,10 @@ public class TaskCommentService : ITaskCommentService
     private readonly IMapper _mapper;
     private readonly INotificationService _notificationService;
 
+    // TODO: paginate GetByTaskAsync — active tasks accumulate comments fast
+    // FIXME: HandleMentionsAsync fires on edit but doesn't deduplicate — users get pinged twice if mentioned again
+    // TODO: consider rate-limiting comment creation per user to prevent spam
+
     public TaskCommentService(IUnitOfWork uow, IMapper mapper, INotificationService notificationService)
     {
         _uow = uow;
@@ -111,6 +115,8 @@ public class TaskCommentService : ITaskCommentService
         _uow.TaskComments.Remove(comment);
         await _uow.SaveChangesAsync();
     }
+
+    private bool ContainsMentions(string text) => Regex.IsMatch(text, @"@\w+");
 
     private async Task HandleMentionsAsync(TaskComment comment, string createdByUserId)
     {

@@ -11,6 +11,10 @@ public class UserService : IUserService
     private readonly IUnitOfWork _uow;
     private readonly IMapper _mapper;
 
+    // TODO: add search/filter to GetAllAsync — assignment dropdown becomes unusable at scale
+    // TODO: add pagination here, backlog item #47
+    // TODO: cache user list, it's read-heavy and rarely changes
+
     public UserService(IUnitOfWork uow, IMapper mapper)
     {
         _uow = uow;
@@ -28,6 +32,8 @@ public class UserService : IUserService
         var user = await _uow.Users.GetByIdAsync(userId);
         return user != null ? _mapper.Map<UserDto>(user) : null;
     }
+
+    private string FormatDisplayName(string username) => username.Trim().ToLowerInvariant();
 }
 
 

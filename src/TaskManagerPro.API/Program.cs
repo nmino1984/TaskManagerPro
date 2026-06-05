@@ -59,10 +59,8 @@ builder.Services.AddControllers(options =>
             new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
     });
 
-// Infrastructure: DbContext, UnitOfWork, JwtTokenService, BcryptPasswordHasher, Hangfire, TaskNotificationJob
 builder.Services.AddInfrastructure(builder.Configuration);
 
-// Application services
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITaskService, TaskService>();
 builder.Services.AddScoped<ISubTaskService, SubTaskService>();
@@ -71,6 +69,8 @@ builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ITaskCommentService, TaskCommentService>();
 builder.Services.AddScoped<IAuditLogService, AuditLogService>();
+
+// TODO: move these registrations to an AddApplication() extension method like Infrastructure does
 
 builder.Services.AddAutoMapper(cfg => cfg.AddProfile<MappingProfile>());
 builder.Services.AddValidatorsFromAssemblyContaining<MyTaskCreateDtoValidator>();
@@ -100,8 +100,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddAuthorization();
 
-// CORS origins come from appsettings.Development.json → "CorsOrigins" array
-// In production, set via env var or appsettings.Production.json
+// origins from appsettings.Development.json — add new Angular port there if it shifts
 var corsOrigins = builder.Configuration.GetSection("CorsOrigins").Get<string[]>()
     ?? ["http://localhost:4200"];
 
@@ -115,13 +114,12 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// Global error handling — must be first to catch all exceptions
 app.UseMiddleware<ErrorHandlingMiddleware>();
 
 if (app.Environment.IsProduction())
     app.UseHttpsRedirection();
 
-// UseRouting must be explicit and before UseCors so CORS has route context for OPTIONS preflight
+// UseRouting before UseCors — CORS needs route context to handle OPTIONS preflight correctly
 app.UseRouting();
 app.UseCors("Angular");
 
@@ -159,7 +157,6 @@ if (app.Environment.IsDevelopment())
     }
 }
 
-// Register recurring job in all environments except test
 if (!app.Environment.IsEnvironment("Testing"))
 {
     RecurringJob.AddOrUpdate<TaskNotificationJob>(

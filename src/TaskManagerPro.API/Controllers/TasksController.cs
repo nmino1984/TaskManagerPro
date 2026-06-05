@@ -1,12 +1,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using TaskManagerPro.Application.DTOs.AuditLog;
 using TaskManagerPro.Application.DTOs.MyTask;
 using TaskManagerPro.Application.Interfaces;
-using TaskManagerPro.Domain.Entities;
-using TaskManagerPro.Infrastructure.Persistence;
 
 namespace TaskManagerPro.API.Controllers;
 
@@ -29,9 +26,6 @@ public class TasksController : ControllerBase
         _auditLogService = auditLogService;
     }
 
-    /// <summary>
-    /// Retrieves all tasks with optional pagination and filtering.
-    /// </summary>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll([FromQuery] TaskQueryParams q)
@@ -41,9 +35,6 @@ public class TasksController : ControllerBase
         return Ok(await _taskService.GetAllAsync(userId, q));
     }
 
-    /// <summary>
-    /// Retrieves a single task by its ID.
-    /// </summary>
     [HttpGet("{id:int}")]
     [ProducesResponseType<MyTaskResponseDto>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -54,9 +45,6 @@ public class TasksController : ControllerBase
         return Ok(await _taskService.GetByIdAsync(id, userId));
     }
 
-    /// <summary>
-    /// Creates a new task.
-    /// </summary>
     [HttpPost]
     [ProducesResponseType<MyTaskResponseDto>(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -68,9 +56,6 @@ public class TasksController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = result.MyTaskId }, result);
     }
 
-    /// <summary>
-    /// Updates an existing task.
-    /// </summary>
     [HttpPut("{id:int}")]
     [ProducesResponseType<MyTaskResponseDto>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -82,9 +67,6 @@ public class TasksController : ControllerBase
         return Ok(await _taskService.UpdateAsync(id, dto, userId));
     }
 
-    /// <summary>
-    /// Deletes a task by its ID.
-    /// </summary>
     [HttpDelete("{id:int}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -123,45 +105,4 @@ public class TasksController : ControllerBase
         return Ok(await _auditLogService.GetTaskHistoryAsync(id, userId));
     }
 
-    /// <summary>
-    /// DEBUG: Check database schema
-    /// </summary>
-    [HttpGet("debug/schema")]
-    [AllowAnonymous]
-    public IActionResult GetDbSchema()
-    {
-        var properties = typeof(MyTask).GetProperties();
-        var props = properties.Select(p => new { PropertyName = p.Name, PropertyType = p.PropertyType.Name }).ToList();
-        return Ok(new { message = "MyTask properties", properties = props });
-    }
-
-    /// <summary>
-    /// DEBUG: Check actual database by querying first task
-    /// </summary>
-    [HttpGet("debug/db-columns")]
-    [AllowAnonymous]
-    public async Task<IActionResult> GetDbColumns([FromServices] AppDbContext db)
-    {
-        try
-        {
-            var task = await db.MyTasks.FirstOrDefaultAsync();
-            if (task == null)
-            {
-                return Ok(new { message = "No tasks found in database" });
-            }
-
-            return Ok(new
-            {
-                message = "First task from database",
-                myTaskId = task.MyTaskId,
-                title = task.Title,
-                assignedToUserId = task.AssignedToUserId,
-                assignedToUser = task.AssignedToUser?.Username
-            });
-        }
-        catch (Exception ex)
-        {
-            return Ok(new { error = ex.Message, stackTrace = ex.StackTrace });
-        }
-    }
 }

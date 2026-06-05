@@ -25,9 +25,6 @@ public class SubTasksController : ControllerBase
         _auditLogService = auditLogService;
     }
 
-    /// <summary>
-    /// Retrieves all subtasks belonging to a specific task.
-    /// </summary>
     [HttpGet("bytask/{taskId:int}")]
     [ProducesResponseType<List<SubTaskResponseDto>>(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetByTask(int taskId)
@@ -37,9 +34,6 @@ public class SubTasksController : ControllerBase
         return Ok(await _subTaskService.GetByTaskAsync(taskId, userId));
     }
 
-    /// <summary>
-    /// Retrieves a single subtask by its ID.
-    /// </summary>
     [HttpGet("{id:int}")]
     [ProducesResponseType<SubTaskResponseDto>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -50,9 +44,6 @@ public class SubTasksController : ControllerBase
         return Ok(await _subTaskService.GetByIdAsync(id, userId));
     }
 
-    /// <summary>
-    /// Creates a new subtask under an existing task.
-    /// </summary>
     [HttpPost]
     [ProducesResponseType<SubTaskResponseDto>(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -65,9 +56,6 @@ public class SubTasksController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = result.SubTaskId }, result);
     }
 
-    /// <summary>
-    /// Updates an existing subtask.
-    /// </summary>
     [HttpPut("{id:int}")]
     [ProducesResponseType<SubTaskResponseDto>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -79,9 +67,6 @@ public class SubTasksController : ControllerBase
         return Ok(await _subTaskService.UpdateAsync(id, dto, userId));
     }
 
-    /// <summary>
-    /// Deletes a subtask by its ID.
-    /// </summary>
     [HttpDelete("{id:int}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

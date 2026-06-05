@@ -22,9 +22,6 @@ public class NotificationsController : ControllerBase
         _notificationService = notificationService;
     }
 
-    /// <summary>
-    /// Retrieves all notifications for the current user.
-    /// </summary>
     [HttpGet]
     [ProducesResponseType<IEnumerable<NotificationResponseDto>>(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll()

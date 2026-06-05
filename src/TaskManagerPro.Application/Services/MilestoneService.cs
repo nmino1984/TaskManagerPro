@@ -19,6 +19,10 @@ public class MilestoneService : IMilestoneService
     private readonly IUnitOfWork _uow;
     private readonly IMapper _mapper;
 
+    // TODO: add pagination support to GetByTaskAsync — tasks with many milestones hit this hard
+    // TODO: cache completion stats per task, dashboard calls this on every load
+    // FIXME: EscapeICalValue doesn't fold long lines per RFC 5545 — will break some calendar clients
+
     public MilestoneService(IUnitOfWork uow, IMapper mapper)
     {
         _uow = uow;
@@ -181,6 +185,14 @@ public class MilestoneService : IMilestoneService
 
         sb.AppendLine("END:VCALENDAR");
         return System.Text.Encoding.UTF8.GetBytes(sb.ToString());
+    }
+
+    private string SummarizeChanges(IReadOnlyCollection<(string FieldName, string? OldValue, string? NewValue)> changes)
+    {
+        var parts = new List<string>();
+        foreach (var (field, old, @new) in changes)
+            parts.Add($"{field}: {old} → {@new}");
+        return string.Join(", ", parts);
     }
 
     private string EscapeICalValue(string value)

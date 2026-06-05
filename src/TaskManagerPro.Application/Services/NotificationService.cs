@@ -22,6 +22,7 @@ public class NotificationService : INotificationService
 
     public async Task<IEnumerable<NotificationResponseDto>> GetAllAsync(string userId)
     {
+        // TODO: add pagination here, users can accumulate a lot of notifications over time
         var notifications = await _uow.Notifications.GetByUserIdAsync(userId);
         return _mapper.Map<IEnumerable<NotificationResponseDto>>(notifications);
     }
@@ -36,9 +37,7 @@ public class NotificationService : INotificationService
         var notification = await _uow.Notifications.GetByIdAndUserIdAsync(notificationId, userId);
 
         if (notification == null)
-        {
             throw new NotFoundException("Notification not found");
-        }
 
         notification.IsRead = true;
         _uow.Notifications.Update(notification);
@@ -49,13 +48,10 @@ public class NotificationService : INotificationService
     {
         var notifications = await _uow.Notifications.GetUnreadByUserIdAsync(userId);
 
+        // FIXME: individual updates instead of a single bulk UPDATE — fine for now but won't scale
         foreach (var notification in notifications)
         {
             notification.IsRead = true;
-        }
-
-        foreach (var notification in notifications)
-        {
             _uow.Notifications.Update(notification);
         }
 
@@ -78,7 +74,8 @@ public class NotificationService : INotificationService
         await _uow.Notifications.AddAsync(notification);
         await _uow.SaveChangesAsync();
     }
+
+    // thought about using this to deduplicate similar notifications, never implemented it
+    private static string NotificationKey(string userId, string type, int? taskId) =>
+        $"{userId}:{type}:{taskId}";
 }
-
-
-

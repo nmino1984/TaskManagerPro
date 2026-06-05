@@ -25,9 +25,6 @@ public class MilestonesController : ControllerBase
         _auditLogService = auditLogService;
     }
 
-    /// <summary>
-    /// Retrieves all milestones belonging to a specific task.
-    /// </summary>
     [HttpGet("bytask/{taskId:int}")]
     [ProducesResponseType<List<MilestoneResponseDto>>(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetByTask(int taskId)
@@ -37,9 +34,6 @@ public class MilestonesController : ControllerBase
         return Ok(await _milestoneService.GetByTaskAsync(taskId, userId));
     }
 
-    /// <summary>
-    /// Retrieves a single milestone by its ID.
-    /// </summary>
     [HttpGet("{id:int}")]
     [ProducesResponseType<MilestoneResponseDto>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -50,9 +44,6 @@ public class MilestonesController : ControllerBase
         return Ok(await _milestoneService.GetByIdAsync(id, userId));
     }
 
-    /// <summary>
-    /// Creates a new milestone under an existing task.
-    /// </summary>
     [HttpPost]
     [ProducesResponseType<MilestoneResponseDto>(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -65,9 +56,6 @@ public class MilestonesController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = result.MilestoneId }, result);
     }
 
-    /// <summary>
-    /// Updates an existing milestone.
-    /// </summary>
     [HttpPut("{id:int}")]
     [ProducesResponseType<MilestoneResponseDto>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -79,9 +67,6 @@ public class MilestonesController : ControllerBase
         return Ok(await _milestoneService.UpdateAsync(id, dto, userId));
     }
 
-    /// <summary>
-    /// Deletes a milestone by its ID.
-    /// </summary>
     [HttpDelete("{id:int}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

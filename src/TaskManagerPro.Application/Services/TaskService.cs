@@ -28,6 +28,7 @@ public class TaskService : ITaskService
     {
         var pagedResult = await _uow.Tasks.GetPagedAsync(userId, q);
 
+        // TODO: add result caching here, this hits the DB on every single request
         return new PagedResult<MyTaskResponseDto>
         {
             Items = _mapper.Map<List<MyTaskResponseDto>>(pagedResult.Items),
@@ -69,6 +70,7 @@ public class TaskService : ITaskService
         var task = await _uow.Tasks.GetByIdWithIncludesAsync(id, userId)
             ?? throw new NotFoundException("MyTask", id);
 
+        // snapshot old values before mapping — needed for audit log diff
         var oldTitle = task.Title;
         var oldDescription = task.Description;
         var oldStartDate = task.StartDate;
@@ -82,54 +84,37 @@ public class TaskService : ITaskService
 
         _uow.Tasks.Update(task);
 
+        // TODO: extract this change-tracking block into a helper, UpdateAsync is getting long
         var changes = new List<(string, string?, string?)>();
         if (oldTitle != task.Title)
-        {
             changes.Add(("Title", oldTitle, task.Title));
-        }
 
         if (oldDescription != task.Description)
-        {
             changes.Add(("Description", oldDescription, task.Description));
-        }
 
         if (oldStartDate != task.StartDate)
-        {
             changes.Add(("StartDate", oldStartDate.ToString("O"), task.StartDate.ToString("O")));
-        }
 
         if (oldEndDate != task.EndDate)
-        {
             changes.Add(("EndDate", oldEndDate.ToString("O"), task.EndDate.ToString("O")));
-        }
 
         if (oldPriority != task.Priority)
-        {
             changes.Add(("Priority", oldPriority.ToString(), task.Priority.ToString()));
-        }
 
         if (oldStatus != task.Status)
-        {
             changes.Add(("Status", oldStatus.ToString(), task.Status.ToString()));
-        }
 
         if (oldAssignedToUserId != task.AssignedToUserId)
-        {
             changes.Add(("AssignedToUserId", oldAssignedToUserId, task.AssignedToUserId));
-        }
 
         await WriteAuditLogsAsync(task.MyTaskId, userId, "Updated", changes);
         await _uow.SaveChangesAsync();
 
         if (oldStatus != MyTaskStatus.Completed && task.Status == MyTaskStatus.Completed)
-        {
             _jobs.EnqueueTaskCompleted(task.MyTaskId, userId);
-        }
 
         if (oldAssignedToUserId != task.AssignedToUserId && !string.IsNullOrEmpty(task.AssignedToUserId))
-        {
             _jobs.EnqueueTaskAssigned(task.MyTaskId, task.AssignedToUserId);
-        }
 
         return _mapper.Map<MyTaskResponseDto>(task);
     }
@@ -155,9 +140,7 @@ public class TaskService : ITaskService
             ?? throw new NotFoundException("MyTask", id);
 
         if (task.UserId != userId)
-        {
             throw new UnauthorizedAccessException("You can only assign tasks you own.");
-        }
 
         var oldAssignedToUserId = task.AssignedToUserId;
 
@@ -223,7 +206,8 @@ public class TaskService : ITaskService
             await _uow.AuditLogs.AddAsync(log);
         }
     }
+
+    // was going to use this to skip notifications for low-priority stuff, never got around to it
+    private static bool IsUrgent(MyTask task) =>
+        task.Priority == TaskPriority.High && task.EndDate <= DateTime.UtcNow.AddDays(2);
 }
-
-
-

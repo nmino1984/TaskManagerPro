@@ -12,6 +12,9 @@ public class AuditLogService : IAuditLogService
     private readonly IUnitOfWork _uow;
     private readonly IMapper _mapper;
 
+    // TODO: paginate history endpoints — long-lived tasks end up with hundreds of log entries
+    // TODO: add date range filter so clients can scope history to a sprint
+
     public AuditLogService(IUnitOfWork uow, IMapper mapper)
     {
         _uow = uow;
@@ -65,6 +68,10 @@ public class AuditLogService : IAuditLogService
         var logs = await _uow.MilestoneAuditLogs.GetByMilestoneIdAsync(milestoneId);
         return _mapper.Map<IEnumerable<MilestoneAuditLogResponseDto>>(logs);
     }
+
+    // not used yet — placeholder for future "hide noisy field changes" filter
+    private bool IsSignificantChange(string fieldName) =>
+        fieldName is "Title" or "Status" or "DueDate" or "Priority";
 }
 
 

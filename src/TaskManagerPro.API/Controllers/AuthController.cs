@@ -17,9 +17,6 @@ public class AuthController : ControllerBase
         _authService = authService;
     }
 
-    /// <summary>
-    /// Registers a new user with username and password.
-    /// </summary>
     [HttpPost("register")]
     [ProducesResponseType<AuthResponseDto>(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -29,9 +26,6 @@ public class AuthController : ControllerBase
         return CreatedAtAction(nameof(Register), result);
     }
 
-    /// <summary>
-    /// Logs in a user with username and password.
-    /// </summary>
     [HttpPost("login")]
     [ProducesResponseType<AuthResponseDto>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
