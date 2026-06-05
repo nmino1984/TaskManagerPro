@@ -1,9 +1,9 @@
 using FluentAssertions;
-using MyApp.Domain.Entities;
-using MyApp.Domain.Enums;
+using TaskManagerPro.Domain.Entities;
+using TaskManagerPro.Domain.Enums;
 using Xunit;
 
-namespace MyApp.Tests.Unit.Domain;
+namespace TaskManagerPro.Unit.Tests.Domain;
 
 public class MyTaskProgressTests
 {

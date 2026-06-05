@@ -100,19 +100,30 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddAuthorization();
 
+// CORS origins come from appsettings.Development.json → "CorsOrigins" array
+// In production, set via env var or appsettings.Production.json
+var corsOrigins = builder.Configuration.GetSection("CorsOrigins").Get<string[]>()
+    ?? ["http://localhost:4200"];
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("Angular", policy =>
-        policy.WithOrigins("http://localhost:4200", "http://localhost:8080")
+        policy.WithOrigins(corsOrigins)
               .AllowAnyHeader()
               .AllowAnyMethod());
 });
 
 var app = builder.Build();
 
-app.UseCors("Angular");
-
+// Global error handling — must be first to catch all exceptions
 app.UseMiddleware<ErrorHandlingMiddleware>();
+
+if (app.Environment.IsProduction())
+    app.UseHttpsRedirection();
+
+// UseRouting must be explicit and before UseCors so CORS has route context for OPTIONS preflight
+app.UseRouting();
+app.UseCors("Angular");
 
 if (app.Environment.IsDevelopment())
 {
@@ -127,6 +138,7 @@ if (app.Environment.IsDevelopment())
         options.Title = "TaskMaster Pro API";
         options.Theme = ScalarTheme.Purple;
     });
+    app.UseHangfireDashboard("/hangfire");
 }
 
 app.UseAuthentication();
@@ -134,13 +146,6 @@ app.UseAuthorization();
 
 if (app.Environment.IsDevelopment())
 {
-    app.UseHangfireDashboard("/hangfire");
-
-    RecurringJob.AddOrUpdate<TaskNotificationJob>(
-        "task-overdue-check",
-        j => j.TaskOverdueCheckAsync(),
-        Cron.Hourly);
-
     try
     {
         using var scope = app.Services.CreateScope();
@@ -152,6 +157,15 @@ if (app.Environment.IsDevelopment())
     {
         Log.Error(ex, "Error during database migration or seeding");
     }
+}
+
+// Register recurring job in all environments except test
+if (!app.Environment.IsEnvironment("Testing"))
+{
+    RecurringJob.AddOrUpdate<TaskNotificationJob>(
+        "task-overdue-check",
+        j => j.TaskOverdueCheckAsync(),
+        Cron.Hourly);
 }
 
 app.MapControllers();
